@@ -1,3 +1,3 @@
-<img src=".github/assets/meteorite-title.png" width="240" />
+## meteorite
 
 > Smarter GitHub notifications.
