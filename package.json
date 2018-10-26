@@ -1,27 +1,26 @@
 {
   "name": "meteorite",
-  "version": "1.0.0",
-  "description": "Smarter GitHub notifications.",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com:nickzuber/meteorite.git"
-  },
-  "keywords": [
-    "github",
-    "notifications"
-  ],
-  "author": "Nick Zuber <zuber.nicholas@gmail.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/nickzuber/meteorite/issues"
-  },
-  "homepage": "https://github.com/nickzuber/meteorite#readme",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
-    "axios": "^0.18.0",
-    "graphql": "^14.0.2"
-  }
+    "@reach/router": "^1.2.1",
+    "react": "^16.6.0",
+    "react-dom": "^16.6.0",
+    "react-scripts": "2.0.5"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }
