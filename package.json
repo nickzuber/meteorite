@@ -1,0 +1,23 @@
+{
+  "name": "github-notifications",
+  "version": "1.0.0",
+  "description": "Smart GitHub notifications.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/nickzuber/github-notifications.git"
+  },
+  "keywords": [
+    "github",
+    "notifications"
+  ],
+  "author": "Nick Zuber <zuber.nicholas@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nickzuber/github-notifications/issues"
+  },
+  "homepage": "https://github.com/nickzuber/github-notifications#readme"
+}
