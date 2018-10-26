@@ -1,14 +1,14 @@
 {
-  "name": "github-notifications",
+  "name": "meteorite",
   "version": "1.0.0",
-  "description": "Smart GitHub notifications.",
+  "description": "Smarter GitHub notifications.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/nickzuber/github-notifications.git"
+    "url": "git+ssh://git@github.com:nickzuber/meteorite.git"
   },
   "keywords": [
     "github",
@@ -17,7 +17,11 @@
   "author": "Nick Zuber <zuber.nicholas@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nickzuber/github-notifications/issues"
+    "url": "https://github.com/nickzuber/meteorite/issues"
   },
-  "homepage": "https://github.com/nickzuber/github-notifications#readme"
+  "homepage": "https://github.com/nickzuber/meteorite#readme",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "graphql": "^14.0.2"
+  }
 }
