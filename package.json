@@ -5,8 +5,11 @@
   "dependencies": {
     "@reach/router": "^1.2.1",
     "axios": "^0.18.0",
+    "emotion": "^9.2.12",
+    "query-string": "^6.2.0",
     "react": "^16.6.0",
     "react-dom": "^16.6.0",
+    "react-emotion": "^9.2.12",
     "react-scripts": "2.0.5"
   },
   "scripts": {
