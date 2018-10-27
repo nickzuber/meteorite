@@ -1,11 +1,11 @@
 import React from 'react';
 import { Link } from "@reach/router";
 import styled from 'react-emotion';
-import { Routes } from '../../constants';
+import { routes } from '../../constants';
 import { AuthenticationButton } from '../../components/buttons';
 
-const Container = styled.div({
-  background: 'red',
+const Container = styled('div')({
+  background: '#f4f4f4',
   width: '100%',
   height: 100
 });
@@ -13,8 +13,8 @@ const Container = styled.div({
 export default function Scene ({ loading, error, loggedOut, ...props }) {
   return (
     <Container>
-      <Link to={Routes.HOME}>home</Link>
-      <p>
+      <Link to={routes.HOME}>home</Link>
+      <div>
         {error ? (
           <div>
             error, try again?
@@ -25,9 +25,9 @@ export default function Scene ({ loading, error, loggedOut, ...props }) {
         ) : loggedOut ? (
           <AuthenticationButton />
         ) : (
-          <span>logged in!!</span>
+          <span>logged in!</span>
         )}
-      </p>
+      </div>
     </Container>
   );
 }

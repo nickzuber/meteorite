@@ -1,8 +1,5 @@
 import React from 'react';
 import qs from 'query-string';
-import { Routes } from '../../constants';
-import { AuthenticationButton } from '../../components/buttons';
-import { AuthConsumer } from '../../providers/Auth';
 
 export default class TokenHandler extends React.Component {
   componentDidMount() {
