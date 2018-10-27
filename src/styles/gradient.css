@@ -1,0 +1,56 @@
+
+.container-gradient {
+  background: radial-gradient(farthest-corner at -0% 100%, #7247ff 30%, #00ffbe 95%);
+  background-size: 400% 400%;
+
+  -webkit-animation: gradientTransition 30s ease infinite;
+  -moz-animation: gradientTransition 30s ease infinite;
+  animation: gradientTransition 30s ease infinite;
+}
+
+.container-gradient a {
+  cursor: pointer;
+  color: #7247ff;
+  background: #fff;
+  border-radius: 4px;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  padding: 0 16px;
+  margin-right: 15px;
+  height: 48px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  -webkit-transition: all 0.12s ease-in-out;
+  transition: all 0.12s ease-in-out;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+.container-gradient a:hover {
+  background: #f9f9f9
+}
+.container-gradient a:active {
+  background: #e4e4e4
+}
+
+@-webkit-keyframes gradientTransition {
+  0% {background-position: 0% 50%}
+  50% {background-position: 60% 50%}
+  100% {background-position: 0% 50%}
+}
+@-moz-keyframes gradientTransition {
+  0% {background-position: 0% 50%}
+  50% {background-position: 60% 50%}
+  100% {background-position: 0% 50%}
+}
+@keyframes gradientTransition {
+  0% {background-position: 0% 50%}
+  50% {background-position: 60% 50%}
+  100% {background-position: 0% 50%}
+}
