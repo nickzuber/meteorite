@@ -8,13 +8,17 @@ import '../../styles/gradient.css';
 const Header = styled('h1')({
   color: '#fff',
   padding: '0 20px',
-  margin: '0 auto 16px'
+  margin: '0 auto 20px',
+  letterSpacing: '-1.5px'
 });
 
 const SubHeader = styled(Header)({
   fontWeight: 500,
+  maxWidth: 550,
   color: '#fff',
-  fontSize: 24
+  fontSize: 24,
+  marginBottom: 30,
+  letterSpacing: '-1.0px'
 });
 
 const LandingHeader = styled('div')({
@@ -34,8 +38,20 @@ const LandingMessage = styled(LandingHeader)({
   }
 });
 
-const LinksContainer = styled('div')({
+const SmallLink = styled('a')({
+  fontSize: '12px',
+  fontWeight: 'bold',
+  color: '#ffffff',
+  textDecoration: 'none',
+  ':hover': {
+    textDecoration: 'underline'
+  }
+});
 
+const BottomLinkContainer = styled(LandingHeader)({
+  maxWidth: '390px',
+  width: '100%',
+  margin: '32px auto 0',
 });
 
 const Logo = styled('div')({
@@ -55,22 +71,33 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
       position: 'relative',
       display: 'flex',
       flexDirection: 'column',
-      alignItems: 'center'
+      alignItems: 'center',
+      overflowX: 'hidden',
+      // background: 'radial-gradient(farthest-corner at -0% 100%, #9065ff 30%, #00ffbe 95%)'
     }}>
       <LandingHeader>
         <Logo />
         {loggedIn ? (
-          <LinksContainer>
-            <RouterLink to={routes.INBOX}>inbox</RouterLink>
-            <LinkButton href="javascript:void(0);" onClick={onLogout}>logout</LinkButton>
-          </LinksContainer>
+          <div className="button-container">
+            <RouterLink style={{marginRight: 15}} to={routes.INBOX}>notifications</RouterLink>
+            <LinkButton style={{marginRight: 15}} href="#" onClick={onLogout}>logout</LinkButton>
+          </div>
         ) : (
-          <RouterLink to={routes.LOGIN}>login</RouterLink>
+          <div className="button-container">
+            <RouterLink style={{marginRight: 15}} to={routes.LOGIN}>login</RouterLink>
+          </div>
         )}
       </LandingHeader>
       <LandingMessage>
-        <Header>Conquer your notifications</Header>
-        <SubHeader>Take back control over your GitHub notifications</SubHeader>
+        <Header>Manage your notifications</Header>
+        <SubHeader>Stop manually sorting through GitHub notifications and start being productive.</SubHeader>
+        <div className="button-container">
+          <RouterLink to={routes.LOGIN}>let's get started</RouterLink>
+        </div>
+        <BottomLinkContainer>
+          <SmallLink href="">View and contribute on GitHub</SmallLink>
+          <SmallLink href="">View and contribute on GitHub</SmallLink>
+        </BottomLinkContainer>
       </LandingMessage>
       <Curve />
     </div>

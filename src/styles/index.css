@@ -2,7 +2,7 @@
 
 ::selection {
   color: #fff;
-  background: #7247ff;
+  background: #9065ff;
 }
 
 body {
@@ -19,19 +19,21 @@ body {
 h1 {
   font-weight: 500;
   font-size: 48px;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.05px;
+  font-size: 52px;
+  letter-spacing: -0.75px;
 }
 
 h2 {
   font-weight: 500;
   font-size: 38px;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.05px;
 }
 
 h3 {
   font-weight: 500;
   font-size: 28px;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.05px;
   margin: 10px 0 20px;
 }
 

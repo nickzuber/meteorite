@@ -4,6 +4,7 @@ import styled from 'react-emotion';
 import { routes } from '../../constants';
 import { AuthenticationButton } from '../../components/buttons';
 import LoadingIcon from '../../components/LoadingIcon';
+import ErrorMessage from '../../components/ErrorMessage';
 import '../../styles/gradient.css';
 
 const Container = styled('div')({
@@ -11,9 +12,8 @@ const Container = styled('div')({
   background: '#fff',
   borderRadius: 4,
   margin: '0 auto',
-  padding: '24px 48px',
-  width: 300,
-  height: 300
+  padding: '24px 48px 76px',
+  width: 300
 });
 
 const ButtonsContainer = styled('div')({
@@ -32,11 +32,8 @@ export default function Scene ({ loading, error, loggedOut, ...props }) {
   return (
     <div className="container-gradient" style={{
       width: '100%',
-      height: 600,
       position: 'relative',
-      display: 'flex',
       flexDirection: 'column',
-      alignItems: 'center',
       height: '100vh',
       display: 'flex',
       justifyContent: 'center',
@@ -44,12 +41,17 @@ export default function Scene ({ loading, error, loggedOut, ...props }) {
     }}>
       <Container>
         <h3>Authenticate with GitHub</h3>
-        {error ? (
+        {!error ? (
           <React.Fragment>
             <p>Log in with GitHub and we'll start organizing and sorting all of your notifications.</p>
+            <ErrorMessage>Oops, looks like something went wrong. Try again?</ErrorMessage>
             <ButtonsContainer>
-              <Link to={routes.HOME}>go back</Link>
-              <AuthenticationButton />
+              <div className="button-container">
+                <Link style={{boxShadow: '0 0 0'}} to={routes.HOME}>go back</Link>
+              </div>
+              <div className="button-container">
+                <AuthenticationButton style={{boxShadow: '0 0 0'}} />
+              </div>
             </ButtonsContainer>
           </React.Fragment>
         ) : loading ? (
@@ -58,8 +60,12 @@ export default function Scene ({ loading, error, loggedOut, ...props }) {
           <React.Fragment>
             <p>Log in with GitHub and we'll start organizing and sorting all of your notifications.</p>
             <ButtonsContainer>
-              <Link to={routes.HOME}>go back</Link>
-              <AuthenticationButton />
+              <div className="button-container">
+                <Link style={{boxShadow: '0 0 0'}} to={routes.HOME}>go back</Link>
+              </div>
+              <div className="button-container">
+                <AuthenticationButton style={{boxShadow: '0 0 0'}} />
+              </div>
             </ButtonsContainer>
           </React.Fragment>
         ) : (
