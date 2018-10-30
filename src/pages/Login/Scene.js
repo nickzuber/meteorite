@@ -41,7 +41,7 @@ export default function Scene ({ loading, error, loggedOut, ...props }) {
     }}>
       <Container>
         <h3>Authenticate with GitHub</h3>
-        {!error ? (
+        {error ? (
           <React.Fragment>
             <p>Log in with GitHub and we'll start organizing and sorting all of your notifications.</p>
             <ErrorMessage>Oops, looks like something went wrong. Try again?</ErrorMessage>

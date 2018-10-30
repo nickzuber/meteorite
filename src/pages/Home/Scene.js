@@ -3,13 +3,14 @@ import { Link as RouterLink } from "@reach/router";
 import styled from 'react-emotion';
 import { routes } from '../../constants';
 import Curve from '../../components/Curve';
+import Logo from '../../components/Logo';
 import '../../styles/gradient.css';
 
 const Header = styled('h1')({
   color: '#fff',
   padding: '0 20px',
   margin: '0 auto 20px',
-  letterSpacing: '-1.5px'
+  letterSpacing: '-1.0px'
 });
 
 const SubHeader = styled(Header)({
@@ -18,7 +19,7 @@ const SubHeader = styled(Header)({
   color: '#fff',
   fontSize: 24,
   marginBottom: 30,
-  letterSpacing: '-1.0px'
+  letterSpacing: '-0.25px'
 });
 
 const LandingHeader = styled('div')({
@@ -40,7 +41,7 @@ const LandingMessage = styled(LandingHeader)({
 
 const SmallLink = styled('a')({
   fontSize: '12px',
-  fontWeight: 'bold',
+  fontWeight: '700',
   color: '#ffffff',
   textDecoration: 'none',
   ':hover': {
@@ -48,17 +49,16 @@ const SmallLink = styled('a')({
   }
 });
 
-const BottomLinkContainer = styled(LandingHeader)({
-  maxWidth: '390px',
-  width: '100%',
-  margin: '32px auto 0',
+const SmallText = styled('span')({
+  fontSize: '12px',
+  fontWeight: '500',
+  color: '#ffffff',
 });
 
-const Logo = styled('div')({
-  marginLeft: 15,
-  background: 'green',
-  width: 50,
-  height: 50,
+const BottomLinkContainer = styled(LandingHeader)({
+  maxWidth: 390,
+  width: '100%',
+  margin: '32px auto 0',
 });
 
 const LinkButton = styled('a')({});
@@ -76,7 +76,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
       // background: 'radial-gradient(farthest-corner at -0% 100%, #9065ff 30%, #00ffbe 95%)'
     }}>
       <LandingHeader>
-        <Logo />
+        <Logo size={75} />
         {loggedIn ? (
           <div className="button-container">
             <RouterLink style={{marginRight: 15}} to={routes.INBOX}>notifications</RouterLink>
@@ -84,19 +84,19 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
           </div>
         ) : (
           <div className="button-container">
-            <RouterLink style={{marginRight: 15}} to={routes.LOGIN}>login</RouterLink>
+            <RouterLink style={{marginRight: 15}} to={routes.LOGIN}>sign in</RouterLink>
           </div>
         )}
       </LandingHeader>
       <LandingMessage>
-        <Header>Manage your notifications</Header>
-        <SubHeader>Stop manually sorting through GitHub notifications and start being productive.</SubHeader>
+        <Header>Control your notifications</Header>
+        <SubHeader>Organizing and managing your GitHub notifications made easy</SubHeader>
         <div className="button-container">
           <RouterLink to={routes.LOGIN}>let's get started</RouterLink>
         </div>
         <BottomLinkContainer>
-          <SmallLink href="">View and contribute on GitHub</SmallLink>
-          <SmallLink href="">View and contribute on GitHub</SmallLink>
+          <SmallLink target="_blank" href="https://github.com/nickzuber/meteorite">View and contribute on GitHub</SmallLink>
+          <SmallText href="">Already have an account?</SmallText>
         </BottomLinkContainer>
       </LandingMessage>
       <Curve />
