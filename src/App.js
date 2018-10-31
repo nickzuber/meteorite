@@ -5,7 +5,7 @@ import { AuthProvider } from './providers/Auth';
 import {
   Home,
   Login,
-  Inbox,
+  Notifications,
 } from './pages';
 
 class App extends Component {
@@ -15,7 +15,7 @@ class App extends Component {
         <Router>
           <Home path={routes.HOME} />
           <Login path={routes.LOGIN} />
-          <Inbox path={routes.INBOX} />
+          <Notifications path={routes.NOTIFICATIONS} />
         </Router>
       </AuthProvider>
     );

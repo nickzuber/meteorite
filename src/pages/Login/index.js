@@ -24,7 +24,7 @@ class LoginPage extends React.Component {
 
   render () {
     if (this.props.authApi.token) {
-      return <Redirect noThrow to={routes.INBOX} />
+      return <Redirect noThrow to={routes.NOTIFICATIONS} />
     }
 
     return (

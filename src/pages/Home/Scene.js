@@ -72,15 +72,14 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      overflowX: 'hidden',
-      // background: 'radial-gradient(farthest-corner at -0% 100%, #9065ff 30%, #00ffbe 95%)'
+      overflowX: 'hidden'
     }}>
       <LandingHeader>
         <Logo size={75} />
         {loggedIn ? (
           <div className="button-container">
-            <RouterLink style={{marginRight: 15}} to={routes.INBOX}>notifications</RouterLink>
-            <LinkButton style={{marginRight: 15}} href="#" onClick={onLogout}>logout</LinkButton>
+            <RouterLink style={{marginRight: 15}} to={routes.NOTIFICATIONS}>notifications</RouterLink>
+            <LinkButton style={{marginRight: 15}} href="#" onClick={onLogout}>sign out</LinkButton>
           </div>
         ) : (
           <div className="button-container">

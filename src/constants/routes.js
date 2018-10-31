@@ -1,5 +1,5 @@
 export default {
   HOME: '/',
-  INBOX: 'inbox',
+  NOTIFICATIONS: 'notifications',
   LOGIN: 'login'
 };

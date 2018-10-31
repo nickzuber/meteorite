@@ -9,7 +9,7 @@
                     type="rotate"
                     from="0 9 9"
                     to="360 9 9"
-                    dur=".75s"
+                    dur=".5s"
                     repeatCount="indefinite"/>
             </path>
         </g>
