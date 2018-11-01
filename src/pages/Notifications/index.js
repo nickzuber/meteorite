@@ -6,11 +6,17 @@ import { withAuthProvider } from '../../providers/Auth';
 import { withCookiesProvider } from '../../providers/Cookies';
 import { OAUTH_TOKEN_COOKIE } from '../../constants/cookies';
 import { routes } from '../../constants';
+import { Filters } from '../../constants/filters';
 import Scene from './Scene';
 
 class NotificationsPage extends React.Component {
   state = {
-    isSearching: false
+    isSearching: false,
+    activeFilter: Filters.ALL
+  }
+
+  onSetActiveFilter = filter => {
+    this.setState({ activeFilter: filter });
   }
 
   onLogout = () => {
@@ -41,6 +47,7 @@ class NotificationsPage extends React.Component {
 
     const {
       fetchNotifications,
+      markAsRead,
       notifications,
       loading: isFetchingNotifications,
       error: fetchingNotificationsError,
@@ -52,9 +59,12 @@ class NotificationsPage extends React.Component {
         onLogout={this.onLogout}
         onSearch={this.onSearch}
         onFetchNotifications={fetchNotifications}
+        onMarkAsRead={markAsRead}
         isSearching={this.state.isSearching}
         isFetchingNotifications={isFetchingNotifications}
         fetchingNotificationsError={fetchingNotificationsError}
+        onSetActiveFilter={this.onSetActiveFilter}
+        activeFilter={this.state.activeFilter}
       />
     );
   }
