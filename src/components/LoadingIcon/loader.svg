@@ -3,7 +3,7 @@
     <g fill="none" fill-rule="evenodd">
         <g transform="translate(1 1)" stroke-width="2.6">
             <circle stroke-opacity=".5" cx="9" cy="9" r="9"/>
-            <path stroke="#9065ff" d="M18,9 C18,4.03 13.97,0 9,0">
+            <path stroke="#6772e5" d="M18,9 C18,4.03 13.97,0 9,0">
                 <animateTransform
                     attributeName="transform"
                     type="rotate"

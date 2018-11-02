@@ -1,7 +1,7 @@
 
 .container-gradient {
   /* background: radial-gradient(farthest-corner at -0% 100%, #7247ff 30%, #00ffbe 95%); */
-  background: radial-gradient(farthest-corner at -0% 100%, #9065ff 30%, #58fff7 95%);
+  background: radial-gradient(farthest-corner at -0% 100%, #6772e5 30%, #00cfff 95%);
   background-size: 400% 400%;
 
   -webkit-animation: gradientTransition 20s ease infinite;
@@ -11,10 +11,10 @@
 
 .button-container a {
   text-align: center;
-  box-shadow: 0 1px 3px #4a4a4a5c;
+  box-shadow: 0 4px 6px rgba(50,50,93,.11), 0 1px 3px rgba(0,0,0,.08);
   margin: 0 auto;
   cursor: pointer;
-  color: #9065ff;
+  color: #6772e5;
   background: #fff;
   border-radius: 4px;
   -webkit-align-items: center;

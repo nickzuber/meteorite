@@ -1,8 +1,16 @@
 import React from 'react';
 import {AuthConsumer} from './Auth';
+import {StorageProvider} from './Storage';
 import {MockNotifications} from '../utils/mocks';
 
 const BASE_GITHUB_API_URL = 'https://api.github.com';
+
+function subjectUrlToIssue (url) {
+  return url
+    .replace('api.github.com', 'github.com')
+    .replace('/repos/', '/')
+    .replace('/pulls/', '/pull/');
+}
 
 function processHeadersAndBodyJson (response) {
   const entries = response.headers.entries();
@@ -29,7 +37,19 @@ function processHeadersAndBodyJson (response) {
   // links.next.page
   headers['link'] = links;
 
-  return [headers, response.json()];
+  // 304 will usually mean nothing has changed from our last fetch.
+  if (response.status === 304) {
+    return Promise.resolve({
+      headers,
+      json: null
+    });
+  }
+
+  // I can't get marking a notification as read to get past here??
+  return response.json().then(json => ({
+    headers,
+    json
+  }));
 }
 
 class NotificationsProvider extends React.Component {
@@ -41,17 +61,16 @@ class NotificationsProvider extends React.Component {
 
   state = {
     loading: false,
-    error: null,
-    notifications: MockNotifications
+    error: null
   }
 
-  requestPage = (page = 1) => {
+  requestPage = (page = 1, optimizePolling = true) => {
     const headers = {
       'Authorization': `token ${this.props.token}`,
       'Content-Type': 'application/json',
     };
 
-    if (this.last_modified) {
+    if (optimizePolling && this.last_modified) {
       headers['If-Modified-Since'] = this.last_modified;
     }
 
@@ -60,13 +79,16 @@ class NotificationsProvider extends React.Component {
       headers: headers
     })
       .then(processHeadersAndBodyJson)
-      .then(([headers, body]) => {
+      .then(({headers, json}) => {
         // If there were updates, make sure we get the newest last-modified.
         if (headers['last-modified']) {
           this.last_modified = headers['last-modified'];
         }
 
-        return body;
+        return {
+          headers,
+          json
+        };
       });
   }
 
@@ -77,24 +99,65 @@ class NotificationsProvider extends React.Component {
     });
   }
 
-  fetchNotifications = () => {
+  fetchNotifications = (page = 1, optimizePolling = true) => {
     if (!this.props.token) {
       console.error('Unauthenitcated, aborting request.')
       return false;
     }
 
     this.setState({ loading: true });
-    return this.mockRequestPage(1)
-      .then(notifications => this.processNotificationsChunk(notifications))
-      .catch(error => this.setState({ error }))
+    return this.requestPage(page, optimizePolling)
+      .then(({headers, json}) => {
+        if (json === null) return;
+        let nextPage = null;
+        const links = headers['link'];
+        if (links && links.next && links.next.page) {
+          nextPage = links.next.page;
+        }
+        return this.processNotificationsChunk(nextPage, json);
+      })
+      .catch(error => console.error(error) || this.setState({ error }))
       .finally(() => this.setState({ loading: false }));
   }
 
-  processNotificationsChunk = notificationsChunk => {
-    console.warn(notificationsChunk);
-    this.setState({
-      notifications: notificationsChunk
+  processNotificationsChunk = (nextPage, notificationsChunk) => {
+    console.warn('chunk', notificationsChunk)
+    let everythingUpdated = true;
+
+    notificationsChunk.forEach(n => {
+      const cached_n = this.props.getItemFromStorage(n.id);
+      // If we've seen this notification before and it hasn't updated, skip it.
+      if (cached_n && (cached_n.updated_at === n.updated_at)) {
+        // This means that something didn't update, which means the page we're
+        // currently processing has stale data so we don't need to fetch the
+        // next page.
+        everythingUpdated = false;
+        return;
+      }
+      // Else, update the cache.
+      this.updateNotification(n);
     });
+
+    if (nextPage && everythingUpdated) {
+      // Still need to fetch more updates.
+      this.fetchNotifications(nextPage, false);
+    } else {
+      // All done fetching updates, let's trigger a sync.
+      this.props.refreshNotifications();
+    }
+  }
+
+  updateNotification = n => {
+    const value = {
+      id: n.id, // @TODO can prob remove this id since its the key
+      updated_at: n.updated_at,
+      reason: n.reason,
+      type: n.subject.type,
+      name: n.subject.title,
+      url: subjectUrlToIssue(n.subject.url),
+      repository: n.repository.name,
+    };
+    this.props.setItemInStorage(n.id, value);
   }
 
   requestMarkAsRead = thread_id => {
@@ -108,9 +171,12 @@ class NotificationsProvider extends React.Component {
       headers: headers
     })
       .then(processHeadersAndBodyJson)
-      .then(([headers, body]) => {
-        console.warn(body)
-        return body;
+      .then(({headers, json}) => {
+        console.warn(headers, json);
+        console.warn('removing', thread_id);
+        this.props.removeItemFromStorage(thread_id);
+        this.props.refreshNotifications();
+        return Promise.resolve(json);
       });
   }
 
@@ -130,6 +196,7 @@ class NotificationsProvider extends React.Component {
   render () {
     return this.props.children({
       ...this.state,
+      notifications: this.props.notifications,
       fetchNotifications: this.fetchNotifications,
       markAsRead: this.markAsRead
     });
@@ -139,11 +206,22 @@ class NotificationsProvider extends React.Component {
 const withNotificationsProvider = WrappedComponent => props => (
   <AuthConsumer>
     {({ token }) => (
-      <NotificationsProvider token={token}>
-        {(notificationsApi) => (
-          <WrappedComponent {...props} notificationsApi={notificationsApi} />
+      <StorageProvider>
+        {({ refreshNotifications, notifications, getItem, setItem, removeItem }) => (
+          <NotificationsProvider
+            refreshNotifications={refreshNotifications}
+            notifications={notifications}
+            getItemFromStorage={getItem}
+            setItemInStorage={setItem}
+            removeItemFromStorage={removeItem}
+            token={token}
+          >
+            {(notificationsApi) => (
+              <WrappedComponent {...props} notificationsApi={notificationsApi} />
+            )}
+          </NotificationsProvider>
         )}
-      </NotificationsProvider>
+      </StorageProvider>
     )}
   </AuthConsumer>
 );

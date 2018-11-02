@@ -13,7 +13,8 @@ const Container = styled('div')({
   borderRadius: 4,
   margin: '0 auto',
   padding: '24px 48px 76px',
-  width: 300
+  width: 300,
+  boxShadow: '0 50px 100px rgba(50,50,93,.1), 0 15px 35px rgba(50,50,93,.15), 0 5px 15px rgba(0,0,0,.1)'
 });
 
 const ButtonsContainer = styled('div')({

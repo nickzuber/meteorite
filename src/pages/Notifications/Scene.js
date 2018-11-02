@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from "@reach/router";
-import moment from 'moment';
 import styled from 'react-emotion';
 import Icon from '../../components/Icon';
 import Logo from '../../components/Logo';
@@ -10,9 +9,12 @@ import { Filters } from '../../constants/filters';
 import { withOnEnter } from '../../enhance';
 import '../../styles/gradient.css';
 
+const FixedContainer = styled('div')({
+  position: 'fixed'
+});
+
 const NotificationsContainer = styled('div')({
   position: 'relative',
-  boxSizing: 'border-box',
   background: '#fff',
   margin: '0 auto',
   padding: 0,
@@ -36,41 +38,43 @@ const NavigationContainer = styled('div')({
 
 const GeneralOptionsContainer = styled(NavigationContainer)({
   background: '#fff',
-  padding: '8px 80px',
-  flex: '0 0 75px',
+  padding: '8px 16px',
+  paddingLeft: 260,
+  flex: '0 0 50px',
   'button': {
     display: 'inline-flex',
-    margin: 0,
-    marginTop: 12
+    margin: 0
   }
 });
 
 const Sidebar = styled('div')({
-  flex: '0 0 180px',
+  flex: '0 0 200px',
   padding: '0 20px 20px',
-  marginTop: 15,
-  'a': {
-    textAlign: 'left',
-    margin: '0 auto',
-    cursor: 'pointer',
-    borderRadius: '8px',
-    alignItems: 'center',
-    padding: '0 16px',
-    height: '48px',
-    fontSize: '12px',
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    textDecoration: 'none',
-    transition: 'background 0.12s ease-in-out',
-    display: 'flex'
-  }
+  marginTop: 15
 });
 
 const SidebarLink = styled('a')({}, ({active, color}) => ({
+  textAlign: 'left',
+  margin: '0 auto',
+  cursor: 'pointer',
+  borderRadius: '8px',
+  alignItems: 'center',
+  padding: '0 14px',
+  height: 40,
+  fontSize: '12px',
+  fontWeight: 600,
+  letterSpacing: 0.5,
+  textTransform: 'uppercase',
+  textDecoration: 'none',
+  transition: 'background 0.12s ease-in-out',
+  display: 'flex',
   background: active ? color : 'none',
   color: active ? '#fff' : '#1a1a1a',
   ':hover': {
     background: active ? color: 'rgba(200, 200, 200, .25)'
+  },
+  'div': {
+    marginRight: 5
   }
 }));
 
@@ -83,7 +87,6 @@ const Tab = styled('button')({
   border: 0,
   outline: 'none',
   background: 'none',
-  display: 'block',
   height: 40,
   width: 40,
   borderRadius: '100%',
@@ -108,7 +111,7 @@ const SearchField = styled('div')({
   float: 'left',
   textAlign: 'left',
   width: '50%',
-  boxShadow: '0 1px 3px #4a4a4a5c',
+  boxShadow: '0 4px 6px rgba(50,50,93,.11), 0 1px 3px rgba(0,0,0,.08)',
   margin: '0 auto',
   background: '#fff',
   borderRadius: '4px',
@@ -147,23 +150,30 @@ const SearchInput = styled('input')({
 });
 const EnhancedSearchInput = withOnEnter(SearchInput);
 
-const NotificationRow = styled('div')({
+const NotificationRow = styled('tr')({
+  position: 'relative',
   cursor: 'pointer',
+  borderBottom: '1px solid #f2f2f2',
   display: 'block',
   textAlign: 'left',
   width: '100%',
   margin: '0 auto',
   background: '#fff',
-  padding: '16px 24px',
+  padding: '8px 16px',
   transition: 'all 0.12s ease-in-out',
-  borderRadius: 8,
   boxSizing: 'border-box',
   ':hover': {
-    background: '#f9f9f9'
+    // background: '#f9f9f9',
+    boxShadow: '0 4px 6px rgba(50,50,93,.11), 0 1px 3px rgba(0,0,0,.08)',
+    zIndex: 10
   }
 });
 
-const NotificationTitle = styled('div')({
+const NotificationTab = styled(Tab)({
+  margin: 0,
+});
+
+const NotificationTitle = styled('span')({
   position: 'relative',
 }, ({img}) => img && ({
   paddingLeft: 20,
@@ -180,14 +190,29 @@ const NotificationTitle = styled('div')({
 }));
 
 const Repository = styled('span')({
-  fontWeight: 600,
+  fontWeight: 500,
   marginLeft: 10,
-  fontSize: 16
+  fontSize: 14
 });
 
 const PRIssue = styled(Repository)({
   fontWeight: 400,
 });
+
+const Table = styled('table')({
+  display: 'block',
+  'td': {
+    display: 'inline-block'
+  }
+});
+
+const TableItem = styled('td')({
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+}, ({width}) => ({
+  width
+}));
 
 function getPRIssueIcon (type, reason) {
   const grow = 1.2;
@@ -231,14 +256,17 @@ export default function Scene ({
         n.reason !== 'manual' &&
         n.reason !== 'invitation'
       );
-    break;
+      break;
+    case Filters.SUBSCRIBED:
+      filterMethod = n => n.reason === 'subscribed';
+      break;
     case Filters.ALL:
     default:
       filterMethod = () => true;
   }
 
   notifications = notifications
-    .sort((a, b) => b.repository.name.localeCompare(a.repository.name))
+    .sort((a, b) => a.repository.localeCompare(b.repository))
     .filter(filterMethod);
 
   return (
@@ -276,13 +304,13 @@ export default function Scene ({
         <Tab disabled={isLoading}>
           <Icon.Refresh
             opacity={0.9}
-            onClick={!isLoading && onFetchNotifications}
+            onClick={!isLoading ? (() => onFetchNotifications()) : undefined}
           />
         </Tab>
         <Tab disabled={isLoading}>
           <Icon.DoneAll
             opacity={0.9}
-            onClick={!isLoading && (() => onMarkAsRead('402658026'))}
+            onClick={!isLoading ? (() => onMarkAsRead('402658026')) : undefined}
           />
         </Tab>
         <Tab>
@@ -301,58 +329,60 @@ export default function Scene ({
       </GeneralOptionsContainer>
       <NotificationsContainer>
         <Sidebar>
-          <SidebarLink
-            active={activeFilter === Filters.ALL}
-            color="#9065ff"
-            onClick={() => onSetActiveFilter(Filters.ALL)}
-          >
-            {activeFilter === Filters.ALL ? (
-              <Icon.InboxWhite shrink={.6} />
-            ) : (
-              <Icon.Inbox shrink={.6} />
-            )}
-            all notifications
-          </SidebarLink>
-          <SidebarLink
-            active={activeFilter === Filters.REVIEW_REQUESTED}
-            color="#2cbf73"
-            onClick={() => onSetActiveFilter(Filters.REVIEW_REQUESTED)}
-          >
-            {activeFilter === Filters.REVIEW_REQUESTED ? (
-              <Icon.BoltWhite shrink={.6} />
-            ) : (
-              <Icon.Bolt shrink={.6} />
-            )}
-            review requested
-          </SidebarLink>
-          <SidebarLink
-            active={activeFilter === Filters.PARTICIPATING}
-            color="#00A0F5"
-            onClick={() => onSetActiveFilter(Filters.PARTICIPATING)}
-          >
-            {activeFilter === Filters.PARTICIPATING ? (
-              <Icon.PeopleWhite shrink={.6} />
-            ) : (
-              <Icon.People shrink={.6} />
-            )}
-            participating
-          </SidebarLink>
-          <SidebarLink
-            active={activeFilter === Filters.SUBSCRIBED}
-            color="#f68700"
-            onClick={() => onSetActiveFilter(Filters.SUBSCRIBED)}
-          >
-            <Icon.Bookmark shrink={.6} />
-            subscribed
-          </SidebarLink>
-          <SidebarLink
-            active={activeFilter === Filters.HOT}
-            color="#ee3044"
-            onClick={() => onSetActiveFilter(Filters.HOT)}
-          >
-            <Icon.Hot shrink={.6} />
-            hot
-          </SidebarLink>
+          <FixedContainer>
+            <SidebarLink
+              active={activeFilter === Filters.ALL}
+              color="#6772e5"
+              onClick={() => onSetActiveFilter(Filters.ALL)}
+            >
+              {activeFilter === Filters.ALL ? (
+                <Icon.InboxWhite shrink={.6} />
+              ) : (
+                <Icon.Inbox shrink={.6} />
+              )}
+              all notifications
+            </SidebarLink>
+            <SidebarLink
+              active={activeFilter === Filters.REVIEW_REQUESTED}
+              color="#2cbf73"
+              onClick={() => onSetActiveFilter(Filters.REVIEW_REQUESTED)}
+            >
+              {activeFilter === Filters.REVIEW_REQUESTED ? (
+                <Icon.BoltWhite shrink={.6} />
+              ) : (
+                <Icon.Bolt shrink={.6} />
+              )}
+              review requested
+            </SidebarLink>
+            <SidebarLink
+              active={activeFilter === Filters.PARTICIPATING}
+              color="#00A0F5"
+              onClick={() => onSetActiveFilter(Filters.PARTICIPATING)}
+            >
+              {activeFilter === Filters.PARTICIPATING ? (
+                <Icon.PeopleWhite shrink={.6} />
+              ) : (
+                <Icon.People shrink={.6} />
+              )}
+              participating
+            </SidebarLink>
+            <SidebarLink
+              active={activeFilter === Filters.SUBSCRIBED}
+              color="#f68700"
+              onClick={() => onSetActiveFilter(Filters.SUBSCRIBED)}
+            >
+              <Icon.Bookmark shrink={.6} />
+              subscribed
+            </SidebarLink>
+            <SidebarLink
+              active={activeFilter === Filters.HOT}
+              color="#ee3044"
+              onClick={() => onSetActiveFilter(Filters.HOT)}
+            >
+              <Icon.Hot shrink={.6} />
+              hot
+            </SidebarLink>
+          </FixedContainer>
         </Sidebar>
         <Notifications>
           {isFetchingNotifications ? (
@@ -364,24 +394,37 @@ export default function Scene ({
               <p>no notifications</p>
             </div>
           ) : (
-            <div>
-              {notifications.map(n => (
-                <NotificationRow key={n.id}>
-                  <NotificationTitle>
-                    <div style={{
-                      float: 'left',
-                      marginTop: -3
-                    }}>
-                      {getPRIssueIcon(n.subject.type, n.reason)}
-                    </div>
-                    <PRIssue>{n.subject.title} ({n.reason})</PRIssue>
-                    {/* <Repository>{n.repository.name}</Repository> */}
-                  </NotificationTitle>
-                  {/* <p>Last read at {n.last_read_at ? moment(n.last_read_at).format('dddd h:mma') : 'never'}</p>
-                  <p>Last updated at {moment(n.last_updated).format('dddd h:mma')}</p> */}
-                </NotificationRow>
-              ))}
-            </div>
+            <Table>
+              <tbody>
+                {notifications.map(n => (
+                  <NotificationRow key={n.id}>
+                    <TableItem>
+                      <div style={{ float: 'left', marginTop: -3 }}>
+                        {getPRIssueIcon(n.type, n.reason)}
+                      </div>
+                    </TableItem>
+                    <TableItem width={500} onClick={() => window.open(n.url)}>
+                      <NotificationTitle>
+                        <PRIssue>{n.name} ({n.reason})</PRIssue>
+                      </NotificationTitle>
+                    </TableItem>
+                    <TableItem width={200}>
+                      <Repository>{n.repository}</Repository>
+                    </TableItem>
+                    <TableItem>
+                      <NotificationTab>
+                        <Icon.Done
+                          opacity={0.9}
+                          onClick={!isLoading ? (() => onMarkAsRead(n.id)) : undefined}
+                        />
+                      </NotificationTab>
+                    </TableItem>
+                    {/* <p>Last read at {n.last_read_at ? moment(n.last_read_at).format('dddd h:mma') : 'never'}</p>
+                    <p>Last updated at {moment(n.last_updated).format('dddd h:mma')}</p> */}
+                  </NotificationRow>
+                ))}
+              </tbody>
+            </Table>
           )}
         </Notifications>
         <Sidebar>
