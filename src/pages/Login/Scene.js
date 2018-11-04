@@ -47,10 +47,10 @@ export default function Scene ({ loading, error, loggedOut, ...props }) {
             <p>Log in with GitHub and we'll start organizing and sorting all of your notifications.</p>
             <ErrorMessage>Oops, looks like something went wrong. Try again?</ErrorMessage>
             <ButtonsContainer>
-              <div className="button-container">
+              <div className="button-container-alt">
                 <Link style={{boxShadow: '0 0 0'}} to={routes.HOME}>go back</Link>
               </div>
-              <div className="button-container">
+              <div className="button-container-alt">
                 <AuthenticationButton style={{boxShadow: '0 0 0'}} />
               </div>
             </ButtonsContainer>
@@ -61,10 +61,10 @@ export default function Scene ({ loading, error, loggedOut, ...props }) {
           <React.Fragment>
             <p>Log in with GitHub and we'll start organizing and sorting all of your notifications.</p>
             <ButtonsContainer>
-              <div className="button-container">
+              <div className="button-container-alt">
                 <Link style={{boxShadow: '0 0 0'}} to={routes.HOME}>go back</Link>
               </div>
-              <div className="button-container">
+              <div className="button-container-alt">
                 <AuthenticationButton style={{boxShadow: '0 0 0'}} />
               </div>
             </ButtonsContainer>

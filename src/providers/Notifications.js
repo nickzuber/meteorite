@@ -2,6 +2,7 @@ import React from 'react';
 import {AuthConsumer} from './Auth';
 import {StorageProvider} from './Storage';
 import {MockNotifications} from '../utils/mocks';
+import {Status} from '../constants/status';
 
 const BASE_GITHUB_API_URL = 'https://api.github.com';
 
@@ -45,7 +46,6 @@ function processHeadersAndBodyJson (response) {
     });
   }
 
-  // I can't get marking a notification as read to get past here??
   return response.json().then(json => ({
     headers,
     json
@@ -95,7 +95,10 @@ class NotificationsProvider extends React.Component {
   // @TODO remove this mock when ready
   mockRequestPage = page => {
     return new Promise((resolve, reject) => {
-      setTimeout(() => resolve(MockNotifications), 1000)
+      setTimeout(() => resolve({
+        headers: {},
+        json: MockNotifications
+      }), 1000)
     });
   }
 
@@ -121,21 +124,31 @@ class NotificationsProvider extends React.Component {
   }
 
   processNotificationsChunk = (nextPage, notificationsChunk) => {
-    console.warn('chunk', notificationsChunk)
+    console.log('chunk', notificationsChunk)
     let everythingUpdated = true;
+
+    if (notificationsChunk.length === 0) {
+      // Apparently this means that a user has no notifications (makes sense).
+      // So I guess we should purge our cache? This brings up the great point
+      // of us having stale cache. How can we detect that a notifcation was seen?
+    }
 
     notificationsChunk.forEach(n => {
       const cached_n = this.props.getItemFromStorage(n.id);
-      // If we've seen this notification before and it hasn't updated, skip it.
-      if (cached_n && (cached_n.updated_at === n.updated_at)) {
+      // If we've seen this notification before.
+      if (cached_n) {
+        // Something's changed, we want to push
+        if (cached_n.updated_at !== n.updated_at) {
+          this.updateNotification(n, cached_n.reasons);
+          return;
+        }
         // This means that something didn't update, which means the page we're
-        // currently processing has stale data so we don't need to fetch the
-        // next page.
+        // currently processing has stale data so we don't need to fetch the next page.
         everythingUpdated = false;
-        return;
+      } else {
+        // Else, update the cache.
+        this.updateNotification(n);
       }
-      // Else, update the cache.
-      this.updateNotification(n);
     });
 
     if (nextPage && everythingUpdated) {
@@ -147,11 +160,25 @@ class NotificationsProvider extends React.Component {
     }
   }
 
-  updateNotification = n => {
-    const value = {
-      id: n.id, // @TODO can prob remove this id since its the key
-      updated_at: n.updated_at,
+  updateNotification = (n, prevReason = null) => {
+    let reasons = [];
+    const newReason = {
       reason: n.reason,
+      time: n.updated_at
+    }
+
+    if (prevReason) {
+      reasons = prevReason.concat(newReason);
+      console.warn('MULTIPLE REASONS', reasons)
+    } else {
+      reasons = [newReason];
+    }
+
+    const value = {
+      id: n.id,
+      updated_at: n.updated_at,
+      status: Status.QUEUED,
+      reasons: reasons,
       type: n.subject.type,
       name: n.subject.title,
       url: subjectUrlToIssue(n.subject.url),
@@ -170,13 +197,16 @@ class NotificationsProvider extends React.Component {
       method: 'PATCH',
       headers: headers
     })
-      .then(processHeadersAndBodyJson)
-      .then(({headers, json}) => {
-        console.warn(headers, json);
+      .then(response => {
+        return response.status === 205
+          ? Promise.resolve()
+          : Promise.reject();
+      })
+      .then(() => {
         console.warn('removing', thread_id);
         this.props.removeItemFromStorage(thread_id);
         this.props.refreshNotifications();
-        return Promise.resolve(json);
+        return Promise.resolve();
       });
   }
 
@@ -188,7 +218,48 @@ class NotificationsProvider extends React.Component {
 
     this.setState({ loading: true });
     return this.requestMarkAsRead(thread_id)
-      .then(response => console.warn('response', response))
+      .catch(error => this.setState({ error }))
+      .finally(() => this.setState({ loading: false }));
+  }
+
+  requestClearCache = () => {
+    return new Promise((resolve, reject) => {
+      console.warn('clearing cache');
+      this.props.clearStorageCache();
+      this.props.refreshNotifications();
+      this.last_modified = null;
+      return resolve();
+    });
+  }
+
+  clearCache = () => {
+    this.setState({ loading: true });
+    return this.requestClearCache()
+      .catch(error => this.setState({ error }))
+      .finally(() => this.setState({ loading: false }));
+  }
+
+  requestStageThread = thread_id => {
+    return new Promise((resolve, reject) => {
+      console.warn('staging thread', thread_id);
+      const cached_n = this.props.getItemFromStorage(thread_id);
+      if (cached_n) {
+        const newValue = {
+          ...cached_n,
+          status: Status.STAGED
+        };
+        this.props.setItemInStorage(thread_id, newValue);
+        this.props.refreshNotifications();
+        return resolve();
+      } else {
+        throw new Error(`Attempted to stage thread ${thread_id} that wasn't found in the cache.`);
+      }
+    });
+  }
+
+  stageThread = thread_id => {
+    this.setState({ loading: true });
+    return this.requestStageThread(thread_id)
       .catch(error => this.setState({ error }))
       .finally(() => this.setState({ loading: false }));
   }
@@ -198,7 +269,9 @@ class NotificationsProvider extends React.Component {
       ...this.state,
       notifications: this.props.notifications,
       fetchNotifications: this.fetchNotifications,
-      markAsRead: this.markAsRead
+      markAsRead: this.markAsRead,
+      clearCache: this.clearCache,
+      stageThread: this.stageThread
     });
   }
 }
@@ -207,12 +280,20 @@ const withNotificationsProvider = WrappedComponent => props => (
   <AuthConsumer>
     {({ token }) => (
       <StorageProvider>
-        {({ refreshNotifications, notifications, getItem, setItem, removeItem }) => (
+        {({
+          refreshNotifications,
+          notifications,
+          getItem,
+          setItem,
+          clearCache,
+          removeItem
+        }) => (
           <NotificationsProvider
             refreshNotifications={refreshNotifications}
             notifications={notifications}
             getItemFromStorage={getItem}
             setItemInStorage={setItem}
+            clearStorageCache={clearCache}
             removeItemFromStorage={removeItem}
             token={token}
           >

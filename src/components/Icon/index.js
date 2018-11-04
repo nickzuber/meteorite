@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'react-emotion';
 
+import alarm from './svg/alarm.svg';
 import allInbox from './svg/all_inbox.svg';
 import back from './svg/back.svg';
 import bolt from './svg/bolt.svg';
@@ -24,6 +25,7 @@ import search from './svg/search.svg';
 import settings from './svg/settings.svg';
 import starAlt from './svg/star-alt.svg';
 import star from './svg/star.svg';
+import trash from './svg/trash.svg';
 import unlocked from './svg/unlocked.svg';
 import x from './svg/x.svg';
 
@@ -54,6 +56,7 @@ export default function Icon ({src, ...props}) {
 
 const createIcon = src => props => <Icon {...props} src={src} />;
 
+Icon.Alarm = createIcon(alarm);
 Icon.AllInbox = createIcon(allInbox);
 Icon.Back = createIcon(back);
 Icon.Bolt = createIcon(bolt);
@@ -77,6 +80,7 @@ Icon.Search = createIcon(search);
 Icon.Settings = createIcon(settings);
 Icon.StarAlt = createIcon(starAlt);
 Icon.Star = createIcon(star);
+Icon.Trash = createIcon(trash);
 Icon.Unlocked = createIcon(unlocked);
 Icon.X = createIcon(x);
 

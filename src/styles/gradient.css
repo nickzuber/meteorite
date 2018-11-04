@@ -44,6 +44,54 @@
   box-shadow: 0 0 0 #4a4a4a5c;
 }
 
+.button-container-alt a {
+  position: relative;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(50,50,93,.11), 0 1px 3px rgba(0,0,0,.08);
+  margin: 0 auto;
+  cursor: pointer;
+  color: #6772e5;
+  background: #fff;
+  border-radius: 4px;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  padding: 0 16px;
+  height: 48px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  -webkit-transition: all 0.04s ease-in-out;
+  transition: all 0.04s ease-in-out;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+.button-container-alt a:before {
+  content: "";
+  transition: all 150ms ease;
+  background: rgba(190, 197, 208, 0.25);
+  border-radius: 4px;
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transform: scale(0);
+}
+.button-container-alt a:hover:before {
+  transform: scale(1);
+}
+.button-container-alt a:active:before {
+  background: rgba(190, 197, 208, 0.5)
+}
+
+
 @-webkit-keyframes gradientTransition {
   0% {background-position: 0% 50%}
   50% {background-position: 60% 50%}

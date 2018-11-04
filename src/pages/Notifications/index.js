@@ -4,6 +4,7 @@ import { compose } from 'recompose';
 import { withNotificationsProvider } from '../../providers/Notifications';
 import { withAuthProvider } from '../../providers/Auth';
 import { withCookiesProvider } from '../../providers/Cookies';
+import { withStorageProvider } from '../../providers/Storage';
 import { OAUTH_TOKEN_COOKIE } from '../../constants/cookies';
 import { routes } from '../../constants';
 import { Filters } from '../../constants/filters';
@@ -12,7 +13,7 @@ import Scene from './Scene';
 class NotificationsPage extends React.Component {
   state = {
     isSearching: false,
-    activeFilter: Filters.ALL
+    activeFilter: Filters.PARTICIPATING
   }
 
   onSetActiveFilter = filter => {
@@ -47,7 +48,9 @@ class NotificationsPage extends React.Component {
 
     const {
       fetchNotifications,
+      stageThread,
       markAsRead,
+      clearCache,
       notifications,
       loading: isFetchingNotifications,
       error: fetchingNotificationsError,
@@ -60,6 +63,9 @@ class NotificationsPage extends React.Component {
         onSearch={this.onSearch}
         onFetchNotifications={fetchNotifications}
         onMarkAsRead={markAsRead}
+        onClearCache={clearCache}
+        onStageThread={stageThread}
+        onRefreshNotifications={this.props.storageApi.refreshNotifications}
         isSearching={this.state.isSearching}
         isFetchingNotifications={isFetchingNotifications}
         fetchingNotificationsError={fetchingNotificationsError}
@@ -71,6 +77,7 @@ class NotificationsPage extends React.Component {
 };
 
 const enhance = compose(
+  withStorageProvider,
   withAuthProvider,
   withCookiesProvider,
   withNotificationsProvider
