@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import { Redirect } from "@reach/router";
 import { compose } from 'recompose';
 import { withNotificationsProvider } from '../../providers/Notifications';
@@ -11,6 +12,8 @@ import { Filters } from '../../constants/filters';
 import { Status } from '../../constants/status';
 import { Reasons, Badges } from '../../constants/reasons';
 import Scene from './SceneAlt';
+
+const PER_PAGE = 15;
 
 // @TODO Move these functions.
 
@@ -65,13 +68,27 @@ function scoreOf (notification) {
 // @TODO implement this
 function badgesOf (notification) {
   const badges = [];
-  if (notification.reasons.length > 7) {
-    badges.push(Badges.HOT);
+  const len = notification.reasons.length;
+  // If there are more than 4 reasons, and the last 4 reasons have happened within
+  // an hour of each other.
+  // The specific time frame and reasons count is subject to change.
+  if (len >= 4) {
+    const oldestReference = moment(notification.reasons[len - 4].time);
+    const newestReference = moment(notification.reasons[len - 1].time);
+    if (newestReference.diff(oldestReference, 'hours') <= 1) {
+      badges.push(Badges.HOT);
+    }
   }
-  if (notification.reasons.length > 3) {
+  // If there's a lot of activity going on within the thread in general.
+  // The specific nunmber should be relative to average number of thread lengths.
+  // We can track a running statistic as we see notifications update.
+  if (len > 8) {
     badges.push(Badges.COMMENTS);
   }
-  if (notification.reasons.length <= 2) {
+  // If you've been tagged in for review and the most recent update happened over
+  // 4 hours ago, that specific time is subject to change.
+  if (notification.reasons.some(r => r.reason === Reasons.REVIEW_REQUESTED) &&
+      moment().diff(moment(notification.reasons.pop().time).hours, 'hours') > 4) {
     badges.push(Badges.OLD);
   }
   return badges;
@@ -92,8 +109,6 @@ const decorateWithScore = notification => ({
   score: scoreOf(notification),
   badges: badgesOf(notification)
 });
-
-const PER_PAGE = 10;
 
 class NotificationsPage extends React.Component {
   state = {

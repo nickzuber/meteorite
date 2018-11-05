@@ -15,7 +15,7 @@ const Header = styled('h1')({
 
 const SubHeader = styled(Header)({
   fontWeight: 500,
-  maxWidth: 550,
+  maxWidth: 460,
   color: '#fff',
   fontSize: 24,
   marginBottom: 30,
@@ -89,7 +89,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
       </LandingHeader>
       <LandingMessage>
         <Header>Control your notifications</Header>
-        <SubHeader>Organizing and managing your GitHub notifications made easy</SubHeader>
+        <SubHeader>Prioritize the tasks that keep you and your team most productive</SubHeader>
         <div className="button-container">
           <RouterLink to={routes.LOGIN}>let's get started</RouterLink>
         </div>

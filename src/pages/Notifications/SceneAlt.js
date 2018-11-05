@@ -103,7 +103,7 @@ const Sidebar = styled('div')({
 const SidebarLink = styled('a')({}, ({active, color}) => ({
   textAlign: 'left',
   userSelect: 'none',
-  margin: '0 auto',
+  margin: '0 auto 5px',
   position: 'relative',
   cursor: 'pointer',
   borderRadius: 4,
@@ -630,9 +630,6 @@ export default function Scene ({
                       </NotificationTitle>
                       <Timestamp>{getRelativeTime(n.updated_at)}</Timestamp>
                     </TableItem>
-                    {/* <TableItem width={200}>
-                      <Repository>{n.reasons.map(r => r.reason).join(', ')}</Repository>
-                    </TableItem> */}
                     <TableItem width={100}>
                       <InlineBlockContainer>
                         {n.badges.map(badge => {
@@ -672,8 +669,6 @@ export default function Scene ({
                         />
                       </NotificationTab>
                     </TableItem>
-                    {/* <p>Last read at {n.last_read_at ? moment(n.last_read_at).format('dddd h:mma') : 'never'}</p>
-                    <p>Last updated at {moment(n.last_updated).format('dddd h:mma')}</p> */}
                   </NotificationRow>
                 ))}
               </tbody>
