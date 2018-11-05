@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import {Link} from "@reach/router";
 import styled from 'react-emotion';
 import Icon from '../../components/Icon';
@@ -12,6 +13,28 @@ import {Badges} from '../../constants/reasons';
 import '../../styles/gradient.css';
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
+
+function getRelativeTime (time) {
+  const currentTime = moment();
+  const targetTime = moment(time);
+  const diffMinutes = currentTime.diff(targetTime, 'minutes');
+  if (diffMinutes < 1)
+    return 'Just now';
+  if (diffMinutes < 5)
+    return 'Few minutes ago';
+  if (diffMinutes < 60)
+    return diffMinutes + ' minutes ago';
+  if (diffMinutes < 60 * 24)
+    return Math.floor(diffMinutes / 60) + ' hours ago';
+
+  const diffDays = currentTime.diff(targetTime, 'days');
+  if (diffDays === 1)
+    return 'Yesterday';
+  if (diffDays <= 7)
+    return 'Last ' + targetTime.format('dddd');
+  // @TODO implement longer diffs
+  return 'Long time ago';
+}
 
 const FixedContainer = styled('div')({
   position: 'fixed'
@@ -263,7 +286,6 @@ const EnhancedSearchInput = withOnEnter(SearchInput);
 const NotificationRow = styled('tr')({
   position: 'relative',
   cursor: 'pointer',
-  // borderBottom: '1px solid #f2f2f2',
   display: 'block',
   textAlign: 'left',
   width: '100%',
@@ -284,12 +306,21 @@ const NotificationTab = styled(Tab)({
   margin: 0,
 });
 
+const Timestamp = styled('span')({
+  position: 'relative',
+  margin: 0,
+  marginLeft: 10,
+  fontSize: 11,
+  opacity: 0.5,
+});
+
 const NotificationTitle = styled('span')({
   position: 'relative',
+  display: 'block'
 }, ({img}) => img && ({
   paddingLeft: 20,
   '::before': {
-    content: "''",
+    content: '""',
     position: 'absolute',
     display: 'block',
     background: `url(${img}) center center no-repeat`,
@@ -590,13 +621,14 @@ export default function Scene ({
                         {getPRIssueIcon(n.type, n.reasons)}
                       </div>
                     </TableItem>
-                    <TableItem width={400} onClick={() => {
+                    <TableItem style={{height: 36}} width={400} onClick={() => {
                       window.open(n.url);
                       onStageThread(n.id)
                     }}>
                       <NotificationTitle>
                         <PRIssue>{n.name}</PRIssue>
                       </NotificationTitle>
+                      <Timestamp>{getRelativeTime(n.updated_at)}</Timestamp>
                     </TableItem>
                     {/* <TableItem width={200}>
                       <Repository>{n.reasons.map(r => r.reason).join(', ')}</Repository>
