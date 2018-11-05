@@ -65,9 +65,13 @@ class NotificationsProvider extends React.Component {
   }
 
   shouldComponentUpdate (nextProps, nextState) {
-    // Update if our state changes
+    // Update if our state changes.
     if ((this.state.loading !== nextState.loading) ||
         (this.state.error !== nextState.error)) {
+      return true;
+    }
+    // Update if the token changes at all (sign in & sign out).
+    if (this.props.token !== nextProps.token) {
       return true;
     }
     // Only update if our notifications prop changes.
