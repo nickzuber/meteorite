@@ -12,9 +12,7 @@ export default function Curve ({ ...props }) {
       width: '190vw',
       paddingBottom: '4.5%',
       backgroundSize: 'cover',
-      marginBottom: '-1px',
-      '-webkit-transform': 'translateX(-50%)',
-      '-ms-transform': 'translateX(-50%)',
+      marginBottom: '-1px'
     }} />
   );
 }

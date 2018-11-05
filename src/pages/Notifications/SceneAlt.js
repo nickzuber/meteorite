@@ -8,8 +8,10 @@ import {routes} from '../../constants';
 import {Filters} from '../../constants/filters';
 import {withOnEnter} from '../../enhance';
 import {Status} from '../../constants/status';
-import {Reasons, Badges} from '../../constants/reasons';
+import {Badges} from '../../constants/reasons';
 import '../../styles/gradient.css';
+
+/* eslint-disable jsx-a11y/anchor-is-valid */
 
 const FixedContainer = styled('div')({
   position: 'fixed'
@@ -576,7 +578,7 @@ export default function Scene ({
                 fontWeight: 400,
                 color: '#5f6368'
               }}>
-                🎉 You're all set here for the moment</p>
+                <span role="img" aria-label="hooray">🎉</span> You're all set here for the moment</p>
             </Message>
           ) : (
             <Table>
@@ -606,15 +608,12 @@ export default function Scene ({
                             case Badges.HOT:
                               // lots of `reasons` within short time frame
                               return <Icon.Hot shrink={0.75} />
-                              break;
                             case Badges.OLD:
                               // old
                               return <Icon.Alarm shrink={0.75} />
-                              break;
                             case Badges.COMMENTS:
                               // lots of `reasons`
                               return <Icon.Convo shrink={0.75} />
-                              break;
                             default:
                               return null;
                           }

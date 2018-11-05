@@ -47,11 +47,13 @@ class StorageProvider extends React.Component {
    * Loads up the notifications state with the cache.
    */
   refreshNotifications = () => {
-    const notifications = Object.keys(window.localStorage).map(key => {
+    const notifications = Object.keys(window.localStorage).reduce((acc, key) => {
       if (key.indexOf(LOCAL_STORAGE_PREFIX) > -1) {
-        return JSON.parse(window.localStorage.getItem(key));
+        const cached_n = JSON.parse(window.localStorage.getItem(key));
+        acc.push(cached_n);
       }
-    });
+      return acc;
+    }, []);
     this.setState({ notifications });
     // this.setState({ notifications: mockNotifications });
   }
