@@ -8,45 +8,8 @@ import {routes} from '../../constants';
 import {Filters} from '../../constants/filters';
 import {withOnEnter} from '../../enhance';
 import {Status} from '../../constants/status';
+import {Reasons, Badges} from '../../constants/reasons';
 import '../../styles/gradient.css';
-
-/**
- * Given a notification, give it a score based on its importance.
- *
- * There are some interesting workarounds that go into this algorithm to account
- * for GitHub's broken notifications API -- but we will get to that later. First,
- * let's start off with the basics of scoring.
- *
- * There are a few "reasons" that we can be getting a notification, each having
- * an initial weight of importance:
- *
- *  - MENTION           ->  8
- *  - ASSIGN            ->  14
- *  - REVIEW_REQUESTED  ->  20
- *  - SUBSCRIBED        ->  3
- *  - AUTHOR            ->  8
- *  - OTHER             ->  2
- *
- * There are some rules that go to giving out these scores, primarily being the
- * first time we see one of these unique reasons, we award the notification with
- * the respective score, but a reason that transitions into itself will be awarded
- * a degraded score of min(ceil(n/3), 2). For example:
- *
- *  - null, MENTION, MENTION -> 0, 8, 3
- *  - null, ASSIGN, ASSIGN, REVIEW_REQUESTED, -> 0, 14, 5, 20
- *  - null, SUBSCRIBED, SUBSCRIBED, SUBSCRIBED -> 0, 3, 2, 2
- *
- * @param {Object} notification Some notification to score.
- * @return {number} The score.
- */
-function scoreOf (notification) {
-  return notification.reasons.length
-}
-
-const decorateWithScore = notification => ({
-  ...notification,
-  score: scoreOf(notification)
-});
 
 const FixedContainer = styled('div')({
   position: 'fixed'
@@ -64,7 +27,7 @@ const NotificationsContainer = styled('div')({
   margin: '0 auto',
   padding: 0,
   width: '100%',
-  height: '100vh',
+  height: '100%',
   display: 'flex',
   flexDirection: 'row',
   overflowX: 'hidden',
@@ -72,19 +35,32 @@ const NotificationsContainer = styled('div')({
 });
 
 const NavigationContainer = styled('div')({
-  position: 'relative',
+  position: 'fixed',
+  top: 0,
   boxSizing: 'border-box',
   margin: '0 auto',
-  padding: '24px 48px',
   width: '100%',
   background: 'none',
-  height: 'initial'
+  height: 60,
+  backgroundColor: '#24292e',
+  color: 'hsla(0,0%,100%,.75)',
+  paddingBottom: '12px',
+  paddingTop: '12px',
+  zIndex: '100',
 });
 
 const GeneralOptionsContainer = styled(NavigationContainer)({
+  position: 'relative',
+  zIndex: '1',
+  height: 'initial',
+  minHeight: 60,
+  width: '100%',
+  margin: 0,
+  marginLeft: 230,
+  maxWidth: 1000,
   background: '#fff',
   padding: '8px 16px',
-  paddingLeft: 260,
+  paddingTop: 18,
   flex: '0 0 50px',
   'button': {
     display: 'inline-flex',
@@ -95,28 +71,47 @@ const GeneralOptionsContainer = styled(NavigationContainer)({
 const Sidebar = styled('div')({
   flex: '0 0 200px',
   padding: '0 20px 20px',
-  marginTop: 15
+  display: 'flex',
+  justifyContent: 'center',
 });
 
 const SidebarLink = styled('a')({}, ({active, color}) => ({
   textAlign: 'left',
+  userSelect: 'none',
   margin: '0 auto',
+  position: 'relative',
   cursor: 'pointer',
-  borderRadius: '8px',
+  borderRadius: 4,
   alignItems: 'center',
   padding: '0 14px',
   height: 40,
   fontSize: '12px',
   fontWeight: 600,
   letterSpacing: 0.5,
-  textTransform: 'uppercase',
+  textTransform: 'capitalize',
   textDecoration: 'none',
   transition: 'background 0.12s ease-in-out',
   display: 'flex',
   background: active ? color : 'none',
   color: active ? '#fff' : '#202124',
-  ':hover': {
-    background: active ? color: 'rgba(200, 200, 200, .25)'
+  ':before': {
+    content: '""',
+    transition: 'all 150ms ease',
+    background: 'rgba(190, 197, 208, 0.25)',
+    borderRadius: 4,
+    display: 'block',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left: 0,
+    position: 'absolute',
+    transform: 'scale(0)'
+  },
+  ':hover:before': {
+    transform: active ? 'scale(0)' : 'scale(1)',
+  },
+  ':active:before': {
+    background: 'rgba(190, 197, 208, 0.5)'
   },
   'div': {
     marginRight: 5
@@ -127,8 +122,44 @@ const Notifications = styled('div')({
   flex: 1,
 });
 
+const NavTab = styled('a')({
+  position: 'relative',
+  textTransform: 'capitalize',
+  userSelect: 'none',
+  borderRadius: 4,
+  textDecoration: 'none',
+  fontWeight: '500',
+  fontSize: '14px',
+  textAlign: 'left',
+  opacity: 0.6,
+  padding: '20px 32px',
+  paddingLeft: '16px',
+  width: '150px',
+  display: 'inline-block',
+  margin: 0,
+  transition: 'all 150ms ease',
+  ':hover': {
+    background: 'rgba(190, 197, 208, 0.25)',
+  },
+}, ({ active, color }) => active && ({
+  color,
+  opacity: 1,
+  ':after': {
+    content: '""',
+    position: 'absolute',
+    background: color,
+    height: '3px',
+    width: '90%',
+    bottom: '0',
+    left: '5%',
+    borderTopLeftRadius: '4px',
+    borderTopRightRadius: '4px',
+  }
+}));
+
 const Tab = styled('button')({
   position: 'relative',
+  userSelect: 'none',
   cursor: 'pointer',
   border: 0,
   outline: 'none',
@@ -159,8 +190,14 @@ const Tab = styled('button')({
   }
 }, ({disabled}) => disabled && ({
   background: 'none !important',
-  opacity: 0.5,
+  opacity: 0.35,
   cursor: 'default',
+  ':hover:before': {
+    transform: 'scale(0) !important',
+  },
+  ':active:before': {
+    background: 'none !important'
+  }
 }));
 
 const SearchField = styled('div')({
@@ -169,17 +206,29 @@ const SearchField = styled('div')({
   width: '50%',
   boxShadow: '0 4px 6px rgba(50,50,93,.11), 0 1px 3px rgba(0,0,0,.08)',
   margin: '0 auto',
-  background: '#fff',
+  background: 'hsla(0,0%,100%,.125)',
   borderRadius: '4px',
   alignItems: 'center',
   padding: 0,
-  height: '48px',
-  fontSize: '14px',
+  height: '36px',
+  fontSize: '13px',
   textDecoration: 'none',
   transition: 'all 0.06s ease-in-out',
   display: 'inline-flex',
   ':focus-within': {
-    boxShadow: '0 3px 9px #4a4a4a5c',
+    background: '#fff'
+  }
+});
+
+const Message = styled('div')({
+  display: 'block',
+  textAlign: 'center',
+  marginTop: 96,
+  'p': {
+    paddingTop: 24,
+    userSelect: 'none',
+    display: 'block',
+    margin: 0
   }
 });
 
@@ -196,20 +245,23 @@ const SearchInput = styled('input')({
   margin: '0 auto',
   background: 'none',
   padding: 0,
-  height: '48px',
-  fontSize: '14px',
+  height: '36px',
+  color: '#fff',
+  fontSize: '13px',
   textDecoration: 'none',
-  transition: 'all 0.12s ease-in-out',
   display: 'inline-flex',
   border: '0',
-  outline: 'none'
+  outline: 'none',
+  ':focus': {
+    color: '#202124'
+  }
 });
 const EnhancedSearchInput = withOnEnter(SearchInput);
 
 const NotificationRow = styled('tr')({
   position: 'relative',
   cursor: 'pointer',
-  borderBottom: '1px solid #f2f2f2',
+  // borderBottom: '1px solid #f2f2f2',
   display: 'block',
   textAlign: 'left',
   width: '100%',
@@ -257,18 +309,13 @@ const PRIssue = styled(Repository)({
 });
 
 const Table = styled('table')({
+  width: '100%',
+  maxWidth: 970,
+  minWidth: 970,
   display: 'block',
   'td': {
     display: 'inline-block'
   }
-});
-
-const TableHeader = styled('h2')({
-  fontWeight: 500,
-  fontSize: 34,
-  color: 'rgba(0, 0, 0, 0.86)',
-  letterSpacing: '-0.05px',
-  margin: '20px 15px 0',
 });
 
 const TableItem = styled('td')({
@@ -297,7 +344,17 @@ function getPRIssueIcon (type, reasons) {
 }
 
 export default function Scene ({
+  first,
+  last,
+  lastPage,
+  page,
   notifications,
+  query,
+  activeStatus,
+  allNotificationsCount,
+  onChangePage,
+  onSetActiveStatus,
+  onClearQuery,
   onLogout,
   onSearch,
   onMarkAsRead,
@@ -312,58 +369,38 @@ export default function Scene ({
   onSetActiveFilter,
 }) {
   const isLoading = isSearching || isFetchingNotifications;
+  const isFirstPage = page === 1;
+  const isLastPage = page === lastPage;
 
-  let filterMethod = () => true;
-  switch (activeFilter) {
-    case Filters.REVIEW_REQUESTED:
-      filterMethod = n => n.reasons[0].reason === 'review_requested';
-      break;
-    case Filters.PARTICIPATING:
-      filterMethod = n => (
-        n.reasons.some(({ reason }) => (
-          reason === 'review_requested' ||
-          reason === 'assign' ||
-          reason === 'mention' ||
-          reason === 'author'
-        ))
-      );
-      break;
-    case Filters.SUBSCRIBED:
-      filterMethod = n => n.reasons[0].reason === 'subscribed';
-      break;
-    case Filters.ALL:
-    default:
-      filterMethod = () => true;
+  console.warn('before render in scene', notifications)
+
+  if (query) {
+    notifications = notifications.filter(n => (
+      n.name.toLowerCase().indexOf(query.toLowerCase()) > -1)
+    )
   }
 
-  notifications = notifications
-    .filter(filterMethod)
-    .sort((a, b) => a.repository.localeCompare(b.repository))
-    .map(decorateWithScore)
-    .sort((a, b) => b.score - a.score);
-
-  console.warn(notifications)
-
-  const notificationsQueued = notifications.filter(n => n.status === Status.QUEUED);
-  const notificationsStaged = notifications.filter(n => n.status === Status.STAGED);
-
   return (
-    <div className="container-gradient" style={{
-      width: '100%',
-      position: 'relative',
-      flexDirection: 'column',
-      height: '100vh',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center'
-    }}>
+    <div style={{marginTop: 60}}>
       <NavigationContainer>
-        <div className="button-container" style={{ textAlign: 'right' }}>
-          <Logo size={48} style={{
-            float: 'left',
-            marginRight: 48,
-            cursor: 'pointer'
-          }} />
+        <div style={{
+          maxWidth: 1200,
+          textAlign: 'right',
+          margin: '0 auto',
+          padding: '0 20px 0 40px',
+        }}>
+          <Logo
+            size={36}
+            style={{
+              float: 'left',
+              marginRight: 48,
+              cursor: 'pointer'
+            }}
+            onClick={() => {
+              onSetActiveStatus(Status.QUEUED);
+              onSetActiveFilter(Filters.PARTICIPATING);
+            }}
+          />
           <SearchField>
             <Icon.Search size={48} opacity={.45} />
             <EnhancedSearchInput
@@ -372,10 +409,26 @@ export default function Scene ({
               placeholder="Search for notifications"
               onEnter={onSearch}
             />
-            {isSearching && <LoadingIcon size={48} />}
+            {isSearching && <LoadingIcon alt={true} size={48} />}
           </SearchField>
-          <Link style={{marginRight: 15}} to={routes.HOME}>go home</Link>
-          <a style={{marginRight: 15}} href="#" onClick={onLogout}>sign out</a>
+          <div style={{display: 'inline-block'}} className="button-container-alt">
+            <Link style={{
+              marginRight: 15,
+              background: 'none',
+              color: '#fff',
+              height: 36,
+              padding: '0 12px'
+            }} to={routes.HOME}>home</Link>
+          </div>
+          <div style={{display: 'inline-block'}}  className="button-container-alt">
+            <a style={{
+              marginRight: 15,
+              background: 'none',
+              color: '#fff',
+              height: 36,
+              padding: '0 12px'
+            }} href="#" onClick={onLogout}>sign out</a>
+          </div>
         </div>
       </NavigationContainer>
       <GeneralOptionsContainer>
@@ -391,19 +444,82 @@ export default function Scene ({
             onClick={!isLoading ? (() => onClearCache()) : undefined}
           />
         </Tab>
-        <Tab>
-          <div style={{
-            position: 'relative',
-            height: 24,
-            width: 24,
-            fontSize: 14,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-            {notifications.length}
+        {query ? (
+          <React.Fragment>
+            <div style={{display: 'inline-block'}}  className="button-container-alt">
+              <a style={{
+                marginRight: 15,
+                background: 'none',
+                color: '#202124',
+                textTransform: 'inherit',
+                boxShadow: '0 0 0',
+                fontWeight: 400,
+                height: 36,
+                padding: '0 12px',
+              }}
+              >
+                Showing results for '{query}'
+              </a>
+            </div>
+            <Tab disabled={isLoading}>
+              <Icon.X
+                opacity={0.9}
+                onClick={!isLoading ? (() => onClearQuery()) : undefined}
+              />
+            </Tab>
+          </React.Fragment>
+        ) : null}
+        <div style={{float: 'right'}}>
+          <div style={{display: 'inline-block'}}  className="button-container-alt">
+            <a style={{
+              marginRight: 15,
+              background: 'none',
+              color: '#202124',
+              textTransform: 'inherit',
+              boxShadow: '0 0 0',
+              fontWeight: 400,
+              height: 36,
+              padding: '0 12px',
+            }}>
+              {first}-{last} of about {allNotificationsCount}
+            </a>
           </div>
-        </Tab>
+          <Tab disabled={isLoading || isFirstPage}>
+            <Icon.Prev
+              opacity={0.9}
+              onClick={!isLoading && !isFirstPage ? (() => onChangePage(page - 1)) : undefined}
+            />
+          </Tab>
+          <Tab disabled={isLoading || isLastPage}>
+            <Icon.Next
+              opacity={0.9}
+              onClick={!isLoading && !isLastPage ? (() => onChangePage(page + 1)) : undefined}
+            />
+          </Tab>
+        </div>
+      </GeneralOptionsContainer>
+      <GeneralOptionsContainer style={{paddingTop: 4}}>
+        <NavTab
+          color="#00d19a"
+          active={activeStatus === Status.QUEUED}
+          onClick={() => onSetActiveStatus(Status.QUEUED)}
+          href="#">
+          Queued
+        </NavTab>
+        <NavTab
+          color="#009ef8"
+          active={activeStatus === Status.STAGED}
+          onClick={() => onSetActiveStatus(Status.STAGED)}
+          href="#">
+          Staged
+        </NavTab>
+        <NavTab
+          color="#f12c3f"
+          active={activeStatus === Status.CLOSED}
+          onClick={() => onSetActiveStatus(Status.CLOSED)}
+          href="#">
+          Closed
+        </NavTab>
       </GeneralOptionsContainer>
       <NotificationsContainer>
         <Sidebar>
@@ -411,8 +527,7 @@ export default function Scene ({
             <SidebarLink
               active={activeFilter === Filters.ALL}
               color="#6772e5"
-              onClick={() => onSetActiveFilter(Filters.ALL)}
-            >
+              onClick={() => onSetActiveFilter(Filters.ALL)}>
               {activeFilter === Filters.ALL ? (
                 <Icon.InboxWhite shrink={.6} />
               ) : (
@@ -422,15 +537,25 @@ export default function Scene ({
             </SidebarLink>
             <SidebarLink
               active={activeFilter === Filters.PARTICIPATING}
-              color="#00A0F5"
-              onClick={() => onSetActiveFilter(Filters.PARTICIPATING)}
-            >
+              color="#00d19a"
+              onClick={() => onSetActiveFilter(Filters.PARTICIPATING)}>
               {activeFilter === Filters.PARTICIPATING ? (
                 <Icon.PeopleWhite shrink={.6} />
               ) : (
                 <Icon.People shrink={.6} />
               )}
               participating
+            </SidebarLink>
+            <SidebarLink
+              active={activeFilter === Filters.COMMENT}
+              color="#00A0F5"
+              onClick={() => onSetActiveFilter(Filters.COMMENT)}>
+              {activeFilter === Filters.COMMENT ? (
+                <Icon.BookmarkAltWhite shrink={.6} />
+              ) : (
+                <Icon.BookmarkAlt shrink={.6} />
+              )}
+              commented
             </SidebarLink>
           </FixedContainer>
         </Sidebar>
@@ -440,14 +565,23 @@ export default function Scene ({
               <LoadingIcon />
             </LoaderContainer>
           ) : notifications.length <= 0 ? (
-            <div>
-              <p>no notifications</p>
-            </div>
+            <Message>
+              <p style={{
+                fontSize: 16,
+                fontWeight: 400,
+              }}>
+                No {activeStatus.toLowerCase()} notifications</p>
+              <p style={{
+                fontSize: 12,
+                fontWeight: 400,
+                color: '#5f6368'
+              }}>
+                🎉 You're all set here for the moment</p>
+            </Message>
           ) : (
             <Table>
               <tbody>
-                <TableHeader>Queued</TableHeader>
-                {notificationsQueued.map(n => (
+                {notifications.map(n => (
                   <NotificationRow key={n.id}>
                     <TableItem>
                       <div style={{ float: 'left', marginTop: 2 }}>
@@ -467,51 +601,39 @@ export default function Scene ({
                     </TableItem> */}
                     <TableItem width={100}>
                       <InlineBlockContainer>
-                        <Icon.Hot shrink={0.75} />
-                        <Icon.Alarm shrink={0.75} />
+                        {n.badges.map(badge => {
+                          switch (badge) {
+                            case Badges.HOT:
+                              // lots of `reasons` within short time frame
+                              return <Icon.Hot shrink={0.75} />
+                              break;
+                            case Badges.OLD:
+                              // old
+                              return <Icon.Alarm shrink={0.75} />
+                              break;
+                            case Badges.COMMENTS:
+                              // lots of `reasons`
+                              return <Icon.Convo shrink={0.75} />
+                              break;
+                            default:
+                              return null;
+                          }
+                        })}
                       </InlineBlockContainer>
                     </TableItem>
-                    <TableItem width={150}>
+                    <TableItem width={250}>
                       <Repository>{n.repository}</Repository>
                     </TableItem>
-                    <TableItem width={100} style={{textAlign: 'right'}}>
+                    <TableItem width={150} style={{textAlign: 'right'}}>
+                      <NotificationTab>
+                        {n.score}
+                      </NotificationTab>
                       <NotificationTab>
                         <Icon.Check
                           opacity={0.9}
                           onClick={!isLoading ? (() => onStageThread(n.id)) : undefined}
                         />
                       </NotificationTab>
-                      <NotificationTab>
-                        <Icon.X
-                          opacity={0.9}
-                          onClick={!isLoading ? (() => onMarkAsRead(n.id)) : undefined}
-                        />
-                      </NotificationTab>
-                    </TableItem>
-                    {/* <p>Last read at {n.last_read_at ? moment(n.last_read_at).format('dddd h:mma') : 'never'}</p>
-                    <p>Last updated at {moment(n.last_updated).format('dddd h:mma')}</p> */}
-                  </NotificationRow>
-                ))}
-                <TableHeader style={{marginTop: 50}}>Staged</TableHeader>
-                {notificationsStaged.map(n => (
-                  <NotificationRow key={n.id}>
-                    <TableItem>
-                      <div style={{ float: 'left', marginTop: 2 }}>
-                        {getPRIssueIcon(n.type, n.reasons)}
-                      </div>
-                    </TableItem>
-                    <TableItem width={400} onClick={() => window.open(n.url)}>
-                      <NotificationTitle>
-                        <PRIssue>{n.name}</PRIssue>
-                      </NotificationTitle>
-                    </TableItem>
-                    <TableItem width={200}>
-                      <Repository>{n.reasons.map(r => r.reason).join(', ')}</Repository>
-                    </TableItem>
-                    <TableItem width={150}>
-                      <Repository>{n.repository}</Repository>
-                    </TableItem>
-                    <TableItem width={100} style={{textAlign: 'right'}}>
                       <NotificationTab>
                         <Icon.X
                           opacity={0.9}

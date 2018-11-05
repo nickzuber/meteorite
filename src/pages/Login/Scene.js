@@ -56,7 +56,7 @@ export default function Scene ({ loading, error, loggedOut, ...props }) {
             </ButtonsContainer>
           </React.Fragment>
         ) : loading ? (
-          <LoadingIcon />
+          <LoadingIcon style={{marginTop: 50}} />
         ) : loggedOut ? (
           <React.Fragment>
             <p>Log in with GitHub and we'll start organizing and sorting all of your notifications.</p>

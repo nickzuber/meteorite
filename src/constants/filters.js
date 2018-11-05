@@ -3,5 +3,5 @@ export const Filters = {
   REVIEW_REQUESTED: 'review_requested',
   PARTICIPATING: 'participating',
   SUBSCRIBED: 'subscribed',
-  HOT: 'hot',
+  COMMENT: 'comment'
 };

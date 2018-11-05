@@ -6,7 +6,7 @@ import {Status} from '../constants/status';
 
 const BASE_GITHUB_API_URL = 'https://api.github.com';
 
-function subjectUrlToIssue (url) {
+function cleanResponseUrl (url) {
   return url
     .replace('api.github.com', 'github.com')
     .replace('/repos/', '/')
@@ -64,6 +64,17 @@ class NotificationsProvider extends React.Component {
     error: null
   }
 
+  shouldComponentUpdate (nextProps, nextState) {
+    // Update if our state changes
+    if ((this.state.loading !== nextState.loading) ||
+        (this.state.error !== nextState.error)) {
+      return true;
+    }
+    // Only update if our notifications prop changes.
+    // All other props "changing" should NOT trigger a rerender.
+    return this.props.notifications !== nextProps.notifications;
+  }
+
   requestPage = (page = 1, optimizePolling = true) => {
     const headers = {
       'Authorization': `token ${this.props.token}`,
@@ -102,13 +113,7 @@ class NotificationsProvider extends React.Component {
     });
   }
 
-  fetchNotifications = (page = 1, optimizePolling = true) => {
-    if (!this.props.token) {
-      console.error('Unauthenitcated, aborting request.')
-      return false;
-    }
-
-    this.setState({ loading: true });
+  requestFetchNotifications = (page = 1, optimizePolling = true) => {
     return this.requestPage(page, optimizePolling)
       .then(({headers, json}) => {
         if (json === null) return;
@@ -118,46 +123,59 @@ class NotificationsProvider extends React.Component {
           nextPage = links.next.page;
         }
         return this.processNotificationsChunk(nextPage, json);
-      })
-      .catch(error => console.error(error) || this.setState({ error }))
+      });
+  }
+
+  fetchNotifications = (page = 1, optimizePolling = true) => {
+    if (!this.props.token) {
+      console.error('Unauthenitcated, aborting request.')
+      return false;
+    }
+
+    this.setState({ loading: true });
+    return this.requestFetchNotifications(page, optimizePolling)
+      .catch(error => this.setState({ error }))
       .finally(() => this.setState({ loading: false }));
   }
 
   processNotificationsChunk = (nextPage, notificationsChunk) => {
-    console.log('chunk', notificationsChunk)
-    let everythingUpdated = true;
+    return new Promise((resolve, reject) => {
+      console.log('chunk', notificationsChunk)
+      let everythingUpdated = true;
 
-    if (notificationsChunk.length === 0) {
-      // Apparently this means that a user has no notifications (makes sense).
-      // So I guess we should purge our cache? This brings up the great point
-      // of us having stale cache. How can we detect that a notifcation was seen?
-    }
+      if (notificationsChunk.length === 0) {
+        // Apparently this means that a user has no notifications (makes sense).
+        // So I guess we should purge our cache? This brings up the great point
+        // of us having stale cache. How can we detect that a notifcation was seen?
+      }
 
-    notificationsChunk.forEach(n => {
-      const cached_n = this.props.getItemFromStorage(n.id);
-      // If we've seen this notification before.
-      if (cached_n) {
-        // Something's changed, we want to push
-        if (cached_n.updated_at !== n.updated_at) {
-          this.updateNotification(n, cached_n.reasons);
-          return;
+      notificationsChunk.forEach(n => {
+        const cached_n = this.props.getItemFromStorage(n.id);
+        // If we've seen this notification before.
+        if (cached_n) {
+          // Something's changed, we want to push
+          if (cached_n.updated_at !== n.updated_at) {
+            this.updateNotification(n, cached_n.reasons);
+            return;
+          }
+          // This means that something didn't update, which means the page we're
+          // currently processing has stale data so we don't need to fetch the next page.
+          everythingUpdated = false;
+        } else {
+          // Else, update the cache.
+          this.updateNotification(n);
         }
-        // This means that something didn't update, which means the page we're
-        // currently processing has stale data so we don't need to fetch the next page.
-        everythingUpdated = false;
+      });
+
+      if (nextPage && everythingUpdated) {
+        // Still need to fetch more updates.
+        this.fetchNotifications(nextPage, false);
       } else {
-        // Else, update the cache.
-        this.updateNotification(n);
+        // All done fetching updates, let's trigger a sync.
+        this.props.refreshNotifications();
+        resolve();
       }
     });
-
-    if (nextPage && everythingUpdated) {
-      // Still need to fetch more updates.
-      this.fetchNotifications(nextPage, false);
-    } else {
-      // All done fetching updates, let's trigger a sync.
-      this.props.refreshNotifications();
-    }
   }
 
   updateNotification = (n, prevReason = null) => {
@@ -181,8 +199,10 @@ class NotificationsProvider extends React.Component {
       reasons: reasons,
       type: n.subject.type,
       name: n.subject.title,
-      url: subjectUrlToIssue(n.subject.url),
-      repository: n.repository.name,
+      url: cleanResponseUrl(n.subject.url),
+      repository: n.repository.full_name,
+      number: n.subject.url.split('/').pop(),
+      repositoryUrl: cleanResponseUrl(n.repository.url)
     };
     this.props.setItemInStorage(n.id, value);
   }
@@ -269,6 +289,7 @@ class NotificationsProvider extends React.Component {
       ...this.state,
       notifications: this.props.notifications,
       fetchNotifications: this.fetchNotifications,
+      fetchNotificationsSync: this.requestFetchNotifications,
       markAsRead: this.markAsRead,
       clearCache: this.clearCache,
       stageThread: this.stageThread

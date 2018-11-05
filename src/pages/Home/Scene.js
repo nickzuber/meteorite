@@ -95,7 +95,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
         </div>
         <BottomLinkContainer>
           <SmallLink target="_blank" href="https://github.com/nickzuber/meteorite">View and contribute on GitHub</SmallLink>
-          <SmallText href="">Already have an account?</SmallText>
+          <SmallText>Totally free and open sourced</SmallText>
         </BottomLinkContainer>
       </LandingMessage>
       <Curve />
