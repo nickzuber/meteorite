@@ -285,10 +285,11 @@ const EnhancedSearchInput = withOnEnter(SearchInput);
 
 const NotificationRow = styled('tr')({
   position: 'relative',
-  cursor: 'pointer',
+  // cursor: 'pointer',
   display: 'block',
   textAlign: 'left',
   width: '100%',
+  borderRadius: 4,
   margin: '0 auto',
   background: '#fff',
   padding: '8px 16px',
@@ -621,7 +622,7 @@ export default function Scene ({
                         {getPRIssueIcon(n.type, n.reasons)}
                       </div>
                     </TableItem>
-                    <TableItem style={{height: 36}} width={400} onClick={() => {
+                    <TableItem style={{height: 36, cursor: 'pointer', userSelect: 'none'}} width={400} onClick={() => {
                       window.open(n.url);
                       onStageThread(n.id)
                     }}>
@@ -650,7 +651,10 @@ export default function Scene ({
                       </InlineBlockContainer>
                     </TableItem>
                     <TableItem width={250}>
-                      <Repository>{n.repository}</Repository>
+                      <Repository
+                        onClick={() => window.open(n.repositoryUrl)}
+                        style={{cursor: 'pointer', userSelect: 'none'}}>
+                        {n.repository}</Repository>
                     </TableItem>
                     <TableItem width={150} style={{textAlign: 'right'}}>
                       <NotificationTab>
