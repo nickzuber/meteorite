@@ -4,6 +4,7 @@ import {Status} from '../constants/status';
 import {Reasons} from '../constants/reasons';
 
 const LOCAL_STORAGE_PREFIX = '__meteorite_noti_cache__';
+const LOCAL_STORAGE_STATISTIC_PREFIX = '__meteorite_statistic_cache__';
 
 const getMockReasons = n => {
   const reasons = Object.values(Reasons);
@@ -58,9 +59,61 @@ class StorageProvider extends React.Component {
     // this.setState({ notifications: mockNotifications });
   }
 
+  /**
+   * Stats are broken up since they are fetched and set often, we want to avoid
+   * the JSON parsing overhead.
+   *
+   * Our statistics are indexed by the date (current unique day) we had recorded it.
+   * This _does_ limit us by making this choice - the most granular we can get with
+   * statistics is by day. This is an intentional design decision and we could always
+   * change it later at some point if we really wanted to.
+   *
+   * Statistics take the form __DATE-NAME. For example:
+   * ```
+   *  __meteorite_noti_cache__2018-11-05-robin-extension-staged -> 52
+   *  __meteorite_noti_cache__2018-11-06-robin-dashboard-staged -> 4
+   * ```
+   */
+  getStat = (stat, startTime = moment(), endTime = moment().add(1, 'day')) => {
+    const response = [];
+
+    // Range reflects `[start, end)`
+    for (let m = startTime.clone(); m.isBefore(endTime); m.add(1, 'day')) {
+      const key = m.format('YYYY-MM-DD');
+      const value = window.localStorage.getItem(`${LOCAL_STORAGE_STATISTIC_PREFIX}${key}-${stat}`);
+      if (value !== null) {
+        response.push(value);
+      }
+    }
+    return response;
+  }
+
+  /**
+   * Since our stats right now are just numbers, we can assume "setting" will always
+   * increment. This is a pretty bold assumption that makes things simpler for now,
+   * so we're going to go with it for the time being.
+   */
+  incrStat = (stat, time = moment()) => {
+    const key = time.format('YYYY-MM-DD');
+    const oldValue = window.localStorage.getItem(`${LOCAL_STORAGE_STATISTIC_PREFIX}${key}-${stat}`);
+    if (oldValue !== null) {
+      window.localStorage.setItem(`${LOCAL_STORAGE_STATISTIC_PREFIX}${key}-${stat}`, parseInt(oldValue, 10) + 1);
+    } else {
+      window.localStorage.setItem(`${LOCAL_STORAGE_STATISTIC_PREFIX}${key}-${stat}`, 1);
+    }
+  }
+
   // val value : Object
   setItem = (id, value) => {
     window.localStorage.setItem(`${LOCAL_STORAGE_PREFIX}${id}`, JSON.stringify(value));
+  }
+
+  getItem = id => {
+    try {
+      return JSON.parse(window.localStorage.getItem(`${LOCAL_STORAGE_PREFIX}${id}`));
+    } catch (e) {
+      return null;
+    }
   }
 
   removeItem = id => {
@@ -77,14 +130,6 @@ class StorageProvider extends React.Component {
     this.setItem(id, closed_cached_n);
   }
 
-  getItem = id => {
-    try {
-      return JSON.parse(window.localStorage.getItem(`${LOCAL_STORAGE_PREFIX}${id}`));
-    } catch (e) {
-      return null;
-    }
-  }
-
   clearCache = () => {
     window.localStorage.clear();
   }
@@ -96,7 +141,9 @@ class StorageProvider extends React.Component {
       getItem: this.getItem,
       removeItem: this.removeItem,
       clearCache: this.clearCache,
-      refreshNotifications: this.refreshNotifications
+      refreshNotifications: this.refreshNotifications,
+      getStat: this.getStat,
+      incrStat: this.incrStat,
     });
   }
 }

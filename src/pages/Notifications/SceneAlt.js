@@ -79,10 +79,8 @@ const GeneralOptionsContainer = styled(NavigationContainer)({
   zIndex: '1',
   height: 'initial',
   minHeight: 60,
-  width: '100%',
+  width: '95%',
   margin: 0,
-  marginLeft: 230,
-  maxWidth: 1000,
   background: '#fff',
   padding: '8px 16px',
   paddingTop: 18,
@@ -94,8 +92,9 @@ const GeneralOptionsContainer = styled(NavigationContainer)({
 });
 
 const Sidebar = styled('div')({
-  flex: '0 0 200px',
-  padding: '0 20px 20px',
+  flex: '0 0 300px',
+  padding: '32px 20px',
+  paddingRight: 0,
   display: 'flex',
   justifyContent: 'center',
 });
@@ -110,6 +109,7 @@ const SidebarLink = styled('a')({}, ({active, color}) => ({
   alignItems: 'center',
   padding: '0 14px',
   height: 40,
+  width: 200,
   fontSize: '12px',
   fontWeight: 600,
   letterSpacing: 0.5,
@@ -340,7 +340,14 @@ const Repository = styled('span')({
 
 const PRIssue = styled(Repository)({
   fontWeight: 400,
-});
+}, ({after}) => ({
+  ':after': {
+    content: `"#${after}"`,
+    fontSize: 13,
+    opacity: .3,
+    marginLeft: 5
+  }
+}));
 
 const Table = styled('table')({
   width: '100%',
@@ -386,6 +393,7 @@ export default function Scene ({
   query,
   activeStatus,
   allNotificationsCount,
+  stagedTodayCount,
   onChangePage,
   onSetActiveStatus,
   onClearQuery,
@@ -418,10 +426,9 @@ export default function Scene ({
     <div style={{marginTop: 60}}>
       <NavigationContainer>
         <div style={{
-          maxWidth: 1200,
           textAlign: 'right',
           margin: '0 auto',
-          padding: '0 20px 0 40px',
+          width: '92%'
         }}>
           <Logo
             size={36}
@@ -465,221 +472,265 @@ export default function Scene ({
           </div>
         </div>
       </NavigationContainer>
-      <GeneralOptionsContainer>
-        <Tab disabled={isLoading}>
-          <Icon.Refresh
-            opacity={0.9}
-            onClick={!isLoading ? (() => onFetchNotifications()) : undefined}
-          />
-        </Tab>
-        <Tab disabled={isLoading}>
-          <Icon.Trash
-            opacity={0.9}
-            onClick={!isLoading ? (() => onClearCache()) : undefined}
-          />
-        </Tab>
-        {query ? (
-          <React.Fragment>
-            <div style={{display: 'inline-block'}}  className="button-container-alt">
-              <a style={{
-                marginRight: 15,
-                background: 'none',
-                color: '#202124',
-                textTransform: 'inherit',
-                boxShadow: '0 0 0',
-                fontWeight: 400,
-                height: 36,
-                padding: '0 12px',
-              }}
-              >
-                Showing results for '{query}'
-              </a>
-            </div>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'row'
+      }}>
+        <div style={{
+          flex: '0 0 300px'
+        }}>
+          <Sidebar>
+            <FixedContainer>
+              <div style={{
+                width: 220,
+                padding: '0 14px',
+                margin: '0 11px 12px',
+              }}>
+                <h3 style={{
+                  margin: 0
+                }}>
+                  <Icon.Clock style={{
+                    display: 'inline-block',
+                    verticalAlign: 'middle',
+                    marginRight: '5px',
+                    top: '-3px',
+                  }} />
+                  {moment().format('h:mma')}
+                </h3>
+                <span style={{
+                  display: 'block',
+                  padding: '6px 0px',
+                  fontSize: 15,
+                  opacity: 0.7,
+                }}>{moment().format('dddd, MMMM Do')}</span>
+                <span style={{
+                  display: 'block',
+                  padding: '6px 0 12px',
+                  fontSize: 12,
+                  opacity: 0.5,
+                }}>You've triaged {stagedTodayCount} notifications today</span>
+              </div>
+              <SidebarLink
+                active={activeFilter === Filters.ALL}
+                color="#6772e5"
+                onClick={() => onSetActiveFilter(Filters.ALL)}>
+                {activeFilter === Filters.ALL ? (
+                  <Icon.InboxWhite shrink={.6} />
+                ) : (
+                  <Icon.Inbox shrink={.6} />
+                )}
+                all notifications
+              </SidebarLink>
+              <SidebarLink
+                active={activeFilter === Filters.PARTICIPATING}
+                color="#00d19a"
+                onClick={() => onSetActiveFilter(Filters.PARTICIPATING)}>
+                {activeFilter === Filters.PARTICIPATING ? (
+                  <Icon.PeopleWhite shrink={.6} />
+                ) : (
+                  <Icon.People shrink={.6} />
+                )}
+                {/* participating */}
+                your triage
+              </SidebarLink>
+              <SidebarLink
+                active={activeFilter === Filters.COMMENT}
+                color="#00A0F5"
+                onClick={() => onSetActiveFilter(Filters.COMMENT)}>
+                {activeFilter === Filters.COMMENT ? (
+                  <Icon.BookmarkAltWhite shrink={.6} />
+                ) : (
+                  <Icon.BookmarkAlt shrink={.6} />
+                )}
+                commented
+              </SidebarLink>
+              {/* <p>3 triaged in robin-dashboard</p> */}
+            </FixedContainer>
+          </Sidebar>
+        </div>
+        <div style={{
+          flex: 1
+        }}>
+          <GeneralOptionsContainer>
             <Tab disabled={isLoading}>
-              <Icon.X
+              <Icon.Refresh
                 opacity={0.9}
-                onClick={!isLoading ? (() => onClearQuery()) : undefined}
+                onClick={!isLoading ? (() => onFetchNotifications()) : undefined}
               />
             </Tab>
-          </React.Fragment>
-        ) : null}
-        <div style={{float: 'right'}}>
-          <div style={{display: 'inline-block'}}  className="button-container-alt">
-            <a style={{
-              marginRight: 15,
-              background: 'none',
-              color: '#202124',
-              textTransform: 'inherit',
-              boxShadow: '0 0 0',
-              fontWeight: 400,
-              height: 36,
-              padding: '0 12px',
-            }}>
-              {first}-{last} of about {allNotificationsCount}
-            </a>
-          </div>
-          <Tab disabled={isLoading || isFirstPage}>
-            <Icon.Prev
-              opacity={0.9}
-              onClick={!isLoading && !isFirstPage ? (() => onChangePage(page - 1)) : undefined}
-            />
-          </Tab>
-          <Tab disabled={isLoading || isLastPage}>
-            <Icon.Next
-              opacity={0.9}
-              onClick={!isLoading && !isLastPage ? (() => onChangePage(page + 1)) : undefined}
-            />
-          </Tab>
-        </div>
-      </GeneralOptionsContainer>
-      <GeneralOptionsContainer style={{paddingTop: 4}}>
-        <NavTab
-          color="#00d19a"
-          active={activeStatus === Status.QUEUED}
-          onClick={() => onSetActiveStatus(Status.QUEUED)}
-          href="#">
-          Queued
-        </NavTab>
-        <NavTab
-          color="#009ef8"
-          active={activeStatus === Status.STAGED}
-          onClick={() => onSetActiveStatus(Status.STAGED)}
-          href="#">
-          Staged
-        </NavTab>
-        <NavTab
-          color="#f12c3f"
-          active={activeStatus === Status.CLOSED}
-          onClick={() => onSetActiveStatus(Status.CLOSED)}
-          href="#">
-          Closed
-        </NavTab>
-      </GeneralOptionsContainer>
-      <NotificationsContainer>
-        <Sidebar>
-          <FixedContainer>
-            <SidebarLink
-              active={activeFilter === Filters.ALL}
-              color="#6772e5"
-              onClick={() => onSetActiveFilter(Filters.ALL)}>
-              {activeFilter === Filters.ALL ? (
-                <Icon.InboxWhite shrink={.6} />
-              ) : (
-                <Icon.Inbox shrink={.6} />
-              )}
-              all notifications
-            </SidebarLink>
-            <SidebarLink
-              active={activeFilter === Filters.PARTICIPATING}
+            <Tab disabled={isLoading}>
+              <Icon.Trash
+                opacity={0.9}
+                onClick={!isLoading ? (() => onClearCache()) : undefined}
+              />
+            </Tab>
+            {query ? (
+              <React.Fragment>
+                <div style={{display: 'inline-block'}}  className="button-container-alt">
+                  <a style={{
+                    marginRight: 15,
+                    background: 'none',
+                    color: '#202124',
+                    textTransform: 'inherit',
+                    boxShadow: '0 0 0',
+                    fontWeight: 400,
+                    height: 36,
+                    padding: '0 12px',
+                  }}
+                  >
+                    Showing results for '{query}'
+                  </a>
+                </div>
+                <Tab disabled={isLoading}>
+                  <Icon.X
+                    opacity={0.9}
+                    onClick={!isLoading ? (() => onClearQuery()) : undefined}
+                  />
+                </Tab>
+              </React.Fragment>
+            ) : null}
+            <div style={{float: 'right'}}>
+              <div style={{display: 'inline-block'}}  className="button-container-alt">
+                <a style={{
+                  marginRight: 15,
+                  background: 'none',
+                  color: '#202124',
+                  textTransform: 'inherit',
+                  boxShadow: '0 0 0',
+                  fontWeight: 400,
+                  height: 36,
+                  padding: '0 12px',
+                }}>
+                  {first}-{last} of about {allNotificationsCount}
+                </a>
+              </div>
+              <Tab disabled={isLoading || isFirstPage}>
+                <Icon.Prev
+                  opacity={0.9}
+                  onClick={!isLoading && !isFirstPage ? (() => onChangePage(page - 1)) : undefined}
+                />
+              </Tab>
+              <Tab disabled={isLoading || isLastPage}>
+                <Icon.Next
+                  opacity={0.9}
+                  onClick={!isLoading && !isLastPage ? (() => onChangePage(page + 1)) : undefined}
+                />
+              </Tab>
+            </div>
+          </GeneralOptionsContainer>
+          <GeneralOptionsContainer style={{paddingTop: 4}}>
+            <NavTab
               color="#00d19a"
-              onClick={() => onSetActiveFilter(Filters.PARTICIPATING)}>
-              {activeFilter === Filters.PARTICIPATING ? (
-                <Icon.PeopleWhite shrink={.6} />
-              ) : (
-                <Icon.People shrink={.6} />
-              )}
-              participating
-            </SidebarLink>
-            <SidebarLink
-              active={activeFilter === Filters.COMMENT}
-              color="#00A0F5"
-              onClick={() => onSetActiveFilter(Filters.COMMENT)}>
-              {activeFilter === Filters.COMMENT ? (
-                <Icon.BookmarkAltWhite shrink={.6} />
-              ) : (
-                <Icon.BookmarkAlt shrink={.6} />
-              )}
-              commented
-            </SidebarLink>
-          </FixedContainer>
-        </Sidebar>
-        <Notifications>
-          {isFetchingNotifications ? (
-            <LoaderContainer>
-              <LoadingIcon />
-            </LoaderContainer>
-          ) : notifications.length <= 0 ? (
-            <Message>
-              <p style={{
-                fontSize: 16,
-                fontWeight: 400,
-              }}>
-                No {activeStatus.toLowerCase()} notifications</p>
-              <p style={{
-                fontSize: 12,
-                fontWeight: 400,
-                color: '#5f6368'
-              }}>
-                <span role="img" aria-label="hooray">🎉</span> You're all set here for the moment</p>
-            </Message>
-          ) : (
-            <Table>
-              <tbody>
-                {notifications.map(n => (
-                  <NotificationRow key={n.id}>
-                    <TableItem>
-                      <div style={{ float: 'left', marginTop: 2 }}>
-                        {getPRIssueIcon(n.type, n.reasons)}
-                      </div>
-                    </TableItem>
-                    <TableItem style={{height: 36, cursor: 'pointer', userSelect: 'none'}} width={400} onClick={() => {
-                      window.open(n.url);
-                      onStageThread(n.id)
-                    }}>
-                      <NotificationTitle>
-                        <PRIssue>{n.name}</PRIssue>
-                      </NotificationTitle>
-                      <Timestamp>{getRelativeTime(n.updated_at)}</Timestamp>
-                    </TableItem>
-                    <TableItem width={100}>
-                      <InlineBlockContainer>
-                        {n.badges.map(badge => {
-                          switch (badge) {
-                            case Badges.HOT:
-                              // lots of `reasons` within short time frame
-                              return <Icon.Hot shrink={0.75} />
-                            case Badges.OLD:
-                              // old
-                              return <Icon.Alarm shrink={0.75} />
-                            case Badges.COMMENTS:
-                              // lots of `reasons`
-                              return <Icon.Convo shrink={0.75} />
-                            default:
-                              return null;
-                          }
-                        })}
-                      </InlineBlockContainer>
-                    </TableItem>
-                    <TableItem width={250}>
-                      <Repository
-                        onClick={() => window.open(n.repositoryUrl)}
-                        style={{cursor: 'pointer', userSelect: 'none'}}>
-                        {n.repository}</Repository>
-                    </TableItem>
-                    <TableItem width={150} style={{textAlign: 'right'}}>
-                      <NotificationTab>
-                        {n.score}
-                      </NotificationTab>
-                      <NotificationTab>
-                        <Icon.Check
-                          opacity={0.9}
-                          onClick={!isLoading ? (() => onStageThread(n.id)) : undefined}
-                        />
-                      </NotificationTab>
-                      <NotificationTab>
-                        <Icon.X
-                          opacity={0.9}
-                          onClick={!isLoading ? (() => onMarkAsRead(n.id)) : undefined}
-                        />
-                      </NotificationTab>
-                    </TableItem>
-                  </NotificationRow>
-                ))}
-              </tbody>
-            </Table>
-          )}
-        </Notifications>
-      </NotificationsContainer>
+              active={activeStatus === Status.QUEUED}
+              onClick={() => onSetActiveStatus(Status.QUEUED)}
+              href="#">
+              Queued
+            </NavTab>
+            <NavTab
+              color="#009ef8"
+              active={activeStatus === Status.STAGED}
+              onClick={() => onSetActiveStatus(Status.STAGED)}
+              href="#">
+              Staged
+            </NavTab>
+            <NavTab
+              color="#f12c3f"
+              active={activeStatus === Status.CLOSED}
+              onClick={() => onSetActiveStatus(Status.CLOSED)}
+              href="#">
+              Closed
+            </NavTab>
+          </GeneralOptionsContainer>
+          <NotificationsContainer>
+          <Notifications>
+            {isFetchingNotifications ? (
+              <LoaderContainer>
+                <LoadingIcon />
+              </LoaderContainer>
+            ) : notifications.length <= 0 ? (
+              <Message>
+                <p style={{
+                  fontSize: 16,
+                  fontWeight: 400,
+                }}>
+                  No {activeStatus.toLowerCase()} notifications</p>
+                <p style={{
+                  fontSize: 12,
+                  fontWeight: 400,
+                  color: '#5f6368'
+                }}>
+                  <span role="img" aria-label="hooray">🎉</span> You're all set here for the moment</p>
+              </Message>
+            ) : (
+              <Table>
+                <tbody>
+                  {notifications.map(n => (
+                    <NotificationRow key={n.id}>
+                      <TableItem>
+                        <div style={{ float: 'left', marginTop: 2 }}>
+                          {getPRIssueIcon(n.type, n.reasons)}
+                        </div>
+                      </TableItem>
+                      <TableItem style={{height: 36, cursor: 'pointer', userSelect: 'none'}} width={400} onClick={() => {
+                        window.open(n.url);
+                        onStageThread(n.id)
+                      }}>
+                        <NotificationTitle>
+                          <PRIssue after={n.number}>{n.name}</PRIssue>
+                        </NotificationTitle>
+                        <Timestamp>{getRelativeTime(n.updated_at)}</Timestamp>
+                      </TableItem>
+                      <TableItem width={100}>
+                        <InlineBlockContainer>
+                          {n.badges.map(badge => {
+                            switch (badge) {
+                              case Badges.HOT:
+                                // lots of `reasons` within short time frame
+                                return <Icon.Hot shrink={0.75} />
+                              case Badges.OLD:
+                                // old
+                                return <Icon.Alarm shrink={0.75} />
+                              case Badges.COMMENTS:
+                                // lots of `reasons`
+                                return <Icon.Convo shrink={0.75} />
+                              default:
+                                return null;
+                            }
+                          })}
+                        </InlineBlockContainer>
+                      </TableItem>
+                      <TableItem width={250}>
+                        <Repository
+                          onClick={() => window.open(n.repositoryUrl)}
+                          style={{cursor: 'pointer', userSelect: 'none'}}>
+                          {n.repository}</Repository>
+                      </TableItem>
+                      <TableItem width={150} style={{textAlign: 'right'}}>
+                        <NotificationTab>
+                          {n.score}
+                        </NotificationTab>
+                        <NotificationTab>
+                          <Icon.Check
+                            opacity={0.9}
+                            onClick={!isLoading ? (() => onStageThread(n.id, n.repository)) : undefined}
+                          />
+                        </NotificationTab>
+                        <NotificationTab>
+                          <Icon.X
+                            opacity={0.9}
+                            onClick={!isLoading ? (() => onMarkAsRead(n.id)) : undefined}
+                          />
+                        </NotificationTab>
+                      </TableItem>
+                    </NotificationRow>
+                  ))}
+                </tbody>
+              </Table>
+            )}
+          </Notifications>
+        </NotificationsContainer>
+        </div>
+      </div>
     </div>
   );
 }

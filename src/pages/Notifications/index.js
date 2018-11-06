@@ -88,7 +88,7 @@ function badgesOf (notification) {
   // If you've been tagged in for review and the most recent update happened over
   // 4 hours ago, that specific time is subject to change.
   if (notification.reasons.some(r => r.reason === Reasons.REVIEW_REQUESTED) &&
-      moment().diff(moment(notification.reasons.pop().time).hours, 'hours') > 4) {
+      moment().diff(moment(notification.reasons[notification.reasons.length - 1].time).hours, 'hours') > 4) {
     badges.push(Badges.OLD);
   }
   return badges;
@@ -169,6 +169,13 @@ class NotificationsPage extends React.Component {
     }, 500);
   }
 
+  enhancedOnStageThread = (thread_id, repository) => {
+    console.warn('staging thread', thread_id, 'in repo', repository);
+    this.props.storageApi.incrStat('stagedCount');
+    this.props.storageApi.incrStat(repository + '-stagedCount');
+    this.props.notificationsApi.stageThread(thread_id);
+  }
+
   render () {
     if (!this.props.authApi.token) {
       return <Redirect noThrow to={routes.LOGIN} />
@@ -176,7 +183,6 @@ class NotificationsPage extends React.Component {
 
     const {
       fetchNotifications,
-      stageThread,
       markAsRead,
       clearCache,
       notifications,
@@ -207,7 +213,6 @@ class NotificationsPage extends React.Component {
     }
 
     const filteredNotifications = notifications.filter(filterMethod);
-    const allNotificationsCount = filteredNotifications.length;
 
     const notificationsQueued = filteredNotifications.filter(n => n.status === Status.QUEUED);
     const notificationsStaged = filteredNotifications.filter(n => n.status === Status.STAGED);
@@ -246,12 +251,15 @@ class NotificationsPage extends React.Component {
       lastNumbered = 0;
     }
 
+    const stagedTodayCount = this.props.storageApi.getStat('stagedCount')[0];
+
     return (
       <Scene
+        stagedTodayCount={stagedTodayCount || 0}
         first={firstNumbered}
         last={lastNumbered}
         lastPage={lastPage}
-        allNotificationsCount={allNotificationsCount}
+        allNotificationsCount={scoredAndSortedNotifications.length}
         notifications={notificationsOnPage}
         query={this.state.query}
         page={this.state.currentPage}
@@ -265,7 +273,7 @@ class NotificationsPage extends React.Component {
         onFetchNotifications={fetchNotifications}
         onMarkAsRead={markAsRead}
         onClearCache={clearCache}
-        onStageThread={stageThread}
+        onStageThread={this.enhancedOnStageThread}
         onRefreshNotifications={this.props.storageApi.refreshNotifications}
         isSearching={this.state.isSearching}
         isFetchingNotifications={isFetchingNotifications}

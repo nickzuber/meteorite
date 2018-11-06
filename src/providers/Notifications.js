@@ -1,7 +1,6 @@
 import React from 'react';
 import {AuthConsumer} from './Auth';
 import {StorageProvider} from './Storage';
-import {MockNotifications} from '../utils/mocks';
 import {Status} from '../constants/status';
 
 const BASE_GITHUB_API_URL = 'https://api.github.com';
@@ -105,16 +104,6 @@ class NotificationsProvider extends React.Component {
           json
         };
       });
-  }
-
-  // @TODO remove this mock when ready
-  mockRequestPage = page => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => resolve({
-        headers: {},
-        json: MockNotifications
-      }), 1000)
-    });
   }
 
   requestFetchNotifications = (page = 1, optimizePolling = true) => {
