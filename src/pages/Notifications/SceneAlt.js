@@ -38,6 +38,9 @@ function getRelativeTime (time) {
 }
 
 const FixedContainer = styled('div')({
+  height: '80%',
+  maxWidth: 270,
+  display: 'block',
   position: 'fixed'
 });
 
@@ -167,10 +170,22 @@ const NavTab = styled('a')({
   ':hover': {
     background: 'rgba(190, 197, 208, 0.25)',
   },
-}, ({ active, color }) => active && ({
+}, ({ number }) => ({
+  ':after': number > 0 && {
+    content: `"${number}"`,
+    color: '#ffffff',
+    background: '#a8a8a9',
+    fontSize: '10px',
+    verticalAlign: 'text-top',
+    padding: '1px 8px',
+    borderRadius: '4px',
+    marginLeft: '6px',
+    display: 'inline-block',
+  }
+}), ({ active, color, number }) => active && ({
   color,
   opacity: 1,
-  ':after': {
+  ':before': {
     content: '""',
     position: 'absolute',
     background: color,
@@ -180,6 +195,17 @@ const NavTab = styled('a')({
     left: '5%',
     borderTopLeftRadius: '4px',
     borderTopRightRadius: '4px',
+  },
+  ':after': number > 0 && {
+    content: `"${number}"`,
+    color: '#ffffff',
+    background: color,
+    fontSize: '10px',
+    verticalAlign: 'text-top',
+    padding: '1px 8px',
+    borderRadius: '4px',
+    marginLeft: '6px',
+    display: 'inline-block',
   }
 }));
 
@@ -249,7 +275,7 @@ const SearchField = styled('div')({
 const Message = styled('div')({
   display: 'block',
   textAlign: 'center',
-  marginTop: 96,
+  marginTop: 24 * 5,
   'p': {
     paddingTop: 24,
     userSelect: 'none',
@@ -367,9 +393,21 @@ const TableItem = styled('td')({
   flex
 }));
 
+const SmallLink = styled('a')({
+  display: 'block',
+  marginRight: 10,
+  cursor: 'pointer',
+  fontSize: 12,
+  lineHeight: '20px',
+  fontWeight: 600,
+  textDecoration: 'none',
+  ':hover': {
+    textDecoration: 'underline'
+  }
+});
+
 function getPRIssueIcon (type, reasons) {
   const grow = 1.0;
-
   switch (type) {
     case 'PullRequest':
       return (
@@ -385,6 +423,9 @@ function getPRIssueIcon (type, reasons) {
 }
 
 export default function Scene ({
+  queuedCount,
+  stagedCount,
+  closedCount,
   first,
   last,
   lastPage,
@@ -415,12 +456,6 @@ export default function Scene ({
   const isLastPage = page === lastPage;
 
   console.warn('before render in scene', notifications)
-
-  if (query) {
-    notifications = notifications.filter(n => (
-      n.name.toLowerCase().indexOf(query.toLowerCase()) > -1)
-    )
-  }
 
   return (
     <div style={{marginTop: 60}}>
@@ -505,14 +540,14 @@ export default function Scene ({
                 }}>{moment().format('dddd, MMMM Do')}</span>
                 <span style={{
                   display: 'block',
-                  padding: '6px 0 12px',
+                  padding: '6px 0 8px',
                   fontSize: 12,
                   opacity: 0.5,
                 }}>You've triaged {stagedTodayCount} notifications today</span>
               </div>
               <SidebarLink
                 active={activeFilter === Filters.ALL}
-                color="#6772e5"
+                color="#00A0F5"
                 onClick={() => onSetActiveFilter(Filters.ALL)}>
                 {activeFilter === Filters.ALL ? (
                   <Icon.InboxWhite shrink={.6} />
@@ -535,7 +570,7 @@ export default function Scene ({
               </SidebarLink>
               <SidebarLink
                 active={activeFilter === Filters.COMMENT}
-                color="#00A0F5"
+                color="#f12c3f"
                 onClick={() => onSetActiveFilter(Filters.COMMENT)}>
                 {activeFilter === Filters.COMMENT ? (
                   <Icon.BookmarkAltWhite shrink={.6} />
@@ -544,6 +579,24 @@ export default function Scene ({
                 )}
                 commented
               </SidebarLink>
+              <div style={{
+                padding: 14,
+                margin: 21,
+                background: '#f5f5f5',
+                borderRadius: 4,
+                height: 100,
+                fontSize: 12
+              }}>
+                bar chart, statistics, etc
+              </div>
+              <div style={{
+                padding: 14,
+                margin: 21,
+              }}>
+                <SmallLink>Report bugs</SmallLink>
+                <SmallLink>Submit feedback</SmallLink>
+                <SmallLink>See source code</SmallLink>
+              </div>
             </FixedContainer>
           </Sidebar>
         </div>
@@ -560,14 +613,18 @@ export default function Scene ({
             <Tab disabled={isLoading}>
               <Icon.Trash
                 opacity={0.9}
-                onClick={!isLoading ? (() => onClearCache()) : undefined}
+                onClick={!isLoading ? (() => {
+                  const response = window.confirm('Are you sure you want to clear the cache?');
+                  if (response) {
+                    onClearCache();
+                  }
+                }) : undefined}
               />
             </Tab>
             {query ? (
               <React.Fragment>
                 <div style={{display: 'inline-block'}}  className="button-container-alt">
                   <a style={{
-                    marginRight: 15,
                     background: 'none',
                     color: '#202124',
                     textTransform: 'inherit',
@@ -619,24 +676,27 @@ export default function Scene ({
           </GeneralOptionsContainer>
           <GeneralOptionsContainer style={{paddingTop: 4}}>
             <NavTab
+              number={queuedCount}
               color="#00d19a"
               active={activeStatus === Status.QUEUED}
               onClick={() => onSetActiveStatus(Status.QUEUED)}
-              href="#">
+              href="javascript:void(0);">
               Queued
             </NavTab>
             <NavTab
+              number={stagedCount}
               color="#009ef8"
               active={activeStatus === Status.STAGED}
               onClick={() => onSetActiveStatus(Status.STAGED)}
-              href="#">
+              href="javascript:void(0);">
               Staged
             </NavTab>
             <NavTab
+              number={closedCount}
               color="#f12c3f"
               active={activeStatus === Status.CLOSED}
               onClick={() => onSetActiveStatus(Status.CLOSED)}
-              href="#">
+              href="javascript:void(0);">
               Closed
             </NavTab>
           </GeneralOptionsContainer>

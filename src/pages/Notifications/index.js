@@ -32,7 +32,7 @@ const PER_PAGE = 15;
  *  - REVIEW_REQUESTED  ->  20
  *  - SUBSCRIBED        ->  3
  *  - COMMENT           ->  3
- *  - AUTHOR            ->  6
+ *  - AUTHOR            ->  10
  *  - OTHER             ->  2
  *
  * There are some rules that go to giving out these scores, primarily being the
@@ -82,13 +82,14 @@ function badgesOf (notification) {
   // If there's a lot of activity going on within the thread in general.
   // The specific nunmber should be relative to average number of thread lengths.
   // We can track a running statistic as we see notifications update.
-  if (len > 8) {
+  if (len > 6) {
     badges.push(Badges.COMMENTS);
   }
   // If you've been tagged in for review and the most recent update happened over
   // 4 hours ago, that specific time is subject to change.
+  // @TODO i changed this to 1 for testing, that's def too early.
   if (notification.reasons.some(r => r.reason === Reasons.REVIEW_REQUESTED) &&
-      moment().diff(moment(notification.reasons[notification.reasons.length - 1].time).hours, 'hours') > 4) {
+      moment().diff(moment(notification.reasons[notification.reasons.length - 1].time).hours, 'hours') > 1) {
     badges.push(Badges.OLD);
   }
   return badges;
@@ -96,7 +97,7 @@ function badgesOf (notification) {
 
 const scoreOfReason = {
   [Reasons.ASSIGN]: 14,
-  [Reasons.AUTHOR]: 6,
+  [Reasons.AUTHOR]: 10,
   [Reasons.MENTION]: 8,
   [Reasons.OTHER]: 2,
   [Reasons.REVIEW_REQUESTED]: 20,
@@ -231,9 +232,17 @@ class NotificationsPage extends React.Component {
         notificationsToRender = notificationsQueued;
     }
 
-    const scoredAndSortedNotifications = notificationsToRender
+    let scoredAndSortedNotifications = notificationsToRender
       .map(decorateWithScore)
       .sort((a, b) => b.score - a.score);
+
+    // We gotta make sure to search notifications before we paginate.
+    // Otherwise we'd just end up searching on the current page, which is bad.
+    if (this.state.query) {
+      scoredAndSortedNotifications = scoredAndSortedNotifications.filter(n => (
+        n.name.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1)
+      )
+    }
 
     let firstIndex = (this.state.currentPage - 1) * PER_PAGE;
     let lastIndex = (this.state.currentPage * PER_PAGE);
@@ -255,6 +264,9 @@ class NotificationsPage extends React.Component {
 
     return (
       <Scene
+        queuedCount={notificationsQueued.length}
+        stagedCount={notificationsStaged.length}
+        closedCount={notificationsClosed.length}
         stagedTodayCount={stagedTodayCount || 0}
         first={firstNumbered}
         last={lastNumbered}
