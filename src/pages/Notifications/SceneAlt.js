@@ -69,9 +69,7 @@ const NavigationContainer = styled('div')({
   boxSizing: 'border-box',
   margin: '0 auto',
   width: '100%',
-  background: 'none',
   height: 60,
-  backgroundColor: '#24292e',
   color: 'hsla(0,0%,100%,.75)',
   paddingBottom: '12px',
   paddingTop: '12px',
@@ -397,12 +395,13 @@ const SmallLink = styled('a')({
   display: 'block',
   marginRight: 10,
   cursor: 'pointer',
-  fontSize: 12,
+  fontSize: 10,
   lineHeight: '20px',
-  fontWeight: 600,
-  textDecoration: 'none',
+  fontWeight: 400,
+  textDecoration: 'underline',
+  transition: 'all 0.12s ease-in-out',
   ':hover': {
-    textDecoration: 'underline'
+    opacity: 0.75
   }
 });
 
@@ -459,7 +458,7 @@ export default function Scene ({
 
   return (
     <div style={{marginTop: 60}}>
-      <NavigationContainer>
+      <NavigationContainer className="container-gradient">
         <div style={{
           textAlign: 'right',
           margin: '0 auto',

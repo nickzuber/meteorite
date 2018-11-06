@@ -34,6 +34,13 @@ for (let i = 0; i < mockNotifications.length; i++) {
 }
 
 class StorageProvider extends React.Component {
+  constructor (props) {
+    super(props);
+
+    this.originalTitle = document.title;
+    this.shouldUpdateTitle = false;
+  }
+
   state = {
     loading: false,
     error: null,
@@ -42,6 +49,16 @@ class StorageProvider extends React.Component {
 
   componentWillMount () {
     this.refreshNotifications();
+  }
+
+  componentDidMount () {
+    window.onfocus = () => this.setTitle(this.originalTitle);
+  }
+
+  setTitle = title => {
+    if (document.title.indexOf('(1)') === -1 && document.title !== title) {
+      document.title = title;
+    }
   }
 
   /**
@@ -55,6 +72,18 @@ class StorageProvider extends React.Component {
       }
       return acc;
     }, []);
+
+    // Document is out of focus, the we had notifications before this update,
+    // and there was a change in notifications in the most recent update.
+    if (!document.hasFocus() &&
+        this.state.notifications.length > 0 &&
+        notifications.length !== this.state.notifications.length
+    ) {
+      this.setTitle('(1) ' + this.originalTitle);
+    } else {
+      this.setTitle(this.originalTitle);
+    }
+
     this.setState({ notifications });
     // this.setState({ notifications: mockNotifications });
   }
