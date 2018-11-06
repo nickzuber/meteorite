@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment';
+import {VictoryPie, VictoryChart} from "victory";
 import {Link} from "@reach/router";
 import styled from 'react-emotion';
 import Icon from '../../components/Icon';
@@ -285,8 +286,8 @@ const EnhancedSearchInput = withOnEnter(SearchInput);
 
 const NotificationRow = styled('tr')({
   position: 'relative',
-  // cursor: 'pointer',
-  display: 'block',
+  display: 'flex',
+  alignItems: 'center',
   textAlign: 'left',
   width: '100%',
   borderRadius: 4,
@@ -350,10 +351,8 @@ const PRIssue = styled(Repository)({
 }));
 
 const Table = styled('table')({
-  width: '100%',
-  maxWidth: 970,
+  width: '96%',
   minWidth: 970,
-  display: 'block',
   'td': {
     display: 'inline-block'
   }
@@ -363,8 +362,9 @@ const TableItem = styled('td')({
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
-}, ({width}) => ({
-  width
+}, ({width, flex}) => ({
+  width,
+  flex
 }));
 
 function getPRIssueIcon (type, reasons) {
@@ -544,7 +544,6 @@ export default function Scene ({
                 )}
                 commented
               </SidebarLink>
-              {/* <p>3 triaged in robin-dashboard</p> */}
             </FixedContainer>
           </Sidebar>
         </div>
@@ -663,7 +662,10 @@ export default function Scene ({
               </Message>
             ) : (
               <Table>
-                <tbody>
+                <tbody style={{
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}>
                   {notifications.map(n => (
                     <NotificationRow key={n.id}>
                       <TableItem>
@@ -671,10 +673,14 @@ export default function Scene ({
                           {getPRIssueIcon(n.type, n.reasons)}
                         </div>
                       </TableItem>
-                      <TableItem style={{height: 36, cursor: 'pointer', userSelect: 'none'}} width={400} onClick={() => {
-                        window.open(n.url);
-                        onStageThread(n.id)
-                      }}>
+                      <TableItem
+                        style={{height: 36, cursor: 'pointer', userSelect: 'none'}}
+                        width={400}
+                        flex={.65}
+                        onClick={() => {
+                          window.open(n.url);
+                          onStageThread(n.id)
+                        }}>
                         <NotificationTitle>
                           <PRIssue after={n.number}>{n.name}</PRIssue>
                         </NotificationTitle>
@@ -699,7 +705,7 @@ export default function Scene ({
                           })}
                         </InlineBlockContainer>
                       </TableItem>
-                      <TableItem width={250}>
+                      <TableItem width={250} flex={.35}>
                         <Repository
                           onClick={() => window.open(n.repositoryUrl)}
                           style={{cursor: 'pointer', userSelect: 'none'}}>
