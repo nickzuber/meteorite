@@ -124,7 +124,7 @@ class NotificationsPage extends React.Component {
     this.syncer = setInterval(() => {
       console.warn('sync');
       this.props.notificationsApi.fetchNotificationsSync();
-    }, 15 * 1000);
+    }, 8 * 1000);
   }
 
   componentWillUnmount () {
