@@ -1,7 +1,7 @@
 import React from 'react';
 
 const CLIENT_ID = '9478c90e57ef3d546ef0';
-const REDIRECT_URI = 'http://localhost:9008/login';
+const REDIRECT_URI = 'https://meteorite.surge.sh/login';
 const SCOPES = 'notifications';
 
 const AuthenticationButton = props => (
