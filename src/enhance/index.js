@@ -53,7 +53,7 @@ class Tooltip extends React.Component {
     }, 500);
   }
 
-  onMouseLeave = () => {
+  removeTooltip = () => {
     clearTimeout(this.timeout);
     const tooltipElement = this.getTooltipElement();
     if (tooltipElement) {
@@ -64,16 +64,18 @@ class Tooltip extends React.Component {
   render () {
     return this.props.children({
       onMouseEnter: this.onMouseEnter,
-      onMouseLeave: this.onMouseLeave,
+      onMouseLeave: this.removeTooltip,
+      onMouseDown: this.removeTooltip,
     });
   }
 }
 
 export const withTooltip = WrappedComponent => ({tooltip, tooltipOffsetX, tooltipOffsetY, ...props}) => (
   <Tooltip
-      message={tooltip}
-      tooltipOffsetX={tooltipOffsetX}
-      tooltipOffsetY={tooltipOffsetY}>
+    message={tooltip}
+    tooltipOffsetX={tooltipOffsetX}
+    tooltipOffsetY={tooltipOffsetY}
+  >
     {mouseEvents => tooltip ? (
       <WrappedComponent {...props} {...mouseEvents} />
     ) : (
