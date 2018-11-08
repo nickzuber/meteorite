@@ -37,6 +37,19 @@ function getRelativeTime (time) {
   return 'Long time ago';
 }
 
+const UnofficialReleaseTag = styled('span')({
+  color: 'white',
+  position: 'absolute',
+  left: '21px',
+  bottom: '0px',
+  fontSize: '9px',
+  background: '#f42839',
+  fontWeight: '800',
+  padding: '2px 4px',
+  borderRadius: '4px',
+  textTransform: 'uppercase',
+});
+
 const FixedContainer = styled('div')({
   height: '80%',
   maxWidth: 270,
@@ -469,6 +482,7 @@ export default function Scene ({
     <div style={{marginTop: 60}}>
       <NavigationContainer className="container-gradient">
         <div style={{
+          position: 'relative',
           textAlign: 'right',
           margin: '0 auto',
           width: '92%'
@@ -485,6 +499,7 @@ export default function Scene ({
               onSetActiveFilter(Filters.PARTICIPATING);
             }}
           />
+          <UnofficialReleaseTag>beta</UnofficialReleaseTag>
           <SearchField>
             <Icon.Search size={48} opacity={.45} />
             <EnhancedSearchInput
@@ -602,7 +617,7 @@ export default function Scene ({
                 height: 100,
                 fontSize: 12
               }}>
-                bar chart, statistics, etc
+                bar chart, statistics, etc. will be here eventually
               </div>
               <div style={{
                 padding: 14,
@@ -825,18 +840,27 @@ export default function Scene ({
                           {n.repository}</Repository>
                       </TableItem>
                       <TableItem width={150} style={{textAlign: 'right'}}>
-                        <EnhancedNotificationTab>
+                        <EnhancedNotificationTab
+                          tooltip={!loading ? "Score representing this notification's importance" : null}
+                          tooltipOffsetX={-20}
+                        >
                           {n.score}
                         </EnhancedNotificationTab>
                         {activeStatus === Status.QUEUED ? (
-                          <EnhancedNotificationTab tooltip={!loading ? "Mark as read" : null}>
+                          <EnhancedNotificationTab
+                            tooltip={!loading ? "Mark as read" : null}
+                            tooltipOffsetX={-10}
+                          >
                             <Icon.Check
                               opacity={0.9}
                               onClick={!loading ? (() => onStageThread(n.id, n.repository)) : undefined}
                             />
                           </EnhancedNotificationTab>
                         ) : (
-                          <EnhancedNotificationTab tooltip={!loading ? "Revert back to unread" : null}>
+                          <EnhancedNotificationTab
+                            tooltip={!loading ? "Revert back to unread" : null}
+                            tooltipOffsetX={-10}
+                          >
                             <Icon.Undo
                               opacity={0.9}
                               onClick={!loading ? (() => onRestoreThread(n.id)) : undefined}

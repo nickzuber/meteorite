@@ -3,6 +3,7 @@ import { Link as RouterLink } from "@reach/router";
 import styled from 'react-emotion';
 import { routes } from '../../constants';
 import Curve from '../../components/Curve';
+import Icon from '../../components/Icon';
 import Logo from '../../components/Logo';
 import '../../styles/gradient.css';
 
@@ -23,6 +24,7 @@ const SubHeader = styled(Header)({
 });
 
 const LandingHeader = styled('div')({
+  position: 'relative',
   width: '100%',
   margin: '54px 20px',
   maxWidth: 1000,
@@ -56,12 +58,25 @@ const SmallText = styled('span')({
 });
 
 const BottomLinkContainer = styled(LandingHeader)({
-  maxWidth: 390,
+  maxWidth: 350,
   width: '100%',
   margin: '32px auto 0',
 });
 
 const LinkButton = styled('a')({});
+
+const UnofficialReleaseTag = styled('span')({
+  color: 'white',
+  position: 'absolute',
+  left: '44px',
+  bottom: '7px',
+  fontSize: '11px',
+  background: '#f42839',
+  fontWeight: '800',
+  padding: '2px 4px',
+  borderRadius: '4px',
+  textTransform: 'uppercase',
+});
 
 export default function Scene ({loggedIn, onLogout, ...props}) {
   return (
@@ -76,6 +91,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
     }}>
       <LandingHeader>
         <Logo size={75} />
+        <UnofficialReleaseTag>beta</UnofficialReleaseTag>
         {loggedIn ? (
           <div className="button-container">
             <RouterLink style={{marginRight: 15}} to={routes.NOTIFICATIONS}>notifications</RouterLink>
@@ -95,7 +111,16 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
         </div>
         <BottomLinkContainer>
           <SmallLink target="_blank" href="https://github.com/nickzuber/meteorite">View and contribute on GitHub</SmallLink>
-          <SmallText>Totally free and open sourced</SmallText>
+          <SmallText>
+            <Icon.PeopleWhite
+              shrink={0.55}
+              style={{
+                display: 'inline-block',
+                top: -3
+              }}
+            />
+            Free and open sourced
+          </SmallText>
         </BottomLinkContainer>
       </LandingMessage>
       <Curve />
