@@ -1,7 +1,7 @@
 import React from 'react';
 import curve from './curve.svg';
 
-export default function Curve ({ ...props }) {
+export default function Curve ({ style, ...props }) {
   return (
     <div style={{
       background: `url(${curve}) center bottom`,
@@ -12,7 +12,8 @@ export default function Curve ({ ...props }) {
       width: '190vw',
       paddingBottom: '4.5%',
       backgroundSize: 'cover',
-      marginBottom: '-1px'
+      marginBottom: '-1px',
+      ...style
     }} />
   );
 }

@@ -485,7 +485,12 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
           </ItemText>
         </Item>
       </Section>
-      <Section alt={true}>
+      <Section alt={true} style={{paddingTop: 140}}>
+        <Curve style={{
+          bottom: 'auto',
+          top: 0,
+          transform: 'translateX(-50%) rotate(180deg)'
+        }} />
         <Item style={{flex: '0 0 2.5%', padding: 0}} />
         <Item>
           <h2>Surface the most important tasks to tackle as they happen</h2>
