@@ -29,7 +29,7 @@ const PER_PAGE = 15;
  *
  *  - MENTION           ->  8
  *  - ASSIGN            ->  14
- *  - REVIEW_REQUESTED  ->  20
+ *  - REVIEW_REQUESTED  ->  30
  *  - SUBSCRIBED        ->  3
  *  - COMMENT           ->  3
  *  - AUTHOR            ->  10
@@ -97,13 +97,13 @@ function badgesOf (notification) {
 };
 
 const scoreOfReason = {
-  [Reasons.ASSIGN]: 14,
+  [Reasons.ASSIGN]: 18,
   [Reasons.AUTHOR]: 10,
-  [Reasons.MENTION]: 8,
+  [Reasons.MENTION]: 12,
   [Reasons.OTHER]: 2,
-  [Reasons.REVIEW_REQUESTED]: 20,
+  [Reasons.REVIEW_REQUESTED]: 30,
   [Reasons.SUBSCRIBED]: 3,
-  [Reasons.COMMENT]: 3,
+  [Reasons.COMMENT]: 6,
 };
 
 const decorateWithScore = notification => ({
