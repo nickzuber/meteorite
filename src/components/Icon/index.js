@@ -40,6 +40,9 @@ import unlocked from './svg/unlocked.svg';
 import undo from './svg/undo.svg';
 import user from './svg/user.svg';
 import x from './svg/x.svg';
+import zap from './svg/zap.svg';
+import ear from './svg/ear.svg';
+import ring from './svg/ring.svg';
 
 import issue_closed from './svg/github/issue-closed.svg';
 import issue_open from './svg/github/issue-open.svg';
@@ -107,6 +110,9 @@ Icon.Unlocked = createIcon(unlocked);
 Icon.Undo = createIcon(undo);
 Icon.User = createIcon(user);
 Icon.X = createIcon(x);
+Icon.Zap = createIcon(zap);
+Icon.Ear = createIcon(ear);
+Icon.Ring = createIcon(ring);
 
 Icon.IssueClosed = createIcon(issue_closed);
 Icon.IssueOpen = createIcon(issue_open);
