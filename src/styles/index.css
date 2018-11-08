@@ -77,3 +77,19 @@ p {
   -webkit-font-feature-settings: "calt" 1, "kern" 1, "liga" 1;
   font-feature-settings:         "calt" 1, "kern" 1, "liga" 1;
 }
+
+.react-tooltip {
+  z-index: 999999;
+  pointer-events: none;
+  position: absolute;
+  background: #242a31;
+  color: #fff;
+  padding: 4px 8px;
+  font-weight: 600;
+  font-size: 11px;
+  border-radius: 4px;
+  white-space: nowrap;
+  transform: translateX(-35%) translateY(-15px);
+  opacity: 0;
+  transition: all 100ms ease-in;
+}

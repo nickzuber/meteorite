@@ -171,35 +171,6 @@ class NotificationsProvider extends React.Component {
     });
   }
 
-  updateNotification = (n, prevReason = null) => {
-    let reasons = [];
-    const newReason = {
-      reason: n.reason,
-      time: n.updated_at
-    }
-
-    if (prevReason) {
-      reasons = prevReason.concat(newReason);
-      console.warn('MULTIPLE REASONS', reasons)
-    } else {
-      reasons = [newReason];
-    }
-
-    const value = {
-      id: n.id,
-      updated_at: n.updated_at,
-      status: Status.QUEUED,
-      reasons: reasons,
-      type: n.subject.type,
-      name: n.subject.title,
-      url: cleanResponseUrl(n.subject.url),
-      repository: n.repository.full_name,
-      number: n.subject.url.split('/').pop(),
-      repositoryUrl: cleanResponseUrl(n.repository.url)
-    };
-    this.props.setItemInStorage(n.id, value);
-  }
-
   requestMarkAsRead = thread_id => {
     const headers = {
       'Authorization': `token ${this.props.token}`,
@@ -270,11 +241,67 @@ class NotificationsProvider extends React.Component {
     });
   }
 
+  requestRestoreThread = thread_id => {
+    return new Promise((resolve, reject) => {
+      console.warn('restoring thread', thread_id);
+      const cached_n = this.props.getItemFromStorage(thread_id);
+      if (cached_n) {
+        const newValue = {
+          ...cached_n,
+          status: Status.QUEUED
+        };
+        this.props.setItemInStorage(thread_id, newValue);
+        this.props.refreshNotifications();
+        return resolve();
+      } else {
+        throw new Error(`Attempted to restore thread ${thread_id} that wasn't found in the cache.`);
+      }
+    });
+  }
+
   stageThread = thread_id => {
     this.setState({ loading: true });
     return this.requestStageThread(thread_id)
       .catch(error => this.setState({ error }))
       .finally(() => this.setState({ loading: false }));
+  }
+
+  restoreThread = thread_id => {
+    this.setState({ loading: true });
+    return this.requestRestoreThread(thread_id)
+      .catch(error => this.setState({ error }))
+      .finally(() => this.setState({ loading: false }));
+  }
+
+  updateNotification = (n, prevReason = null) => {
+    let reasons = [];
+    const newReason = {
+      reason: n.reason,
+      time: n.updated_at
+    }
+
+    if (prevReason) {
+      reasons = prevReason.concat(newReason);
+      console.warn('MULTIPLE REASONS', reasons)
+    } else {
+      reasons = [newReason];
+    }
+
+    // Notification model
+    const value = {
+      id: n.id,
+      isAuthor: reasons.some(r => r.reason === 'author'),
+      updated_at: n.updated_at,
+      status: Status.QUEUED,
+      reasons: reasons,
+      type: n.subject.type,
+      name: n.subject.title,
+      url: cleanResponseUrl(n.subject.url),
+      repository: n.repository.full_name,
+      number: n.subject.url.split('/').pop(),
+      repositoryUrl: cleanResponseUrl(n.repository.url)
+    };
+    this.props.setItemInStorage(n.id, value);
   }
 
   render () {
@@ -285,7 +312,8 @@ class NotificationsProvider extends React.Component {
       fetchNotificationsSync: this.requestFetchNotifications,
       markAsRead: this.markAsRead,
       clearCache: this.clearCache,
-      stageThread: this.stageThread
+      stageThread: this.stageThread,
+      restoreThread: this.restoreThread,
     });
   }
 }

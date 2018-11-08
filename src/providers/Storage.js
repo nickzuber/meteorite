@@ -73,16 +73,17 @@ class StorageProvider extends React.Component {
       return acc;
     }, []);
 
+    // @TODO fix this
     // Document is out of focus, the we had notifications before this update,
     // and there was a change in notifications in the most recent update.
-    if (!document.hasFocus() &&
-        this.state.notifications.length > 0 &&
-        notifications.length !== this.state.notifications.length
-    ) {
-      this.setTitle('(1) ' + this.originalTitle);
-    } else {
-      this.setTitle(this.originalTitle);
-    }
+    // if (!document.hasFocus() &&
+    //     this.state.notifications.length > 0 &&
+    //     notifications.length !== this.state.notifications.length
+    // ) {
+    //   this.setTitle('(1) ' + this.originalTitle);
+    // } else {
+    //   this.setTitle(this.originalTitle);
+    // }
 
     this.setState({ notifications });
     // this.setState({ notifications: mockNotifications });

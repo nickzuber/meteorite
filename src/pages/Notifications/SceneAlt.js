@@ -8,7 +8,7 @@ import Logo from '../../components/Logo';
 import LoadingIcon from '../../components/LoadingIcon';
 import {routes} from '../../constants';
 import {Filters} from '../../constants/filters';
-import {withOnEnter} from '../../enhance';
+import {withOnEnter, withTooltip} from '../../enhance';
 import {Status} from '../../constants/status';
 import {Badges} from '../../constants/reasons';
 import '../../styles/gradient.css';
@@ -405,6 +405,14 @@ const SmallLink = styled('a')({
   }
 });
 
+const EnhancedTab = withTooltip(Tab);
+const EnhancedNavTab = withTooltip(NavTab);
+const EnhancedNotificationTab = withTooltip(NotificationTab);
+const EnhancedSidebarLink = withTooltip(SidebarLink);
+const EnhancedIconHot = withTooltip(Icon.Hot);
+const EnhancedIconTimer = withTooltip(Icon.Timer);
+const EnhancedIconConvo = withTooltip(Icon.Convo);
+
 function getPRIssueIcon (type, reasons) {
   const grow = 1.0;
   switch (type) {
@@ -443,6 +451,7 @@ export default function Scene ({
   onFetchNotifications,
   onRefreshNotifications,
   onStageThread,
+  onRestoreThread,
   isSearching,
   isFetchingNotifications,
   onClearCache,
@@ -450,7 +459,7 @@ export default function Scene ({
   activeFilter,
   onSetActiveFilter,
 }) {
-  const isLoading = isSearching || isFetchingNotifications;
+  const loading = isSearching || isFetchingNotifications;
   const isFirstPage = page === 1;
   const isLastPage = page === lastPage;
 
@@ -479,12 +488,12 @@ export default function Scene ({
           <SearchField>
             <Icon.Search size={48} opacity={.45} />
             <EnhancedSearchInput
-              disabled={isLoading}
+              disabled={loading}
               type="text"
               placeholder="Search for notifications"
               onEnter={onSearch}
             />
-            {isSearching && <LoadingIcon alt={true} size={48} />}
+            {isSearching && <LoadingIcon white={true} size={48} />}
           </SearchField>
           <div style={{display: 'inline-block'}} className="button-container-alt">
             <Link style={{
@@ -544,6 +553,9 @@ export default function Scene ({
                   opacity: 0.5,
                 }}>You've triaged {stagedTodayCount} notifications today</span>
               </div>
+              {/*
+              We shouldn't show all the notificaitons. Pointless and creates more noise.
+
               <SidebarLink
                 active={activeFilter === Filters.ALL}
                 color="#00A0F5"
@@ -555,29 +567,33 @@ export default function Scene ({
                 )}
                 all notifications
               </SidebarLink>
-              <SidebarLink
+              */}
+              <EnhancedSidebarLink
+                tooltip="All the updates for issues and pull requests that are your responsibility to deal with"
+                tooltipOffsetX={130}
                 active={activeFilter === Filters.PARTICIPATING}
                 color="#00d19a"
                 onClick={() => onSetActiveFilter(Filters.PARTICIPATING)}>
                 {activeFilter === Filters.PARTICIPATING ? (
-                  <Icon.PeopleWhite shrink={.6} />
+                  <Icon.BoltWhite shrink={.6} />
                 ) : (
-                  <Icon.People shrink={.6} />
+                  <Icon.Bolt shrink={.6} />
                 )}
-                {/* participating */}
-                your triage
-              </SidebarLink>
-              <SidebarLink
+                your updates
+              </EnhancedSidebarLink>
+              <EnhancedSidebarLink
+                tooltip="Updates for issues and pull requests that you have commented on"
+                tooltipOffsetX={100}
                 active={activeFilter === Filters.COMMENT}
-                color="#f12c3f"
+                color="#00A0F5"
                 onClick={() => onSetActiveFilter(Filters.COMMENT)}>
                 {activeFilter === Filters.COMMENT ? (
-                  <Icon.BookmarkAltWhite shrink={.6} />
+                  <Icon.PeopleAltWhite shrink={.6} />
                 ) : (
-                  <Icon.BookmarkAlt shrink={.6} />
+                  <Icon.PeopleAlt shrink={.6} />
                 )}
-                commented
-              </SidebarLink>
+                participating
+              </EnhancedSidebarLink>
               <div style={{
                 padding: 14,
                 margin: 21,
@@ -592,9 +608,9 @@ export default function Scene ({
                 padding: 14,
                 margin: 21,
               }}>
-                <SmallLink>Report bugs</SmallLink>
-                <SmallLink>Submit feedback</SmallLink>
-                <SmallLink>See source code</SmallLink>
+                <SmallLink target="_blank" href="https://github.com/nickzuber/meteorite/issues">Report bugs</SmallLink>
+                <SmallLink target="_blank" href="https://github.com/nickzuber/meteorite/issues">Submit feedback</SmallLink>
+                <SmallLink target="_blank" href="https://github.com/nickzuber/meteorite">See source code</SmallLink>
               </div>
             </FixedContainer>
           </Sidebar>
@@ -603,23 +619,23 @@ export default function Scene ({
           flex: 1
         }}>
           <GeneralOptionsContainer>
-            <Tab disabled={isLoading}>
+            <EnhancedTab tooltip={!loading ? "Refresh your notifications" : null} disabled={loading}>
               <Icon.Refresh
                 opacity={0.9}
-                onClick={!isLoading ? (() => onFetchNotifications()) : undefined}
+                onClick={!loading ? (() => onFetchNotifications()) : undefined}
               />
-            </Tab>
-            <Tab disabled={isLoading}>
+            </EnhancedTab>
+            <EnhancedTab tooltip={!loading ? "Delete all of your notifications from the cache" : null} disabled={loading}>
               <Icon.Trash
                 opacity={0.9}
-                onClick={!isLoading ? (() => {
+                onClick={!loading ? (() => {
                   const response = window.confirm('Are you sure you want to clear the cache?');
                   if (response) {
                     onClearCache();
                   }
                 }) : undefined}
               />
-            </Tab>
+            </EnhancedTab>
             {query ? (
               <React.Fragment>
                 <div style={{display: 'inline-block'}}  className="button-container-alt">
@@ -636,12 +652,12 @@ export default function Scene ({
                     Showing results for '{query}'
                   </a>
                 </div>
-                <Tab disabled={isLoading}>
+                <EnhancedTab disabled={loading}>
                   <Icon.X
                     opacity={0.9}
-                    onClick={!isLoading ? (() => onClearQuery()) : undefined}
+                    onClick={!loading ? (() => onClearQuery()) : undefined}
                   />
-                </Tab>
+                </EnhancedTab>
               </React.Fragment>
             ) : null}
             <div style={{float: 'right'}}>
@@ -659,45 +675,51 @@ export default function Scene ({
                   {first}-{last} of about {allNotificationsCount}
                 </a>
               </div>
-              <Tab disabled={isLoading || isFirstPage}>
+              <EnhancedTab disabled={loading || isFirstPage}>
                 <Icon.Prev
                   opacity={0.9}
-                  onClick={!isLoading && !isFirstPage ? (() => onChangePage(page - 1)) : undefined}
+                  onClick={!loading && !isFirstPage ? (() => onChangePage(page - 1)) : undefined}
                 />
-              </Tab>
-              <Tab disabled={isLoading || isLastPage}>
+              </EnhancedTab>
+              <EnhancedTab disabled={loading || isLastPage}>
                 <Icon.Next
                   opacity={0.9}
-                  onClick={!isLoading && !isLastPage ? (() => onChangePage(page + 1)) : undefined}
+                  onClick={!loading && !isLastPage ? (() => onChangePage(page + 1)) : undefined}
                 />
-              </Tab>
+              </EnhancedTab>
             </div>
           </GeneralOptionsContainer>
           <GeneralOptionsContainer style={{paddingTop: 4}}>
-            <NavTab
+            <EnhancedNavTab
+              tooltip="New updates that you haven't dealt with yet"
+              tooltipOffsetX={55}
               number={queuedCount}
               color="#00d19a"
               active={activeStatus === Status.QUEUED}
               onClick={() => onSetActiveStatus(Status.QUEUED)}
               href="javascript:void(0);">
-              Queued
-            </NavTab>
-            <NavTab
+              Unread
+            </EnhancedNavTab>
+            <EnhancedNavTab
+              tooltip="Notifications that you've seen, clicked on, or otherwise have handled"
+              tooltipOffsetX={55}
               number={stagedCount}
               color="#009ef8"
               active={activeStatus === Status.STAGED}
               onClick={() => onSetActiveStatus(Status.STAGED)}
               href="javascript:void(0);">
-              Staged
-            </NavTab>
-            <NavTab
+              Read
+            </EnhancedNavTab>
+            <EnhancedNavTab
+              tooltip="Stale and old notifications that are considered closed out and finished"
+              tooltipOffsetX={55}
               number={closedCount}
               color="#f12c3f"
               active={activeStatus === Status.CLOSED}
               onClick={() => onSetActiveStatus(Status.CLOSED)}
               href="javascript:void(0);">
-              Closed
-            </NavTab>
+              Resolved
+            </EnhancedNavTab>
           </GeneralOptionsContainer>
           <NotificationsContainer>
           <Notifications>
@@ -738,12 +760,23 @@ export default function Scene ({
                         flex={.65}
                         onClick={() => {
                           window.open(n.url);
-                          onStageThread(n.id)
+                          onStageThread(n.id, n.repository)
                         }}>
                         <NotificationTitle>
                           <PRIssue after={n.number}>{n.name}</PRIssue>
                         </NotificationTitle>
-                        <Timestamp>{getRelativeTime(n.updated_at)}</Timestamp>
+                        <Timestamp>
+                          {getRelativeTime(n.updated_at)}
+                          {n.isAuthor && (
+                            <Icon.User
+                              shrink={0.5}
+                              style={{
+                                display: 'inline-block',
+                                top: -3
+                              }}
+                            />
+                          )}
+                        </Timestamp>
                       </TableItem>
                       <TableItem width={100}>
                         <InlineBlockContainer>
@@ -751,13 +784,34 @@ export default function Scene ({
                             switch (badge) {
                               case Badges.HOT:
                                 // lots of `reasons` within short time frame
-                                return <Icon.Hot shrink={0.75} />
+                                return (
+                                  <EnhancedIconHot
+                                    tooltip="Lots of recent activity"
+                                    tooltipOffsetX={-15}
+                                    tooltipOffsetY={-10}
+                                    shrink={0.75}
+                                  />
+                                );
                               case Badges.OLD:
                                 // old
-                                return <Icon.Alarm shrink={0.75} />
+                                return (
+                                  <EnhancedIconTimer
+                                    tooltip="Old pull request that needs your review"
+                                    tooltipOffsetX={-15}
+                                    tooltipOffsetY={-10}
+                                    shrink={0.75}
+                                  />
+                                );
                               case Badges.COMMENTS:
                                 // lots of `reasons`
-                                return <Icon.Convo shrink={0.75} />
+                                return (
+                                  <EnhancedIconConvo
+                                    tooltip="Very talkative thread"
+                                    tooltipOffsetX={-15}
+                                    tooltipOffsetY={-10}
+                                    shrink={0.75}
+                                  />
+                                );
                               default:
                                 return null;
                             }
@@ -771,21 +825,40 @@ export default function Scene ({
                           {n.repository}</Repository>
                       </TableItem>
                       <TableItem width={150} style={{textAlign: 'right'}}>
-                        <NotificationTab>
+                        <EnhancedNotificationTab>
                           {n.score}
-                        </NotificationTab>
-                        <NotificationTab>
-                          <Icon.Check
-                            opacity={0.9}
-                            onClick={!isLoading ? (() => onStageThread(n.id, n.repository)) : undefined}
-                          />
-                        </NotificationTab>
-                        <NotificationTab>
-                          <Icon.X
-                            opacity={0.9}
-                            onClick={!isLoading ? (() => onMarkAsRead(n.id)) : undefined}
-                          />
-                        </NotificationTab>
+                        </EnhancedNotificationTab>
+                        {activeStatus === Status.QUEUED ? (
+                          <EnhancedNotificationTab tooltip={!loading ? "Mark as read" : null}>
+                            <Icon.Check
+                              opacity={0.9}
+                              onClick={!loading ? (() => onStageThread(n.id, n.repository)) : undefined}
+                            />
+                          </EnhancedNotificationTab>
+                        ) : (
+                          <EnhancedNotificationTab tooltip={!loading ? "Revert back to unread" : null}>
+                            <Icon.Undo
+                              opacity={0.9}
+                              onClick={!loading ? (() => onRestoreThread(n.id)) : undefined}
+                            />
+                          </EnhancedNotificationTab>
+                        )}
+                        {activeStatus === Status.CLOSED ? (
+                          <EnhancedNotificationTab>
+                            <Icon.Help
+                              shrink={0.8}
+                              opacity={0.9}
+                              onClick={!loading ? (() => {}) : undefined}
+                            />
+                            </EnhancedNotificationTab>
+                          ) : (
+                          <EnhancedNotificationTab tooltip={!loading ? "Mark as resolved" : null}>
+                            <Icon.X
+                              opacity={0.9}
+                              onClick={!loading ? (() => onMarkAsRead(n.id)) : undefined}
+                            />
+                          </EnhancedNotificationTab>
+                        )}
                       </TableItem>
                     </NotificationRow>
                   ))}

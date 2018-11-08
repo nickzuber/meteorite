@@ -69,10 +69,12 @@ function scoreOf (notification) {
 function badgesOf (notification) {
   const badges = [];
   const len = notification.reasons.length;
+  const timeSinceLastUpdate = moment().diff(moment(notification.reasons[len - 1].time), 'minutes');
+
   // If there are more than 4 reasons, and the last 4 reasons have happened within
-  // an hour of each other.
+  // an hour of each other. The last update should be within the past 30 minutes.
   // The specific time frame and reasons count is subject to change.
-  if (len >= 4) {
+  if (len >= 4 && timeSinceLastUpdate < 30) {
     const oldestReference = moment(notification.reasons[len - 4].time);
     const newestReference = moment(notification.reasons[len - 1].time);
     if (newestReference.diff(oldestReference, 'hours') <= 1) {
@@ -87,9 +89,8 @@ function badgesOf (notification) {
   }
   // If you've been tagged in for review and the most recent update happened over
   // 4 hours ago, that specific time is subject to change.
-  // @TODO i changed this to 1 for testing, that's def too early.
   if (notification.reasons.some(r => r.reason === Reasons.REVIEW_REQUESTED) &&
-      moment().diff(moment(notification.reasons[notification.reasons.length - 1].time).hours, 'hours') > 1) {
+      timeSinceLastUpdate > 60 * 4) {
     badges.push(Badges.OLD);
   }
   return badges;
@@ -175,6 +176,11 @@ class NotificationsPage extends React.Component {
     this.props.storageApi.incrStat('stagedCount');
     this.props.storageApi.incrStat(repository + '-stagedCount');
     this.props.notificationsApi.stageThread(thread_id);
+  }
+
+  restoreThread = thread_id => {
+    console.warn('restoring thread');
+    this.props.notificationsApi.restoreThread(thread_id);
   }
 
   render () {
@@ -286,6 +292,7 @@ class NotificationsPage extends React.Component {
         onMarkAsRead={markAsRead}
         onClearCache={clearCache}
         onStageThread={this.enhancedOnStageThread}
+        onRestoreThread={this.restoreThread}
         onRefreshNotifications={this.props.storageApi.refreshNotifications}
         isSearching={this.state.isSearching}
         isFetchingNotifications={isFetchingNotifications}
