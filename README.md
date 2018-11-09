@@ -1,6 +1,10 @@
-# meteorite
+# <img width="650" src=".github/icon.png" /> meteorite
 
 > Smarter GitHub notifications.
+
+<div align="center">
+  <img width="650" src=".github/template.png" />
+</div>
 
 ## License
 

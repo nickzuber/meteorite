@@ -31,7 +31,7 @@ class Tooltip extends React.Component {
     }
 
     const {tooltipOffsetX, tooltipOffsetY} = this.props;
-    const {x, y, height} = event.target.getBoundingClientRect();
+    const {x, y} = event.target.getBoundingClientRect();
     const text = document.createTextNode(this.props.message);
     const tooltipElement = document.createElement('div');
 

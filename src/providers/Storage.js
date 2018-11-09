@@ -3,8 +3,8 @@ import moment from 'moment';
 import {Status} from '../constants/status';
 import {Reasons} from '../constants/reasons';
 
-const LOCAL_STORAGE_PREFIX = '__meteorite_noti_cache__';
-const LOCAL_STORAGE_STATISTIC_PREFIX = '__meteorite_statistic_cache__';
+export const LOCAL_STORAGE_PREFIX = '__meteorite_noti_cache__';
+export const LOCAL_STORAGE_STATISTIC_PREFIX = '__meteorite_statistic_cache__';
 
 const getMockReasons = n => {
   const reasons = Object.values(Reasons);

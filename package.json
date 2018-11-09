@@ -64,7 +64,7 @@
     "start": "node scripts/start.js",
     "build": "node scripts/build.js && cp build/index.html build/200.html",
     "test": "node scripts/test.js",
-    "deploy": "surge"
+    "deploy": "npm run build && surge ./build"
   },
   "eslintConfig": {
     "extends": "react-app"

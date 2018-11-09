@@ -11,7 +11,7 @@ import { routes } from '../../constants';
 import { Filters } from '../../constants/filters';
 import { Status } from '../../constants/status';
 import { Reasons, Badges } from '../../constants/reasons';
-import Scene from './SceneAlt';
+import Scene from './Scene';
 
 const PER_PAGE = 15;
 
@@ -53,7 +53,6 @@ function scoreOf (notification) {
   let prevReason = null;
   for (let i = 0; i < reasons.length; i++) {
     const reason = reasons[i].reason;
-    console.log(reason)
     if (prevReason && reason === prevReason) {
       const degradedScore = Math.ceil(scoreOfReason[reason] / 3);
       score += Math.max(degradedScore, 2);
@@ -122,8 +121,9 @@ class NotificationsPage extends React.Component {
   }
 
   componentDidMount () {
+    this.props.notificationsApi.fetchNotifications();
+
     this.syncer = setInterval(() => {
-      console.warn('sync');
       this.props.notificationsApi.fetchNotificationsSync();
     }, 8 * 1000);
   }
@@ -172,14 +172,12 @@ class NotificationsPage extends React.Component {
   }
 
   enhancedOnStageThread = (thread_id, repository) => {
-    console.warn('staging thread', thread_id, 'in repo', repository);
     this.props.storageApi.incrStat('stagedCount');
     this.props.storageApi.incrStat(repository + '-stagedCount');
     this.props.notificationsApi.stageThread(thread_id);
   }
 
   restoreThread = thread_id => {
-    console.warn('restoring thread');
     this.props.notificationsApi.restoreThread(thread_id);
   }
 
@@ -191,6 +189,7 @@ class NotificationsPage extends React.Component {
     const {
       fetchNotifications,
       markAsRead,
+      markAllAsStaged,
       clearCache,
       notifications,
       loading: isFetchingNotifications,
@@ -208,6 +207,16 @@ class NotificationsPage extends React.Component {
             reason === 'mention' ||
             reason === 'author'
           ))
+        );
+        break;
+      case Filters.ASSIGNED:
+        filterMethod = n => (
+          n.reasons.some(({ reason }) => reason === 'assign')
+        );
+        break;
+      case Filters.REVIEW_REQUESTED:
+        filterMethod = n => (
+          n.reasons.some(({ reason }) => reason === 'review_requested')
         );
         break;
       case Filters.COMMENT:
@@ -290,6 +299,7 @@ class NotificationsPage extends React.Component {
         onClearQuery={this.onClearQuery}
         onFetchNotifications={fetchNotifications}
         onMarkAsRead={markAsRead}
+        onMarkAllAsStaged={markAllAsStaged}
         onClearCache={clearCache}
         onStageThread={this.enhancedOnStageThread}
         onRestoreThread={this.restoreThread}

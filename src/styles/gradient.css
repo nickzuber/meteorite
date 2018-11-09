@@ -112,3 +112,12 @@
   50% {background-position: 60% 50%}
   100% {background-position: 0% 50%}
 }
+
+@media only screen and (max-width: 1400px) {
+  #section {
+    flex-direction: column !important;
+  }
+  #item-text {
+    width: 600px;
+  }
+}

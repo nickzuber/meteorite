@@ -1,6 +1,6 @@
 import React from 'react';
 import {AuthConsumer} from './Auth';
-import {StorageProvider} from './Storage';
+import {StorageProvider, LOCAL_STORAGE_PREFIX} from './Storage';
 import {Status} from '../constants/status';
 
 const BASE_GITHUB_API_URL = 'https://api.github.com';
@@ -121,7 +121,7 @@ class NotificationsProvider extends React.Component {
 
   fetchNotifications = (page = 1, optimizePolling = true) => {
     if (!this.props.token) {
-      console.error('Unauthenitcated, aborting request.')
+      console.error('Unauthenitcated, aborting request.');
       return false;
     }
 
@@ -133,7 +133,7 @@ class NotificationsProvider extends React.Component {
 
   processNotificationsChunk = (nextPage, notificationsChunk) => {
     return new Promise((resolve, reject) => {
-      console.log('chunk', notificationsChunk)
+      console.log('chunk', notificationsChunk);
       let everythingUpdated = true;
 
       if (notificationsChunk.length === 0) {
@@ -187,7 +187,6 @@ class NotificationsProvider extends React.Component {
           : Promise.reject();
       })
       .then(() => {
-        console.warn('removing', thread_id);
         this.props.removeItemFromStorage(thread_id);
         this.props.refreshNotifications();
         return Promise.resolve();
@@ -208,7 +207,6 @@ class NotificationsProvider extends React.Component {
 
   requestClearCache = () => {
     return new Promise((resolve, reject) => {
-      console.warn('clearing cache');
       this.props.clearStorageCache();
       this.props.refreshNotifications();
       this.last_modified = null;
@@ -225,7 +223,6 @@ class NotificationsProvider extends React.Component {
 
   requestStageThread = thread_id => {
     return new Promise((resolve, reject) => {
-      console.warn('staging thread', thread_id);
       const cached_n = this.props.getItemFromStorage(thread_id);
       if (cached_n) {
         const newValue = {
@@ -241,9 +238,28 @@ class NotificationsProvider extends React.Component {
     });
   }
 
+  requestStageAll = () => {
+    return new Promise((resolve, reject) => {
+      Object.keys(localStorage).forEach(nKey => {
+        // Only update the notification items in the cache.
+        // Don't get the statistics or anything else caught in there.
+        if (nKey.includes(LOCAL_STORAGE_PREFIX)) {
+          let cached_n = null;
+          cached_n = JSON.parse(window.localStorage.getItem(nKey));
+          const newValue = {
+            ...cached_n,
+            status: Status.STAGED
+          };
+          window.localStorage.setItem(nKey, JSON.stringify(newValue));
+        }
+      });
+      this.props.refreshNotifications();
+      return resolve();
+    });
+  }
+
   requestRestoreThread = thread_id => {
     return new Promise((resolve, reject) => {
-      console.warn('restoring thread', thread_id);
       const cached_n = this.props.getItemFromStorage(thread_id);
       if (cached_n) {
         const newValue = {
@@ -257,6 +273,13 @@ class NotificationsProvider extends React.Component {
         throw new Error(`Attempted to restore thread ${thread_id} that wasn't found in the cache.`);
       }
     });
+  }
+
+  markAllAsStaged = () => {
+    this.setState({ loading: true });
+    return this.requestStageAll()
+      .catch(error => this.setState({ error }))
+      .finally(() => this.setState({ loading: false }));
   }
 
   stageThread = thread_id => {
@@ -282,7 +305,6 @@ class NotificationsProvider extends React.Component {
 
     if (prevReason) {
       reasons = prevReason.concat(newReason);
-      console.warn('MULTIPLE REASONS', reasons)
     } else {
       reasons = [newReason];
     }
@@ -311,6 +333,7 @@ class NotificationsProvider extends React.Component {
       fetchNotifications: this.fetchNotifications,
       fetchNotificationsSync: this.requestFetchNotifications,
       markAsRead: this.markAsRead,
+      markAllAsStaged: this.markAllAsStaged,
       clearCache: this.clearCache,
       stageThread: this.stageThread,
       restoreThread: this.restoreThread,

@@ -7,7 +7,7 @@ import Icon from '../../components/Icon';
 import Logo from '../../components/Logo';
 import '../../styles/gradient.css';
 
-function createImagePlaceholder () {
+function createImagePlaceholder (highlight) {
   return (
     <ImagePlaceholder>
       {/* navigation backdrop */}
@@ -136,19 +136,21 @@ function createImagePlaceholder () {
       <div style={{
         position: 'absolute',
         background: '#fff',
-        top: 190,
-        left: -20,
-        right: -20,
+        top: highlight === 'badges' ? 190 : 170,
+        left: highlight === 'badges' ? -20 : 0,
+        right: highlight === 'badges' ? -20 : 0,
         height: 50,
         borderRadius: 4,
-        boxShadow: 'rgba(130, 126, 126, 0.27) 0px 3px 8px',
+        boxShadow: highlight === 'badges'
+          ? 'rgba(130, 126, 126, 0.27) 0px 3px 8px'
+          : '0 0 0',
       }}>
         <div style={{
           position: 'absolute',
           background: '#dee1e6',
           top: 15,
-          left: 30,
-          width: 200,
+          left: highlight === 'badges' ? 30 : 100,
+          width: highlight === 'badges' ? 160 : 120,
           height: 10,
           borderRadius: 50
         }} />
@@ -156,7 +158,7 @@ function createImagePlaceholder () {
           position: 'absolute',
           background: '#dee1e6',
           top: 30,
-          left: 30,
+          left: highlight === 'badges' ? 30 : 100,
           width: 50,
           height: 7,
           borderRadius: 50
@@ -164,20 +166,44 @@ function createImagePlaceholder () {
         <div style={{
           position: 'absolute',
           top: 12,
-          left: 300,
+          left: 315,
           width: 30,
           height: 30
         }}>
-          <Icon.Hot shrink={1.1} />
+          {highlight === 'badges' ? (
+            <Icon.Hot shrink={1.1} />
+          ) : (
+            <div
+              style={{
+                background: '#f42839',
+                height: 15,
+                width: 15,
+                marginTop: 5,
+                borderRadius: '100%'
+              }}
+            />
+          )}
         </div>
         <div style={{
           position: 'absolute',
-          top: 13,
-          left: 330,
+          top: 12,
+          left: 345,
           width: 30,
           height: 30
         }}>
-          <Icon.Convo shrink={1.1} />
+          {highlight === 'badges' ? (
+            <Icon.Convo shrink={1.1} />
+          ) : (
+            <div
+              style={{
+                background: '#009ef8',
+                height: 15,
+                width: 15,
+                marginTop: 5,
+                borderRadius: '100%'
+              }}
+            />
+          )}
         </div>
         <div style={{
           position: 'absolute',
@@ -211,19 +237,21 @@ function createImagePlaceholder () {
       <div style={{
         position: 'absolute',
         background: '#fff',
-        top: 280,
-        left: -20,
-        right: -20,
+        top: highlight === 'badges' ? 280 : 220,
+        left: highlight === 'badges' ? -20 : 0,
+        right: highlight === 'badges' ? -20 : 0,
         height: 50,
         borderRadius: 4,
-        boxShadow: 'rgba(130, 126, 126, 0.27) 0px 3px 8px',
+        boxShadow: highlight === 'badges'
+          ? 'rgba(130, 126, 126, 0.27) 0px 3px 8px'
+          : '0 0 0',
       }}>
         <div style={{
           position: 'absolute',
           background: '#dee1e6',
           top: 15,
-          left: 30,
-          width: 220,
+          left: highlight === 'badges' ? 30 : 100,
+          width: highlight === 'badges' ? 220 : 140,
           height: 10,
           borderRadius: 50
         }} />
@@ -231,7 +259,7 @@ function createImagePlaceholder () {
           position: 'absolute',
           background: '#dee1e6',
           top: 30,
-          left: 30,
+          left: highlight === 'badges' ? 30 : 100,
           width: 30,
           height: 7,
           borderRadius: 50
@@ -240,7 +268,7 @@ function createImagePlaceholder () {
           position: 'absolute',
           background: '#dee1e6',
           top: 30,
-          left: 64,
+          left: highlight === 'badges' ? 64 : 134,
           width: 7,
           height: 7,
           borderRadius: '100%'
@@ -248,11 +276,23 @@ function createImagePlaceholder () {
         <div style={{
           position: 'absolute',
           top: 12,
-          left: 315,
+          left: 330,
           width: 30,
           height: 30
         }}>
-          <Icon.Timer shrink={1.1} />
+          {highlight === 'badges' ? (
+            <Icon.Timer shrink={1.1} />
+          ) : (
+            <div
+              style={{
+                background: '#00d299',
+                height: 15,
+                width: 15,
+                marginTop: 5,
+                borderRadius: '100%'
+              }}
+            />
+          )}
         </div>
         <div style={{
           position: 'absolute',
@@ -293,8 +333,8 @@ const Section = styled('div')({
   display: 'flex',
   alignItems: 'center',
   flexDirection: 'row',
-  margin: '40px auto',
-  padding: '80px 0'
+  margin: '28px auto 0',
+  padding: '60px 0'
 }, ({alt}) => alt && ({
   background: '#24292e',
   'p': {
@@ -303,6 +343,9 @@ const Section = styled('div')({
   'h2': {
     color: '#fff'
   },
+  '@media (max-width: 1000px)': {
+    flexDirection: 'column'
+  }
 }));
 
 const Item = styled('div')({
@@ -311,9 +354,10 @@ const Item = styled('div')({
   padding: '24px 72px',
   'h2': {
     marginTop: 0,
-    fontSize: 36,
+    marginLeft: 15,
+    fontSize: 42,
     textAlign: 'left',
-    fontWeight: 700
+    fontWeight: 600
   },
   'p': {
     fontSize: 18
@@ -339,6 +383,7 @@ const ImagePlaceholder = styled('div')({
   position: 'relative',
   display: 'block',
   height: 400,
+  width: 600,
   background: '#fff',
   borderRadius: 8,
   boxShadow: '0 2px 8px rgba(179, 179, 179, 0.25)'
@@ -348,7 +393,7 @@ const ImagePlaceholder = styled('div')({
 const Header = styled('h1')({
   color: '#fff',
   padding: '0 20px',
-  margin: '0 auto 20px',
+  margin: '0 auto 48px',
   letterSpacing: '-1.0px'
 });
 
@@ -364,7 +409,7 @@ const SubHeader = styled(Header)({
 const LandingHeader = styled('div')({
   position: 'relative',
   width: '100%',
-  margin: '54px 20px',
+  margin: '54px 20px 78px',
   maxWidth: 1000,
   display: 'flex',
   justifyContent: 'space-between',
@@ -421,7 +466,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
     <div>
       <div className="container-gradient" style={{
         width: '100%',
-        height: 600,
+        minHeight: 600,
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
@@ -443,7 +488,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
           )}
         </LandingHeader>
         <LandingMessage>
-          <Header>Control your notifications</Header>
+          <Header>Control your GitHub notifications</Header>
           <SubHeader>Prioritize the tasks that keep you and your team most productive</SubHeader>
           <div className="button-container">
             <RouterLink to={routes.LOGIN}>let's get started</RouterLink>
@@ -465,50 +510,54 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
         </LandingMessage>
         <Curve />
       </div>
-      <Section>
+      <Section id="section">
+        <Item style={{flex: '0 0 2.5%', padding: 0}} />
         <Item>
-          {createImagePlaceholder()}
+          {createImagePlaceholder('badges')}
         </Item>
-        <Item>
-          <h2>Surface the most important tasks to tackle as they happen</h2>
+        <Item id="item-text">
+          <h2>Surface the things that matter the most.</h2>
           <ItemText>
             <Icon.Ring />
-            <p>The issues and pull requests that require your attention the most are called out for you.</p>
+            <p>The most important issues and pull requests that require your presence are called out and brought to your attention.</p>
           </ItemText>
           <ItemText>
             <Icon.Ear />
-            <p>We listen for updates with your notifications and let you know as soon as things change.</p>
+            <p>We listen for updates with your notifications and let you know <i>why</i> and <i>when</i> things change.</p>
           </ItemText>
           <ItemText>
             <Icon.Zap />
-            <p>Super charge your day by focusing on getting things done, rather than sifting through notifications.</p>
+            <p>Super charge your day by focusing on getting things done, rather than sifting through notifications or emails.</p>
           </ItemText>
         </Item>
+        <Item style={{flex: '0 0 2.5%', padding: 0}} />
       </Section>
-      <Section alt={true} style={{paddingTop: 140}}>
+      <Section id="section" alt={true} style={{paddingTop: 140, overflowX: 'hidden'}}>
         <Curve style={{
           bottom: 'auto',
+          marginBottom: 0,
+          marginTop: -1,
           top: 0,
           transform: 'translateX(-50%) rotate(180deg)'
         }} />
         <Item style={{flex: '0 0 2.5%', padding: 0}} />
-        <Item>
-          <h2>Surface the most important tasks to tackle as they happen</h2>
+        <Item id="item-text">
+          <h2>Your privacy matters, so<br />we keep things offline.</h2>
           <ItemText>
-            <Icon.PeopleWhite />
-            <p>The issues and pull requests that require your attention the most are called out for you.</p>
+            <Icon.CloudOffWhite />
+            <p>a</p>
           </ItemText>
           <ItemText>
-            <Icon.BoltWhite />
-            <p>We listen for updates with your notifications and let you know as soon as things change.</p>
+            <Icon.CloudOffWhite />
+            <p>a</p>
           </ItemText>
           <ItemText>
-            <Icon.BookmarkAltWhite />
-            <p>Super charge your day by focusing on getting things done, rather than sifting through notifications.</p>
+            <Icon.CloudOffWhite />
+            <p>a</p>
           </ItemText>
         </Item>
         <Item>
-          {createImagePlaceholder()}
+          {createImagePlaceholder('reason')}
         </Item>
         <Item style={{flex: '0 0 2.5%', padding: 0}} />
       </Section>
