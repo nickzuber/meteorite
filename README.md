@@ -1,4 +1,6 @@
-# <img width="650" src=".github/icon.png" /> meteorite
+<div align="center">
+  <img width="650" src=".github/logo.png" />
+</div>
 
 > Smarter GitHub notifications.
 
