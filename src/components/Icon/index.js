@@ -52,6 +52,8 @@ import cloudOff from './svg/cloudoff.svg';
 import tag from './svg/tag.svg';
 import tagWhite from './svg/tag-white.svg';
 import sync from './svg/sync.svg';
+import noPhone from './svg/nophone.svg';
+import noMusic from './svg/nomusic.svg';
 
 import issue_closed from './svg/github/issue-closed.svg';
 import issue_open from './svg/github/issue-open.svg';
@@ -131,6 +133,8 @@ Icon.CloudOffWhite = createIcon(cloudOff);
 Icon.Tag = createIcon(tag);
 Icon.TagWhite = createIcon(tagWhite);
 Icon.Sync = createIcon(sync);
+Icon.NoPhone = createIcon(noPhone);
+Icon.NoMusic = createIcon(noMusic);
 
 Icon.IssueClosed = createIcon(issue_closed);
 Icon.IssueOpen = createIcon(issue_open);

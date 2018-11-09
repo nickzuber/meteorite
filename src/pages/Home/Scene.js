@@ -542,18 +542,18 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
         }} />
         <Item style={{flex: '0 0 2.5%', padding: 0}} />
         <Item id="item-text">
-          <h2>Your privacy matters, so<br />we keep things offline.</h2>
+          <h2>Your time matters, so<br />we keep things simple.</h2>
           <ItemText>
             <Icon.CloudOffWhite />
-            <p>a</p>
+            <p>All of the information we use to make your notifications more useful is kept offline and kept on your own computer.</p>
           </ItemText>
           <ItemText>
-            <Icon.CloudOffWhite />
-            <p>a</p>
+            <Icon.NoPhone />
+            <p>Simply sign in and start working — no complicated or intrusive set up needed.</p>
           </ItemText>
           <ItemText>
-            <Icon.CloudOffWhite />
-            <p>a</p>
+            <Icon.NoMusic />
+            <p>No distractions — we only show you updates on things that matter to you.</p>
           </ItemText>
         </Item>
         <Item>
