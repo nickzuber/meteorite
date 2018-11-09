@@ -3,10 +3,11 @@
 </div>
 <br />
 
-:sparkles::seedling: Smarter GitHub notifications. Organize and rank your notifications based on importance and relevance.
-
 <div align="center">
   <img width="650" src=".github/template.png" />
+  :sparkles: **Smarter GitHub notifications** :seedling:
+  <br />
+  <p>Organize and rank your notifications based on importance and relevance.</p>
 </div>
 
 ## License
