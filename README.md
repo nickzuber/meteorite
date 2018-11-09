@@ -1,10 +1,6 @@
-<div align="center">
-  <img width="350" src=".github/logo.png" />
-  <br />
-  :sparkles: <b>Smarter GitHub notifications</b> :seedling:
-  <br />
-  <p>Organize and rank your notifications based on importance and relevance.</p>
-</div>
+<img width="350" src=".github/logo.png" />
+
+> Smarter GitHub notifications. Organize and rank your notifications based on importance and relevance.
 
 <div align="center">
   <img width="650" src=".github/template.png" />
