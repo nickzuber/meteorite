@@ -2,9 +2,7 @@
 
 > Smarter GitHub notifications. Organize and rank your notifications based on importance and relevance.
 
-<div align="center">
-  <img width="650" src=".github/template.png" />
-</div>
+<img width="650" src=".github/template.png" />
 
 ## License
 
