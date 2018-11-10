@@ -59,8 +59,12 @@ class NotificationsProvider extends React.Component {
   }
 
   state = {
+    syncing: false,
     loading: false,
-    error: null
+    error: null,
+    notificationsPermission:
+      this.props.getUserItem('notificationsPermission') ||
+      'default',
   }
 
   shouldComponentUpdate (nextProps, nextState) {
@@ -76,6 +80,16 @@ class NotificationsProvider extends React.Component {
     // Only update if our notifications prop changes.
     // All other props "changing" should NOT trigger a rerender.
     return this.props.notifications !== nextProps.notifications;
+  }
+
+  // The web notificaitons API doesn't let users revoke notifications permission
+  // after they already grant it, for a reason I can only assume that was pure evil.
+  // So, if a user wants to stop getting notifications we set that in their local
+  // storage, leaning towards it being revoked.
+  setNotificationsPermission = permission => {
+    this.setState({notificationsPermission: permission});
+    this.props.setUserItem('notificationsPermission', permission);
+    this.forceUpdate();
   }
 
   requestPage = (page = 1, optimizePolling = true) => {
@@ -107,16 +121,23 @@ class NotificationsProvider extends React.Component {
   }
 
   requestFetchNotifications = (page = 1, optimizePolling = true) => {
+    if (this.state.syncing) {
+      // Don't try to send off another request if we're already trying to get one.
+      return Promise.reject();
+    }
+
+    this.setState({syncing: true});
     return this.requestPage(page, optimizePolling)
       .then(({headers, json}) => {
-        if (json === null) return;
+        if (json === null) return [];
         let nextPage = null;
         const links = headers['link'];
         if (links && links.next && links.next.page) {
           nextPage = links.next.page;
         }
         return this.processNotificationsChunk(nextPage, json);
-      });
+      })
+      .finally(() => this.setState({syncing: false}));
   }
 
   fetchNotifications = (page = 1, optimizePolling = true) => {
@@ -125,9 +146,15 @@ class NotificationsProvider extends React.Component {
       return false;
     }
 
+    if (this.state.loading) {
+      // Don't try to fetch if we're already fetching
+      return Promise.reject();
+    }
+
     this.setState({ loading: true });
     return this.requestFetchNotifications(page, optimizePolling)
-      .catch(error => this.setState({ error }))
+      .then(() => this.setState({error: null}))
+      .catch(error =>this.setState({error}))
       .finally(() => this.setState({ loading: false }));
   }
 
@@ -199,9 +226,15 @@ class NotificationsProvider extends React.Component {
       return false;
     }
 
+    if (this.state.loading) {
+      // Don't try to fetch if we're already fetching
+      return Promise.reject();
+    }
+
     this.setState({ loading: true });
     return this.requestMarkAsRead(thread_id)
-      .catch(error => this.setState({ error }))
+      .then(() => this.setState({error: null}))
+      .catch(error => this.setState({error}))
       .finally(() => this.setState({ loading: false }));
   }
 
@@ -217,7 +250,8 @@ class NotificationsProvider extends React.Component {
   clearCache = () => {
     this.setState({ loading: true });
     return this.requestClearCache()
-      .catch(error => this.setState({ error }))
+      .then(() => this.setState({error: null}))
+      .catch(error => this.setState({error}))
       .finally(() => this.setState({ loading: false }));
   }
 
@@ -278,21 +312,24 @@ class NotificationsProvider extends React.Component {
   markAllAsStaged = () => {
     this.setState({ loading: true });
     return this.requestStageAll()
-      .catch(error => this.setState({ error }))
+      .then(() => this.setState({error: null}))
+      .catch(error => this.setState({error}))
       .finally(() => this.setState({ loading: false }));
   }
 
   stageThread = thread_id => {
     this.setState({ loading: true });
     return this.requestStageThread(thread_id)
-      .catch(error => this.setState({ error }))
+      .then(() => this.setState({error: null}))
+      .catch(error => this.setState({error}))
       .finally(() => this.setState({ loading: false }));
   }
 
   restoreThread = thread_id => {
     this.setState({ loading: true });
     return this.requestRestoreThread(thread_id)
-      .catch(error => this.setState({ error }))
+      .then(() => this.setState({error: null}))
+      .catch(error => this.setState({error}))
       .finally(() => this.setState({ loading: false }));
   }
 
@@ -337,6 +374,7 @@ class NotificationsProvider extends React.Component {
       clearCache: this.clearCache,
       stageThread: this.stageThread,
       restoreThread: this.restoreThread,
+      setNotificationsPermission: this.setNotificationsPermission,
     });
   }
 }
@@ -350,6 +388,8 @@ const withNotificationsProvider = WrappedComponent => props => (
           notifications,
           getItem,
           setItem,
+          getUserItem,
+          setUserItem,
           clearCache,
           removeItem
         }) => (
@@ -358,6 +398,8 @@ const withNotificationsProvider = WrappedComponent => props => (
             notifications={notifications}
             getItemFromStorage={getItem}
             setItemInStorage={setItem}
+            getUserItem={getUserItem}
+            setUserItem={setUserItem}
             clearStorageCache={clearCache}
             removeItemFromStorage={removeItem}
             token={token}

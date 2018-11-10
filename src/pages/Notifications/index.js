@@ -13,7 +13,7 @@ import { Status } from '../../constants/status';
 import { Reasons, Badges } from '../../constants/reasons';
 import Scene from './Scene';
 
-const PER_PAGE = 15;
+const PER_PAGE = 10;
 
 // @TODO Move these functions.
 
@@ -64,7 +64,6 @@ function scoreOf (notification) {
   return score;
 };
 
-// @TODO implement this
 function badgesOf (notification) {
   const badges = [];
   const len = notification.reasons.length;
@@ -96,13 +95,15 @@ function badgesOf (notification) {
 };
 
 const scoreOfReason = {
-  [Reasons.ASSIGN]: 18,
-  [Reasons.AUTHOR]: 10,
-  [Reasons.MENTION]: 12,
-  [Reasons.OTHER]: 2,
-  [Reasons.REVIEW_REQUESTED]: 30,
+  [Reasons.ASSIGN]: 21,
+  [Reasons.AUTHOR]: 11,
+  [Reasons.MENTION]: 17,
+  [Reasons.TEAM_MENTION]: 11,
+  [Reasons.OTHER]: 4,
+  [Reasons.REVIEW_REQUESTED]: 29,
   [Reasons.SUBSCRIBED]: 3,
   [Reasons.COMMENT]: 6,
+  [Reasons.STATE_CHANGE]: 5,
 };
 
 const decorateWithScore = notification => ({
@@ -113,6 +114,9 @@ const decorateWithScore = notification => ({
 
 class NotificationsPage extends React.Component {
   state = {
+    currentTime: moment(),
+    prevNotifications: [],
+    isFirstTimeUser: false,
     isSearching: false,
     query: null,
     activeFilter: Filters.PARTICIPATING,
@@ -121,15 +125,26 @@ class NotificationsPage extends React.Component {
   }
 
   componentDidMount () {
-    this.props.notificationsApi.fetchNotifications();
+    const isFirstTimeUser = !this.props.storageApi.getUserItem('hasOnboarded');
 
+    if (isFirstTimeUser) {
+      this.setState({isFirstTimeUser: true});
+      // this.props.storageApi.setUserItem('hasOnboarded', true);
+    }
+
+    this.props.notificationsApi.fetchNotifications();
     this.syncer = setInterval(() => {
       this.props.notificationsApi.fetchNotificationsSync();
+      this.setState({currentTime: moment()});
     }, 8 * 1000);
   }
 
   componentWillUnmount () {
     clearInterval(this.syncer);
+  }
+
+  diffForWebNotification (nextProps, nextState) {
+    this.sendWebNotification();
   }
 
   onChangePage = page => {
@@ -181,6 +196,16 @@ class NotificationsPage extends React.Component {
     this.props.notificationsApi.restoreThread(thread_id);
   }
 
+  setNotificationsPermission = (...args) => {
+    this.props.notificationsApi.setNotificationsPermission(...args);
+  }
+
+  sendWebNotification = () => {
+    var img = '../images/icon.png';
+    var text = 'HEY! Your task "null" is now overdue.';
+    var notification = new Notification('Meteorite', { body: text, icon: img });
+  }
+
   render () {
     if (!this.props.authApi.token) {
       return <Redirect noThrow to={routes.LOGIN} />
@@ -191,37 +216,40 @@ class NotificationsPage extends React.Component {
       markAsRead,
       markAllAsStaged,
       clearCache,
+      notificationsPermission,
       notifications,
       loading: isFetchingNotifications,
       error: fetchingNotificationsError,
     } = this.props.notificationsApi;
 
     // @TODO Move all this out of the render method.
+    // nick, do this ^ so you can fire off a web noti when the filtered/final
+    // notifications have a diff
     let filterMethod = () => true;
     switch (this.state.activeFilter) {
       case Filters.PARTICIPATING:
         filterMethod = n => (
           n.reasons.some(({ reason }) => (
-            reason === 'review_requested' ||
-            reason === 'assign' ||
-            reason === 'mention' ||
-            reason === 'author'
+            reason === Reasons.REVIEW_REQUESTED ||
+            reason === Reasons.ASSIGN ||
+            reason === Reasons.MENTION ||
+            reason === Reasons.AUTHOR
           ))
         );
         break;
       case Filters.ASSIGNED:
         filterMethod = n => (
-          n.reasons.some(({ reason }) => reason === 'assign')
+          n.reasons.some(({ reason }) => reason === Reasons.ASSIGN)
         );
         break;
       case Filters.REVIEW_REQUESTED:
         filterMethod = n => (
-          n.reasons.some(({ reason }) => reason === 'review_requested')
+          n.reasons.some(({ reason }) => reason === Reasons.REVIEW_REQUESTED)
         );
         break;
       case Filters.COMMENT:
         filterMethod = n => (
-          n.reasons.some(({ reason }) => reason === 'comment')
+          n.reasons.some(({ reason }) => reason === Reasons.COMMENT)
         );
         break;
       default:
@@ -279,6 +307,10 @@ class NotificationsPage extends React.Component {
 
     return (
       <Scene
+        currentTime={this.state.currentTime}
+        isFirstTimeUser={this.state.isFirstTimeUser}
+        setNotificationsPermission={this.setNotificationsPermission}
+        notificationsPermission={notificationsPermission}
         queuedCount={notificationsQueued.length}
         stagedCount={notificationsStaged.length}
         closedCount={notificationsClosed.length}

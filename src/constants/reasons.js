@@ -6,6 +6,8 @@ export const Reasons = {
   AUTHOR: 'author',
   OTHER: 'other',
   COMMENT: 'comment',
+  STATE_CHANGE: 'state_change',
+  TEAM_MENTION: 'team_mention'
 };
 
 export const Badges = {

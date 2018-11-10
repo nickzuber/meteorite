@@ -16,18 +16,29 @@ import '../../styles/gradient.css';
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable no-script-url */
 
-function getMessageFromReasons (reasons) {
+function stringOfType (type) {
+  switch (type) {
+    case 'PullRequest':
+      return 'pull request';
+    case 'Issue':
+      return 'issue';
+    default:
+      return 'task';
+  }
+}
+
+function getMessageFromReasons (reasons, type) {
   switch (reasons[reasons.length - 1].reason) {
     case Reasons.ASSIGN:
-      return 'You were just assigned a task';
+      return 'You were assigned this ' + stringOfType(type);
     case Reasons.AUTHOR:
-      return 'There was activity on a thread you created';
+      return 'There was activity on this thread you created';
     case Reasons.COMMENT:
-      return 'Somebody just left a comment';
+      return 'Somebody left a comment';
     case Reasons.MENTION:
-      return 'You were just @mentioned';
+      return 'You were @mentioned';
     case Reasons.REVIEW_REQUESTED:
-      return 'Your review was just requested';
+      return 'Your review was requested for this ' + stringOfType(type);
     case Reasons.SUBSCRIBED:
       return 'There was an update and you\'re subscribed';
     case Reasons.OTHER:
@@ -86,11 +97,9 @@ const InlineBlockContainer = styled('div')({
 
 const NotificationsContainer = styled('div')({
   position: 'relative',
-  background: '#fff',
   margin: '0 auto',
   padding: 0,
   width: '100%',
-  height: '100%',
   display: 'flex',
   flexDirection: 'row',
   overflowX: 'hidden',
@@ -117,7 +126,6 @@ const GeneralOptionsContainer = styled(NavigationContainer)({
   minHeight: 60,
   width: '95%',
   margin: 0,
-  background: '#fff',
   padding: '8px 16px',
   paddingTop: 18,
   flex: '0 0 50px',
@@ -350,7 +358,6 @@ const NotificationRow = styled('tr')({
   width: '100%',
   borderRadius: 4,
   margin: '0 auto',
-  background: '#fff',
   padding: '8px 16px',
   transition: 'all 0.1s ease-in-out',
   boxSizing: 'border-box',
@@ -468,6 +475,9 @@ function getPRIssueIcon (type, reasons) {
 }
 
 export default function Scene ({
+  currentTime,
+  isFirstTimeUser,
+  notificationsPermission,
   queuedCount,
   stagedCount,
   closedCount,
@@ -496,12 +506,23 @@ export default function Scene ({
   fetchingNotificationsError,
   activeFilter,
   onSetActiveFilter,
+  setNotificationsPermission
 }) {
   const loading = isSearching || isFetchingNotifications;
   const isFirstPage = page === 1;
   const isLastPage = page === lastPage;
 
+  const NotificationsIcon = notificationsPermission === 'granted'
+    ? Icon.NotificationsOn
+    : Icon.NotificationsOff;
+
   console.log('notifications', notifications)
+  console.log('isFirstTimeUser', isFirstTimeUser)
+  console.log('notificationsPermission', notificationsPermission)
+
+  if (isFirstTimeUser && notifications.length > 5) {
+    // alert('hello, clear ur shit');
+  }
 
   return (
     <div style={{marginTop: 60}}>
@@ -578,14 +599,14 @@ export default function Scene ({
                     marginRight: '5px',
                     top: '-3px',
                   }} />
-                  {moment().format('h:mma')}
+                  {currentTime.format('h:mma')}
                 </h3>
                 <span style={{
                   display: 'block',
                   padding: '6px 0px',
                   fontSize: 15,
                   opacity: 0.7,
-                }}>{moment().format('dddd, MMMM Do')}</span>
+                }}>{currentTime.format('dddd, MMMM Do')}</span>
                 <span style={{
                   display: 'block',
                   padding: '6px 0 8px',
@@ -697,6 +718,23 @@ export default function Scene ({
                   const response = window.confirm('Are you sure you want to clear the cache?');
                   if (response) {
                     onClearCache();
+                  }
+                }) : undefined}
+              />
+            </EnhancedTab>
+            <EnhancedTab tooltip={!loading ? "Toggle web notifications" : null} disabled={loading}>
+              <NotificationsIcon
+                opacity={0.9}
+                onClick={!loading ? (() => {
+                  switch(notificationsPermission) {
+                    case 'granted':
+                      return setNotificationsPermission('denied');
+                    case 'denied':
+                    case 'default':
+                    default:
+                      Notification.requestPermission().then(result => {
+                        return setNotificationsPermission(result);
+                      });
                   }
                 }) : undefined}
               />
@@ -856,7 +894,7 @@ export default function Scene ({
                             }}
                             shrink={.5}
                           />
-                          {getMessageFromReasons(n.reasons)}
+                          {getMessageFromReasons(n.reasons, n.type)}
                         </ReasonMessage>
                       </TableItem>
                       <TableItem width={100}>

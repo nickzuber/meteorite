@@ -1,37 +1,13 @@
 import React from 'react';
 import moment from 'moment';
 import {Status} from '../constants/status';
-import {Reasons} from '../constants/reasons';
+import {createMockNotifications} from '../utils/mocks';
+
+const mockNotifications = createMockNotifications(100);
 
 export const LOCAL_STORAGE_PREFIX = '__meteorite_noti_cache__';
+export const LOCAL_STORAGE_USER_PREFIX = '__meteorite_user_cache__';
 export const LOCAL_STORAGE_STATISTIC_PREFIX = '__meteorite_statistic_cache__';
-
-const getMockReasons = n => {
-  const reasons = Object.values(Reasons);
-  const len = reasons.length;
-  return new Array(n).fill(0).map(_ => ({
-    reason: reasons[Math.floor(Math.random() * len)],
-    time: moment().format()
-  }));
-};
-
-const getMockNotification = randomNumber => ({
-  id: randomNumber,
-  updated_at: moment().format(),
-  status: (randomNumber > 0.8 ? Status.STAGED : Status.QUEUED),
-  reasons: getMockReasons(Math.ceil(randomNumber * 10)),
-  type: ['Issue', 'PullRequest'][Math.floor(randomNumber * 2)],
-  name: 'Mock - Fake notification name',
-  url: 'https://github.com/test/repo/pull',
-  repository: 'test/mock',
-  number: Math.ceil(randomNumber * 1000),
-  repositoryUrl: 'https://github.com/test/repo',
-});
-
-const mockNotifications = new Array(1000);
-for (let i = 0; i < mockNotifications.length; i++) {
-  mockNotifications[i] = getMockNotification(Math.random());
-}
 
 class StorageProvider extends React.Component {
   constructor (props) {
@@ -142,8 +118,20 @@ class StorageProvider extends React.Component {
     try {
       return JSON.parse(window.localStorage.getItem(`${LOCAL_STORAGE_PREFIX}${id}`));
     } catch (e) {
-      return null;
+      return window.localStorage.getItem(`${LOCAL_STORAGE_PREFIX}${id}`);
     }
+  }
+
+  getUserItem = id => {
+    try {
+      return JSON.parse(window.localStorage.getItem(`${LOCAL_STORAGE_USER_PREFIX}${id}`));
+    } catch (e) {
+      return window.localStorage.getItem(`${LOCAL_STORAGE_USER_PREFIX}${id}`);
+    }
+  }
+
+  setUserItem = (id, value) => {
+    window.localStorage.setItem(`${LOCAL_STORAGE_USER_PREFIX}${id}`, JSON.stringify(value));
   }
 
   removeItem = id => {
@@ -169,6 +157,8 @@ class StorageProvider extends React.Component {
       ...this.state,
       setItem: this.setItem,
       getItem: this.getItem,
+      getUserItem: this.getUserItem,
+      setUserItem: this.setUserItem,
       removeItem: this.removeItem,
       clearCache: this.clearCache,
       refreshNotifications: this.refreshNotifications,
