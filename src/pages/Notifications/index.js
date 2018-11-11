@@ -14,6 +14,8 @@ import { Reasons, Badges } from '../../constants/reasons';
 import Scene, { getMessageFromReasons } from './Scene';
 import issueIcon from '../../images/issue-bg.png';
 import prIcon from '../../images/pr-bg.png';
+import tabIcon from '../../images/icon.png';
+import tabDotIcon from '../../images/iconDot.png';
 
 const PER_PAGE = 10;
 
@@ -119,6 +121,7 @@ class NotificationsPage extends React.Component {
     super(props);
 
     this.notificationSent = false;
+    this.isUnreadTab = false;
   }
 
   state = {
@@ -142,6 +145,13 @@ class NotificationsPage extends React.Component {
     }
 
     this.props.notificationsApi.fetchNotifications();
+
+    this.tabSyncer = setInterval(() => {
+      if (!document.hidden && this.isUnreadTab) {
+        this.updateTabIcon(false);
+      }
+    }, 2000);
+
     this.syncer = setInterval(() => {
       this.props.notificationsApi.fetchNotificationsSync()
         .catch(error => this.setState({error}));
@@ -160,10 +170,7 @@ class NotificationsPage extends React.Component {
 
   componentWillUnmount () {
     clearInterval(this.syncer);
-  }
-
-  diffForWebNotification (nextProps, nextState) {
-    this.sendWebNotification();
+    clearInterval(this.tabSyncer);
   }
 
   onChangePage = page => {
@@ -225,13 +232,27 @@ class NotificationsPage extends React.Component {
     this.props.notificationsApi.setNotificationsPermission(...args);
   }
 
+  updateTabIcon (hasUnread = true) {
+    this.isUnreadTab = hasUnread;
+    var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+    link.rel = 'shortcut icon';
+    link.href = hasUnread ? tabDotIcon : tabIcon;
+    document.getElementsByTagName('head')[0].appendChild(link);
+  }
+
   sendWebNotification = newNotifcations => {
     if (this.notificationSent || newNotifcations.length === 0) {
       return;
     }
 
+    // Only show these notifications and title change if the tab is out of focus.
+    if (!document.hidden) {
+      return;
+    }
+
     // Set this even if we don't actually send the notification due to permissions.
     this.notificationSent = true;
+    this.updateTabIcon();
 
     // No permission, no notification.
     if (this.props.notificationsApi.notificationsPermission !== 'granted') {
@@ -331,8 +352,6 @@ class NotificationsPage extends React.Component {
       // this will be whatever we get in the syncing/fetching response
       this.sendWebNotification(this.props.notificationsApi.newChanges);
     }
-
-    console.warn(this.props.notificationsApi);
 
     return {
       notifications: scoredAndSortedNotifications,
