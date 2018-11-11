@@ -331,12 +331,23 @@ function createImagePlaceholder (highlight) {
   );
 }
 
+const Arrow = ({style}) => {
+  return (
+    <svg style={style} xmlns="http://www.w3.org/2000/svg" width="55" height="223" viewBox="0 0 55 223">
+      <g fill="none" fill-rule="evenodd" stroke="rgb(0, 158, 248)" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" transform="translate(1 -2)">
+        <path stroke-dasharray="20 12 40" d="M51,8 C17,19.5689347 1.37247841e-11,46.42498 -5.70089572e-12,88.5681361 C-2.5121299e-11,130.711292 -2.32151849e-11,175.855247 1.74465369e-14,224"></path>
+        <polyline points="41.584 12.035 48.584 4.035 55.584 12.035" transform="rotate(65 48.584 8.035)"></polyline>
+      </g>
+    </svg>
+  );
+}
+
 const NotificationsRowExample = styled('div')({
   position: 'relative',
   height: 59,
   width: 745,
   borderRadius: 8,
-  margin: '58px auto 24px',
+  margin: '158px auto 124px',
   background: `url(${rowExample}) center center no-repeat`,
   backgroundSize: 'cover',
   backgroundColor: '#fff',
@@ -721,7 +732,56 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
           </Item>
           <Item style={{flex: '0 0 2.5%', padding: 0}} />
         </WidthContainer>
-        <NotificationsRowExample />
+        <NotificationsRowExample>
+          <div style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            marginTop: -85,
+            marginLeft: 20,
+            display: 'block',
+          }}>
+            <Arrow style={{
+              position: 'absolute',
+              transform: 'rotate(90deg)',
+              marginTop: '-65px',
+              marginLeft: '480px',
+              left: 0,
+              top: 0,
+            }} />
+            <SmallText className="hover" style={{
+              fontWeight: 600,
+              borderRadius: 4,
+              padding: '12px 24px',
+              background: 'rgb(0, 158, 248)',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.51)',
+            }}>Calculated score based on this issue's importance to you</SmallText>
+          </div>
+          <div style={{
+            position: 'absolute',
+            right: 0,
+            bottom: 0,
+            marginBottom: -80,
+            marginRight: 20,
+            display: 'block',
+          }}>
+            <Arrow style={{
+              position: 'absolute',
+              transform: 'rotate(270deg)',
+              marginBottom: '-70px',
+              marginLeft: '-160px',
+              left: 0,
+              bottom: 0,
+            }} />
+            <SmallText className="hover" style={{
+              fontWeight: 600,
+              borderRadius: 4,
+              padding: '12px 24px',
+              background: 'rgb(0, 158, 248)',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.51)',
+            }}>The reason you just got this notification</SmallText>
+          </div>
+        </NotificationsRowExample>
         <div className="button-container" style={{marginTop: 100 - 24}}>
           <RouterLink to={routes.LOGIN}>sign in and try it out</RouterLink>
         </div>
@@ -753,6 +813,10 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
               </a>
               <br />
               Home page inspiration from
+              <a target="_blank" href="https://robinpowered.com/">
+                Robin
+              </a>
+              and
               <a target="_blank" href="https://getkap.co/">
                 Kap
               </a>
@@ -768,8 +832,8 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
           </Item>
           <Item style={{textAlign: 'right'}} className="footer-links">
             <SmallLink target="_blank" href="https://github.com/nickzuber/meteorite/" style={{marginLeft: 28}}>Source code</SmallLink>
-            <SmallLink target="_blank" href="https://github.com/nickzuber/meteorite/issues" style={{marginLeft: 28}}>Bug reports</SmallLink>
             <SmallLink target="_blank" href="https://github.com/nickzuber/meteorite/issues" style={{marginLeft: 28}}>Submit feedback</SmallLink>
+            <SmallLink target="_blank" href="https://github.com/nickzuber/meteorite/issues" style={{marginLeft: 28}}>Bug reports</SmallLink>
             <SmallText style={{marginLeft: 28, opacity: .25}}>v{version}</SmallText>
           </Item>
           <Item style={{flex: '0 0 2.5%', padding: 0}} />

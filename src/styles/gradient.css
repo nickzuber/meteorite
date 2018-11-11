@@ -109,6 +109,26 @@
   background: rgba(190, 197, 208, 0.5)
 }
 
+.hover {
+  display: block;
+  animation: hover 5s ease-in-out infinite;
+}
+
+@-webkit-keyframes hover {
+  0% {transform: translateY(3px)}
+  50% {transform: translateY(-3px)}
+  100% {transform: translateY(3px)}
+}
+@-moz-keyframes hover {
+  0% {transform: translateY(3px)}
+  50% {transform: translateY(-3px)}
+  100% {transform: translateY(3px)}
+}
+@keyframes hover {
+  0% {transform: translateY(3px)}
+  50% {transform: translateY(-3px)}
+  100% {transform: translateY(3px)}
+}
 
 @-webkit-keyframes gradientTransition {
   0% {background-position: 0% 50%}
