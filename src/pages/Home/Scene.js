@@ -8,7 +8,8 @@ import Logo from '../../components/Logo';
 import screenshot from '../../images/screenshot.png';
 import '../../styles/gradient.css';
 
-const version = require('../../../package.json').version;
+const hash = process.env.GIT_HASH ? `#${process.env.GIT_HASH}` : '';
+const version = require('../../../package.json').version + hash;
 
 function createImagePlaceholder (highlight) {
   return (
@@ -749,9 +750,9 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
             </SmallText>
           </Item>
           <Item style={{textAlign: 'right'}} className="footer-links">
-            <SmallLink style={{marginLeft: 28}}>Source code</SmallLink>
-            <SmallLink style={{marginLeft: 28}}>Bug reports</SmallLink>
-            <SmallLink style={{marginLeft: 28}}>Submit feedback</SmallLink>
+            <SmallLink target="_blank" href="https://github.com/nickzuber/meteorite/" style={{marginLeft: 28}}>Source code</SmallLink>
+            <SmallLink target="_blank" href="https://github.com/nickzuber/meteorite/issues" style={{marginLeft: 28}}>Bug reports</SmallLink>
+            <SmallLink target="_blank" href="https://github.com/nickzuber/meteorite/issues" style={{marginLeft: 28}}>Submit feedback</SmallLink>
             <SmallText style={{marginLeft: 28, opacity: .25}}>v{version}</SmallText>
           </Item>
           <Item style={{flex: '0 0 2.5%', padding: 0}} />
