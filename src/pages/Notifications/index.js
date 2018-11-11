@@ -209,6 +209,12 @@ class NotificationsPage extends React.Component {
     this.props.notificationsApi.stageThread(thread_id);
   }
 
+  enhancedOnMarkAsRead = (thread_id, repository) => {
+    this.props.storageApi.incrStat('stagedCount');
+    this.props.storageApi.incrStat(repository + '-stagedCount');
+    this.props.notificationsApi.markAsRead(thread_id);
+  }
+
   restoreThread = thread_id => {
     this.props.notificationsApi.restoreThread(thread_id);
   }
@@ -342,7 +348,6 @@ class NotificationsPage extends React.Component {
 
     const {
       fetchNotifications,
-      markAsRead,
       markAllAsStaged,
       clearCache,
       notificationsPermission,
@@ -399,7 +404,7 @@ class NotificationsPage extends React.Component {
         onSearch={this.onSearch}
         onClearQuery={this.onClearQuery}
         onFetchNotifications={fetchNotifications}
-        onMarkAsRead={markAsRead}
+        onMarkAsRead={this.enhancedOnMarkAsRead}
         onMarkAllAsStaged={markAllAsStaged}
         onClearCache={clearCache}
         onStageThread={this.enhancedOnStageThread}

@@ -8,6 +8,8 @@ import Logo from '../../components/Logo';
 import screenshot from '../../images/screenshot.png';
 import '../../styles/gradient.css';
 
+const version = require('../../../package.json').version;
+
 function createImagePlaceholder (highlight) {
   return (
     <ImagePlaceholder>
@@ -347,14 +349,16 @@ const ImageContainer = styled('div')({
 
 const WidthContainer = styled('div')({
   margin: '0 auto',
+  width: '100%',
   maxWidth: 1500,
   display: 'flex',
   alignItems: 'center',
   flexDirection: 'row',
+}, ({override = false}) => ({
   '@media (max-width: 1400px)': {
-    flexDirection: 'column'
+    flexDirection: override ? 'row' : 'column'
   }
-});
+}));
 
 const Section = styled('div')({
   position: 'relative',
@@ -399,6 +403,7 @@ const Item = styled('div')({
 }));
 const ItemText = styled('div')({
   display: 'flex',
+  minWidth: 200,
   flexDirection: 'row',
   margin: '20px 0',
   'p': {
@@ -471,7 +476,9 @@ const LandingMessage = styled(LandingHeader)({
 });
 
 const SmallLink = styled('a')({
+  cursor: 'pointer',
   fontSize: '12px',
+  lineHeight: '18px',
   fontWeight: '700',
   color: '#ffffff',
   textDecoration: 'none',
@@ -483,7 +490,17 @@ const SmallLink = styled('a')({
 const SmallText = styled('span')({
   fontSize: '12px',
   fontWeight: '500',
-  color: '#ffffff',
+  color: '#fff',
+  'a': {
+    color: 'rgba(255, 255, 255, .9)',
+    fontWeight: 600,
+    margin: '0 3px',
+    textDecoration: 'none'
+  },
+  'a:hover': {
+    color: 'rgba(255, 255, 255, 1)',
+    textDecoration: 'underline'
+  }
 });
 
 const BottomLinkContainer = styled(LandingHeader)({
@@ -654,39 +671,90 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
           <Item style={{flex: '0 0 2.5%', padding: 0}} />
         </WidthContainer>
       </Section>
-      <Section id="learnMore" className="section" alt={true} style={{marginTop: 0}}>
+      <Section id="learnMore" className="section" alt={true} style={{marginTop: 0, paddingBottom: 100}}>
         <h2 style={{textAlign: 'center', maxWidth: 900, color: '#fff'}}>
-          Meteorite is the assistant for your <br />GitHub notifications.
+          Meteorite is an assistant for your <br />GitHub notifications.
         </h2>
         <WidthContainer>
+          <Item style={{flex: '0 0 2.5%', padding: 0}} />
           <Item className="item-text">
             <ItemText>
-              <Icon.CloudOffWhite />
-              <p>All of the information we use to make your notifications more useful is kept offline and kept on your own computer.</p>
+              <Icon.NotificationsOn style={{filter: 'invert(1)'}} />
+              <p>web notifications</p>
             </ItemText>
             <ItemText>
-              <Icon.NoPhone />
-              <p>Simply sign in and start working — no complicated or intrusive set up needed.</p>
+              <Icon.Sync style={{filter: 'invert(1)'}} />
+              <p>tells you why you got the notification</p>
             </ItemText>
             <ItemText>
-              <Icon.NoMusic />
-              <p>No distractions — we only show you updates on things that matter to you.</p>
+              <Icon.Rank style={{filter: 'invert(1)'}} />
+              <p>sorts by importance</p>
             </ItemText>
           </Item>
           <Item className="item-text">
             <ItemText>
-              <Icon.CloudOffWhite />
-              <p>All of the information we use to make your notifications more useful is kept offline and kept on your own computer.</p>
+              <Icon.Shield style={{filter: 'invert(1)'}} />
+              <p>Protects you from the notifications you don't care about.</p>
             </ItemText>
             <ItemText>
-              <Icon.NoPhone />
-              <p>Simply sign in and start working — no complicated or intrusive set up needed.</p>
+              <Icon.Headphones style={{filter: 'invert(1)'}} />
+              <p>gives you the option to focus on specific things like review requested, assigned, etc</p>
             </ItemText>
             <ItemText>
-              <Icon.NoMusic />
-              <p>No distractions — we only show you updates on things that matter to you.</p>
+              <Icon.Bubbles style={{filter: 'invert(1)'}} />
+              <p>get stats on how many notifications you triage each day</p>
             </ItemText>
           </Item>
+          <Item style={{flex: '0 0 2.5%', padding: 0}} />
+        </WidthContainer>
+      </Section>
+      <Section alt={true} style={{
+        marginTop: 0,
+        minHeight: 100,
+        justifyContent: 'center',
+        paddingBottom: 28,
+        paddingTop: 28,
+        background: '#212629',
+      }}>
+        <WidthContainer override={true} style={{alignItems: 'flex-end'}}>
+          <Item style={{flex: '0 0 2.5%', padding: 0}} />
+          <Item style={{
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            marginLeft: 20
+          }}>
+            <Logo size={50} style={{marginBottom: 18}} />
+            <SmallText style={{color: 'rgba(255, 255, 255, .75)'}}>
+              Created by
+              <a target="_blank" href="https://nickzuber.com/">
+                Nick Zuber
+              </a>
+              and
+              <a target="_blank" href="https://github.com/nickzuber/meteorite/graphs/contributors/">
+                contributors
+              </a>
+              <br />
+              Home page inspiration from
+              <a target="_blank" href="https://getkap.io/">
+                Kap
+              </a>
+              <br />
+              <a target="_blank" href="https://github.com/nickzuber/meteorite/" style={{marginLeft: 0}}>
+                Source
+              </a>
+              available under
+              <a target="_blank" href="https://github.com/nickzuber/meteorite/blob/master/LICENSE/">
+                MIT
+              </a>
+            </SmallText>
+          </Item>
+          <Item style={{textAlign: 'right'}} className="footer-links">
+            <SmallLink style={{marginLeft: 28}}>Source code</SmallLink>
+            <SmallLink style={{marginLeft: 28}}>Bug reports</SmallLink>
+            <SmallLink style={{marginLeft: 28}}>Submit feedback</SmallLink>
+            <SmallText style={{marginLeft: 28, opacity: .25}}>v{version}</SmallText>
+          </Item>
+          <Item style={{flex: '0 0 2.5%', padding: 0}} />
         </WidthContainer>
       </Section>
     </div>

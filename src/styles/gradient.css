@@ -133,4 +133,7 @@
   .item-text {
     width: 600px;
   }
+  .footer-links a {
+    display: block;
+  }
 }

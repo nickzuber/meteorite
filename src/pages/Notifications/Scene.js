@@ -992,7 +992,7 @@ export default function Scene ({
                           <EnhancedNotificationTab tooltip={!loading ? "Mark as resolved" : null}>
                             <Icon.X
                               opacity={0.9}
-                              onClick={!loading ? (() => onMarkAsRead(n.id)) : undefined}
+                              onClick={!loading ? (() => onMarkAsRead(n.id, n.repository)) : undefined}
                             />
                           </EnhancedNotificationTab>
                         )}

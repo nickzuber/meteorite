@@ -57,6 +57,10 @@ import noMusic from './svg/nomusic.svg';
 import leftArrow from './svg/left-arrow.svg';
 import notificationsOn from './svg/notifications-on.svg';
 import notificationsOff from './svg/notifications-off.svg';
+import blur from './svg/blur.svg';
+import rank from './svg/rank.svg';
+import shield from './svg/shield.svg';
+import headphones from './svg/headphones.svg';
 
 import issue_closed from './svg/github/issue-closed.svg';
 import issue_open from './svg/github/issue-open.svg';
@@ -141,6 +145,10 @@ Icon.NoMusic = createIcon(noMusic);
 Icon.LeftArrow = createIcon(leftArrow);
 Icon.NotificationsOn = createIcon(notificationsOn);
 Icon.NotificationsOff = createIcon(notificationsOff);
+Icon.Blur = createIcon(blur);
+Icon.Rank = createIcon(rank);
+Icon.Shield = createIcon(shield);
+Icon.Headphones = createIcon(headphones);
 
 Icon.IssueClosed = createIcon(issue_closed);
 Icon.IssueOpen = createIcon(issue_open);
