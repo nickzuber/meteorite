@@ -2,7 +2,7 @@ import React from 'react';
 import { withCookiesProvider } from './Cookies';
 import { OAUTH_TOKEN_COOKIE } from '../constants/cookies';
 
-const {Provider, Consumer} = React.createContext('foo');
+const {Provider, Consumer} = React.createContext();
 
 class AuthProvider extends React.Component {
   state = {
