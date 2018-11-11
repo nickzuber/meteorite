@@ -6,6 +6,7 @@ import styled from 'react-emotion';
 import Icon from '../../components/Icon';
 import Logo from '../../components/Logo';
 import LoadingIcon from '../../components/LoadingIcon';
+import ErrorMessage from '../../components/ErrorMessage';
 import {routes} from '../../constants';
 import {Filters} from '../../constants/filters';
 import {withOnEnter, withTooltip} from '../../enhance';
@@ -838,9 +839,11 @@ export default function Scene ({
                 <LoadingIcon />
               </LoaderContainer>
             ) : fetchingNotificationsError ? (
-              <LoaderContainer style={{flexDirection: 'column'}}>
-                <p>OOPSIE WOOPSIE!! Uwu An error occurred when fetching notifications.</p>
-                <p><a onClick={() => onFetchNotifications()} href="#">Try again</a></p>
+              <LoaderContainer style={{flexDirection: 'column', textAlign: 'center'}}>
+                <ErrorMessage>
+                  An error occurred when fetching notifications. <br />
+                  <a onClick={() => onFetchNotifications()} href="#">Try again?</a>
+                </ErrorMessage>
               </LoaderContainer>
             ) : notifications.length <= 0 ? (
               <Message>
