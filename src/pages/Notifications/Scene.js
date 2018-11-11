@@ -701,6 +701,28 @@ export default function Scene ({
                 onClick={!loading ? (() => onFetchNotifications()) : undefined}
               />
             </EnhancedTab>
+            <EnhancedTab tooltip={!loading ? "Mark all as read" : null} disabled={loading}>
+              <Icon.DoneAll
+                opacity={0.9}
+                onClick={!loading ? (() => {
+                  const response = window.confirm('Are you sure you want to mark all your notifications as read?');
+                  if (response) {
+                    onMarkAllAsStaged();
+                  }
+                }) : undefined}
+              />
+            </EnhancedTab>
+            <EnhancedTab tooltip={!loading ? "Delete all of your notifications from the cache" : null} disabled={loading}>
+              <Icon.Trash
+                opacity={0.9}
+                onClick={!loading ? (() => {
+                  const response = window.confirm('Are you sure you want to clear the cache?');
+                  if (response) {
+                    onClearCache();
+                  }
+                }) : undefined}
+              />
+            </EnhancedTab>
             <EnhancedTab
               tooltip={!loading ? (
                 notificationsPermission === 'granted'
@@ -720,28 +742,6 @@ export default function Scene ({
                       Notification.requestPermission().then(result => {
                         return setNotificationsPermission(result);
                       });
-                  }
-                }) : undefined}
-              />
-            </EnhancedTab>
-            <EnhancedTab tooltip={!loading ? "Mark all as read" : null} disabled={loading}>
-              <Icon.DoneAll
-                opacity={0.9}
-                onClick={!loading ? (() => {
-                  const response = window.confirm('Are you sure you want to mark all your notifications as read?');
-                  if (response) {
-                    onMarkAllAsStaged();
-                  }
-                }) : undefined}
-              />
-            </EnhancedTab>
-            <EnhancedTab tooltip={!loading ? "Delete all of your notifications from the cache" : null} disabled={loading}>
-              <Icon.Trash
-                opacity={0.9}
-                onClick={!loading ? (() => {
-                  const response = window.confirm('Are you sure you want to clear the cache?');
-                  if (response) {
-                    onClearCache();
                   }
                 }) : undefined}
               />
