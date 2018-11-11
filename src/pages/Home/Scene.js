@@ -784,6 +784,12 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
         </NotificationsRowExample>
         <div className="button-container" style={{marginTop: 100 - 24}}>
           <RouterLink to={routes.LOGIN}>sign in and try it out</RouterLink>
+          <LinkButton
+            style={{
+              marginLeft: 15,
+              color: '#fff',
+              background: 'none'
+            }} href="https://github.com/nickzuber/meteorite/">check out the github</LinkButton>
         </div>
       </Section>
       <Section alt={true} style={{
