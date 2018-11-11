@@ -848,7 +848,16 @@ export default function Scene ({
                   fontSize: 16,
                   fontWeight: 400,
                 }}>
-                  No {activeStatus.toLowerCase()} notifications</p>
+                  No
+                  {activeStatus === Status.QUEUED ? (
+                    ' unread '
+                  ) : activeStatus === Status.STAGED ? (
+                    ' read '
+                  ) : (
+                    ' resolved '
+                    )}
+                  notifications
+                </p>
                 <p style={{
                   fontSize: 12,
                   fontWeight: 400,

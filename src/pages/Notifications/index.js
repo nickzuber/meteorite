@@ -123,6 +123,7 @@ class NotificationsPage extends React.Component {
 
   state = {
     currentTime: moment(),
+    error: null,
     notificationSent: false,
     isFirstTimeUser: false,
     isSearching: false,
@@ -142,7 +143,8 @@ class NotificationsPage extends React.Component {
 
     this.props.notificationsApi.fetchNotifications();
     this.syncer = setInterval(() => {
-      this.props.notificationsApi.fetchNotificationsSync();
+      this.props.notificationsApi.fetchNotificationsSync()
+        .catch(error => this.setState({error}));
       this.setState({currentTime: moment()});
     }, 8 * 1000);
   }
@@ -327,7 +329,6 @@ class NotificationsPage extends React.Component {
       // we shouldn't do it like this. instead, we should have an additional state called
       // "new changes" or something that the notifications api knows about.
       // this will be whatever we get in the syncing/fetching response
-      console.log('send', this.props.notificationsApi.newChanges)
       this.sendWebNotification(this.props.notificationsApi.newChanges);
     }
 
@@ -412,7 +413,7 @@ class NotificationsPage extends React.Component {
         onRefreshNotifications={this.props.storageApi.refreshNotifications}
         isSearching={this.state.isSearching}
         isFetchingNotifications={isFetchingNotifications}
-        fetchingNotificationsError={fetchingNotificationsError}
+        fetchingNotificationsError={fetchingNotificationsError || this.state.error}
         onSetActiveFilter={this.onSetActiveFilter}
       />
     );

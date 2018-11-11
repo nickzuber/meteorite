@@ -119,22 +119,6 @@ class NotificationsProvider extends React.Component {
           this.last_modified = headers['last-modified'];
         }
 
-        return {
-          headers,
-          json
-        };
-      });
-  }
-
-  requestFetchNotifications = (page = 1, optimizePolling = true) => {
-    if (this.state.syncing) {
-      // Don't try to send off another request if we're already trying to get one.
-      return Promise.reject();
-    }
-
-    this.setState({syncing: true});
-    return this.requestPage(page, optimizePolling)
-      .then(({headers, json}) => {
         // This means that we got a response where nothing changed.
         if (json === null) {
           this.setState({newChanges: null});
@@ -146,7 +130,17 @@ class NotificationsProvider extends React.Component {
           nextPage = links.next.page;
         }
         return this.processNotificationsChunk(nextPage, json);
-      })
+      });
+  }
+
+  requestFetchNotifications = (page = 1, optimizePolling = true) => {
+    if (this.state.syncing) {
+      // Don't try to send off another request if we're already trying to get one.
+      return Promise.reject();
+    }
+
+    this.setState({syncing: true});
+    return this.requestPage(page, optimizePolling)
       .finally(() => this.setState({syncing: false}));
   }
 
@@ -206,11 +200,11 @@ class NotificationsProvider extends React.Component {
 
       if (nextPage && everythingUpdated) {
         // Still need to fetch more updates.
-        this.fetchNotifications(nextPage, false);
+        return this.requestPage(nextPage, false).then(resolve);
       } else {
         // All done fetching updates, let's trigger a sync.
         this.props.refreshNotifications();
-        resolve();
+        return resolve();
       }
     });
   }

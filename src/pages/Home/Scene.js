@@ -6,6 +6,7 @@ import Curve from '../../components/Curve';
 import Icon from '../../components/Icon';
 import Logo from '../../components/Logo';
 import screenshot from '../../images/screenshot.png';
+import rowExample from '../../images/row.png';
 import '../../styles/gradient.css';
 
 const hash = process.env.GIT_HASH ? `#${process.env.GIT_HASH}` : '';
@@ -330,6 +331,18 @@ function createImagePlaceholder (highlight) {
   );
 }
 
+const NotificationsRowExample = styled('div')({
+  position: 'relative',
+  height: 59,
+  width: 745,
+  borderRadius: 8,
+  margin: '58px auto 24px',
+  background: `url(${rowExample}) center center no-repeat`,
+  backgroundSize: 'cover',
+  backgroundColor: '#fff',
+  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.51)',
+});
+
 const ImageContainer = styled('div')({
   position: 'absolute',
   height: 390,
@@ -339,7 +352,7 @@ const ImageContainer = styled('div')({
   background: `url(${screenshot}) center center no-repeat`,
   backgroundSize: 'cover',
   backgroundColor: '#fff',
-  boxShadow: '0 2px 8px rgba(179, 179, 179, 0.25)',
+  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.51)',
   marginLeft: 100,
   borderRadius: 8,
   display: 'block',
@@ -708,6 +721,10 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
           </Item>
           <Item style={{flex: '0 0 2.5%', padding: 0}} />
         </WidthContainer>
+        <NotificationsRowExample />
+        <div className="button-container" style={{marginTop: 100 - 24}}>
+          <RouterLink to={routes.LOGIN}>sign in and try it out</RouterLink>
+        </div>
       </Section>
       <Section alt={true} style={{
         marginTop: 0,
