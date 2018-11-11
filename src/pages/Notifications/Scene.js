@@ -27,7 +27,7 @@ function stringOfType (type) {
   }
 }
 
-function getMessageFromReasons (reasons, type) {
+export function getMessageFromReasons (reasons, type) {
   switch (reasons[reasons.length - 1].reason) {
     case Reasons.ASSIGN:
       return 'You were assigned this ' + stringOfType(type);
@@ -516,9 +516,9 @@ export default function Scene ({
     ? Icon.NotificationsOn
     : Icon.NotificationsOff;
 
-  console.log('notifications', notifications)
-  console.log('isFirstTimeUser', isFirstTimeUser)
-  console.log('notificationsPermission', notificationsPermission)
+  // console.log('notifications', notifications)
+  // console.log('isFirstTimeUser', isFirstTimeUser)
+  // console.log('notificationsPermission', notificationsPermission)
 
   if (isFirstTimeUser && notifications.length > 5) {
     // alert('hello, clear ur shit');
@@ -722,7 +722,13 @@ export default function Scene ({
                 }) : undefined}
               />
             </EnhancedTab>
-            <EnhancedTab tooltip={!loading ? "Toggle web notifications" : null} disabled={loading}>
+            <EnhancedTab
+              tooltip={!loading ? (
+                notificationsPermission === 'granted'
+                  ? "Turn off web notifications"
+                  : "Turn on web notifications"
+                ) : null}
+              disabled={loading}>
               <NotificationsIcon
                 opacity={0.9}
                 onClick={!loading ? (() => {

@@ -4,6 +4,7 @@ import {StorageProvider, LOCAL_STORAGE_PREFIX} from './Storage';
 import {Status} from '../constants/status';
 
 const BASE_GITHUB_API_URL = 'https://api.github.com';
+const PER_PAGE = 50;
 
 function cleanResponseUrl (url) {
   return url
@@ -62,12 +63,17 @@ class NotificationsProvider extends React.Component {
     syncing: false,
     loading: false,
     error: null,
+    newChanges: null,
     notificationsPermission:
       this.props.getUserItem('notificationsPermission') ||
       'default',
   }
 
   shouldComponentUpdate (nextProps, nextState) {
+    // Don't try to rerender if we're just setting the new changes.
+    if (this.state.newChanges !== nextState.newChanges) {
+      return false;
+    }
     // Update if our state changes.
     if ((this.state.loading !== nextState.loading) ||
         (this.state.error !== nextState.error)) {
@@ -102,7 +108,7 @@ class NotificationsProvider extends React.Component {
       headers['If-Modified-Since'] = this.last_modified;
     }
 
-    return fetch(`${BASE_GITHUB_API_URL}/notifications?page=${page}`, {
+    return fetch(`${BASE_GITHUB_API_URL}/notifications?page=${page}&per_page=${PER_PAGE}`, {
       method: 'GET',
       headers: headers
     })
@@ -129,7 +135,11 @@ class NotificationsProvider extends React.Component {
     this.setState({syncing: true});
     return this.requestPage(page, optimizePolling)
       .then(({headers, json}) => {
-        if (json === null) return [];
+        // This means that we got a response where nothing changed.
+        if (json === null) {
+          this.setState({newChanges: null});
+          return [];
+        }
         let nextPage = null;
         const links = headers['link'];
         if (links && links.next && links.next.page) {
@@ -148,7 +158,7 @@ class NotificationsProvider extends React.Component {
 
     if (this.state.loading) {
       // Don't try to fetch if we're already fetching
-      return Promise.reject();
+      return;
     }
 
     this.setState({ loading: true });
@@ -167,25 +177,32 @@ class NotificationsProvider extends React.Component {
         // Apparently this means that a user has no notifications (makes sense).
         // So I guess we should purge our cache? This brings up the great point
         // of us having stale cache. How can we detect that a notifcation was seen?
+        // Update ^ we can't so we'll provide the tools for users to easily handle this.
       }
 
-      notificationsChunk.forEach(n => {
+      const processedNotifications = notificationsChunk.map(n => {
         const cached_n = this.props.getItemFromStorage(n.id);
         // If we've seen this notification before.
         if (cached_n) {
           // Something's changed, we want to push
           if (cached_n.updated_at !== n.updated_at) {
-            this.updateNotification(n, cached_n.reasons);
-            return;
+            return this.updateNotification(n, cached_n.reasons);;
           }
           // This means that something didn't update, which means the page we're
           // currently processing has stale data so we don't need to fetch the next page.
           everythingUpdated = false;
+          return cached_n;
         } else {
           // Else, update the cache.
-          this.updateNotification(n);
+          return this.updateNotification(n);
         }
       });
+
+      if (this.last_modified && notificationsChunk.length < PER_PAGE) {
+        // `this.last_modified` being set means this isn't our first fetch.
+        // We don't want to send notifications for the first time the page loads.
+        this.setState({newChanges: processedNotifications});
+      }
 
       if (nextPage && everythingUpdated) {
         // Still need to fetch more updates.
@@ -228,7 +245,7 @@ class NotificationsProvider extends React.Component {
 
     if (this.state.loading) {
       // Don't try to fetch if we're already fetching
-      return Promise.reject();
+      return;
     }
 
     this.setState({ loading: true });
@@ -346,6 +363,14 @@ class NotificationsProvider extends React.Component {
       reasons = [newReason];
     }
 
+    const commentNumber = n.subject.latest_comment_url
+      ? n.subject.latest_comment_url.split('/').pop()
+      : null;
+
+    const url = commentNumber
+      ? cleanResponseUrl(n.subject.url) + '#issuecomment-' + commentNumber
+      : cleanResponseUrl(n.subject.url);
+
     // Notification model
     const value = {
       id: n.id,
@@ -355,12 +380,13 @@ class NotificationsProvider extends React.Component {
       reasons: reasons,
       type: n.subject.type,
       name: n.subject.title,
-      url: cleanResponseUrl(n.subject.url),
+      url: url,
       repository: n.repository.full_name,
       number: n.subject.url.split('/').pop(),
       repositoryUrl: cleanResponseUrl(n.repository.url)
     };
     this.props.setItemInStorage(n.id, value);
+    return value;
   }
 
   render () {

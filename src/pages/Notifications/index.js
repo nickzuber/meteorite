@@ -11,7 +11,9 @@ import { routes } from '../../constants';
 import { Filters } from '../../constants/filters';
 import { Status } from '../../constants/status';
 import { Reasons, Badges } from '../../constants/reasons';
-import Scene from './Scene';
+import Scene, { getMessageFromReasons } from './Scene';
+import issueIcon from '../../images/issue-bg.png';
+import prIcon from '../../images/pr-bg.png';
 
 const PER_PAGE = 10;
 
@@ -113,9 +115,15 @@ const decorateWithScore = notification => ({
 });
 
 class NotificationsPage extends React.Component {
+  constructor (props) {
+    super(props);
+
+    this.notificationSent = false;
+  }
+
   state = {
     currentTime: moment(),
-    prevNotifications: [],
+    notificationSent: false,
     isFirstTimeUser: false,
     isSearching: false,
     query: null,
@@ -137,6 +145,15 @@ class NotificationsPage extends React.Component {
       this.props.notificationsApi.fetchNotificationsSync();
       this.setState({currentTime: moment()});
     }, 8 * 1000);
+  }
+
+  shouldComponentUpdate (nextProps, nextState) {
+    if (this.props.notificationsApi.newChanges !== nextProps.notificationsApi.newChanges) {
+      this.notificationSent = false;
+    }
+    // The idea here is if we've just updated the prevNotifications state, then
+    // we don't want to trigger a rerender.
+    return nextState.prevNotifications === this.state.prevNotifications;
   }
 
   componentWillUnmount () {
@@ -200,31 +217,44 @@ class NotificationsPage extends React.Component {
     this.props.notificationsApi.setNotificationsPermission(...args);
   }
 
-  sendWebNotification = () => {
-    var img = '../images/icon.png';
-    var text = 'HEY! Your task "null" is now overdue.';
-    var notification = new Notification('Meteorite', { body: text, icon: img });
-  }
-
-  render () {
-    if (!this.props.authApi.token) {
-      return <Redirect noThrow to={routes.LOGIN} />
+  sendWebNotification = newNotifcations => {
+    if (this.notificationSent || newNotifcations.length === 0) {
+      return;
     }
 
-    const {
-      fetchNotifications,
-      markAsRead,
-      markAllAsStaged,
-      clearCache,
-      notificationsPermission,
-      notifications,
-      loading: isFetchingNotifications,
-      error: fetchingNotificationsError,
-    } = this.props.notificationsApi;
+    // Set this even if we don't actually send the notification due to permissions.
+    this.notificationSent = true;
 
-    // @TODO Move all this out of the render method.
-    // nick, do this ^ so you can fire off a web noti when the filtered/final
-    // notifications have a diff
+    // No permission, no notification.
+    if (this.props.notificationsApi.notificationsPermission !== 'granted') {
+      return;
+    }
+
+    const n = newNotifcations[0];
+    const reasonByline = getMessageFromReasons(n.reasons, n.type);
+
+    const additionalInfo = newNotifcations.length > 1
+      ? ` (+${newNotifcations.length} more)`
+      : '';
+
+    const notification = new Notification(n.name + additionalInfo, {
+      body: reasonByline,
+      icon: n.type === "Issue" ? issueIcon : prIcon,
+      badge: n.type === "Issue" ? issueIcon : prIcon,
+    });
+
+    notification.addEventListener('click', () => {
+      this.enhancedOnStageThread(n.id, n.repository);
+      window.open(n.url);
+    })
+
+    // Manually close for legacy browser support.
+    setTimeout(notification.close.bind(notification), 4000);
+  }
+
+  getFilteredNotifications = () => {
+    const {notifications} = this.props.notificationsApi;
+
     let filterMethod = () => true;
     switch (this.state.activeFilter) {
       case Filters.PARTICIPATING:
@@ -287,6 +317,45 @@ class NotificationsPage extends React.Component {
       )
     }
 
+    if (this.props.notificationsApi.newChanges) {
+      // we shouldn't do it like this. instead, we should have an additional state called
+      // "new changes" or something that the notifications api knows about.
+      // this will be whatever we get in the syncing/fetching response
+      console.log('send', this.props.notificationsApi.newChanges)
+      this.sendWebNotification(this.props.notificationsApi.newChanges);
+    }
+
+    console.warn(this.props.notificationsApi);
+
+    return {
+      notifications: scoredAndSortedNotifications,
+      queuedCount: notificationsQueued.length,
+      stagedCount: notificationsStaged.length,
+      closedCount: notificationsClosed.length,
+    };
+  }
+
+  render () {
+    if (!this.props.authApi.token) {
+      return <Redirect noThrow to={routes.LOGIN} />
+    }
+
+    const {
+      fetchNotifications,
+      markAsRead,
+      markAllAsStaged,
+      clearCache,
+      notificationsPermission,
+      loading: isFetchingNotifications,
+      error: fetchingNotificationsError,
+    } = this.props.notificationsApi;
+    const {
+      notifications: scoredAndSortedNotifications,
+      queuedCount,
+      stagedCount,
+      closedCount,
+    } = this.getFilteredNotifications();
+
     let firstIndex = (this.state.currentPage - 1) * PER_PAGE;
     let lastIndex = (this.state.currentPage * PER_PAGE);
     let notificationsOnPage = scoredAndSortedNotifications.slice(firstIndex, lastIndex);
@@ -311,9 +380,9 @@ class NotificationsPage extends React.Component {
         isFirstTimeUser={this.state.isFirstTimeUser}
         setNotificationsPermission={this.setNotificationsPermission}
         notificationsPermission={notificationsPermission}
-        queuedCount={notificationsQueued.length}
-        stagedCount={notificationsStaged.length}
-        closedCount={notificationsClosed.length}
+        queuedCount={queuedCount}
+        stagedCount={stagedCount}
+        closedCount={closedCount}
         stagedTodayCount={stagedTodayCount || 0}
         first={firstNumbered}
         last={lastNumbered}
