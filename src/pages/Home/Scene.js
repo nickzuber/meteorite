@@ -679,30 +679,30 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
           <Item style={{flex: '0 0 2.5%', padding: 0}} />
           <Item className="item-text">
             <ItemText>
-              <Icon.NotificationsOn style={{filter: 'invert(1)'}} />
-              <p>web notifications</p>
+              <Icon.Rank style={{filter: 'invert(1)'}} />
+              <p>Scores your notifications based on their importance, so we can surface the most critical updates at the top of your queue.</p>
             </ItemText>
             <ItemText>
               <Icon.Sync style={{filter: 'invert(1)'}} />
-              <p>tells you why you got the notification</p>
+              <p>Provides you with quick context for why you're receiving each notification.</p>
             </ItemText>
             <ItemText>
-              <Icon.Rank style={{filter: 'invert(1)'}} />
-              <p>sorts by importance</p>
+              <Icon.NotificationsOn style={{filter: 'invert(1)'}} />
+              <p>Allows you to opt in for web notifications whenever you recieve important update to help notify you right away.</p>
             </ItemText>
           </Item>
           <Item className="item-text">
             <ItemText>
               <Icon.Shield style={{filter: 'invert(1)'}} />
-              <p>Protects you from the notifications you don't care about.</p>
+              <p>Protects you from useless spammy notifications that you don't care about.</p>
             </ItemText>
             <ItemText>
               <Icon.Headphones style={{filter: 'invert(1)'}} />
-              <p>gives you the option to focus on specific things like review requested, assigned, etc</p>
+              <p>Let's you focus in on specific types of notifications that matter to you, like when your review is requested for a pull request or you were assigned an issue.</p>
             </ItemText>
             <ItemText>
               <Icon.Bubbles style={{filter: 'invert(1)'}} />
-              <p>get stats on how many notifications you triage each day</p>
+              <p>Unlocks dope statistics that help you understand how you interact with notifications on a daily basis.</p>
             </ItemText>
           </Item>
           <Item style={{flex: '0 0 2.5%', padding: 0}} />
@@ -735,7 +735,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
               </a>
               <br />
               Home page inspiration from
-              <a target="_blank" href="https://getkap.io/">
+              <a target="_blank" href="https://getkap.co/">
                 Kap
               </a>
               <br />

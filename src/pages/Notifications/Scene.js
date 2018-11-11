@@ -550,6 +550,7 @@ export default function Scene ({
             <Icon.Search size={48} opacity={.45} />
             <EnhancedSearchInput
               disabled={loading}
+              onClick={event => event.target.select()}
               type="text"
               placeholder="Search for notifications"
               onEnter={onSearch}
@@ -673,8 +674,8 @@ export default function Scene ({
                 borderRadius: 4,
                 height: 100,
                 fontSize: 11,
-                color: 'rgba(36, 41, 46, 0.75)',
-                fontStyle: 'italic'
+                // color: 'rgba(36, 41, 46, 0.75)',
+                // fontStyle: 'italic'
               }}>
                 <Icon.Bubbles style={{display: 'inline-block', verticalAlign: 'middle'}} shrink={.6} />
                 statistics coming soon™
@@ -700,28 +701,6 @@ export default function Scene ({
                 onClick={!loading ? (() => onFetchNotifications()) : undefined}
               />
             </EnhancedTab>
-            <EnhancedTab tooltip={!loading ? "Mark all as read" : null} disabled={loading}>
-              <Icon.DoneAll
-                opacity={0.9}
-                onClick={!loading ? (() => {
-                  const response = window.confirm('Are you sure you want to mark all your notifications as read?');
-                  if (response) {
-                    onMarkAllAsStaged();
-                  }
-                }) : undefined}
-              />
-            </EnhancedTab>
-            <EnhancedTab tooltip={!loading ? "Delete all of your notifications from the cache" : null} disabled={loading}>
-              <Icon.Trash
-                opacity={0.9}
-                onClick={!loading ? (() => {
-                  const response = window.confirm('Are you sure you want to clear the cache?');
-                  if (response) {
-                    onClearCache();
-                  }
-                }) : undefined}
-              />
-            </EnhancedTab>
             <EnhancedTab
               tooltip={!loading ? (
                 notificationsPermission === 'granted'
@@ -741,6 +720,28 @@ export default function Scene ({
                       Notification.requestPermission().then(result => {
                         return setNotificationsPermission(result);
                       });
+                  }
+                }) : undefined}
+              />
+            </EnhancedTab>
+            <EnhancedTab tooltip={!loading ? "Mark all as read" : null} disabled={loading}>
+              <Icon.DoneAll
+                opacity={0.9}
+                onClick={!loading ? (() => {
+                  const response = window.confirm('Are you sure you want to mark all your notifications as read?');
+                  if (response) {
+                    onMarkAllAsStaged();
+                  }
+                }) : undefined}
+              />
+            </EnhancedTab>
+            <EnhancedTab tooltip={!loading ? "Delete all of your notifications from the cache" : null} disabled={loading}>
+              <Icon.Trash
+                opacity={0.9}
+                onClick={!loading ? (() => {
+                  const response = window.confirm('Are you sure you want to clear the cache?');
+                  if (response) {
+                    onClearCache();
                   }
                 }) : undefined}
               />
