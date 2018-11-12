@@ -270,6 +270,7 @@ class NotificationsPage extends React.Component {
       body: reasonByline,
       icon: n.type === "Issue" ? issueIcon : prIcon,
       badge: n.type === "Issue" ? issueIcon : prIcon,
+      requireInteraction: true,
     });
 
     notification.addEventListener('click', () => {
@@ -278,7 +279,7 @@ class NotificationsPage extends React.Component {
     })
 
     // Manually close for legacy browser support.
-    setTimeout(notification.close.bind(notification), 4000);
+    setTimeout(notification.close.bind(notification), 10000);
   }
 
   getFilteredNotifications = () => {
@@ -347,10 +348,12 @@ class NotificationsPage extends React.Component {
     }
 
     if (this.props.notificationsApi.newChanges) {
-      // we shouldn't do it like this. instead, we should have an additional state called
-      // "new changes" or something that the notifications api knows about.
-      // this will be whatever we get in the syncing/fetching response
-      this.sendWebNotification(this.props.notificationsApi.newChanges);
+      const filteredNewChanges = this.props.notificationsApi.newChanges.filter(n => (
+        scoredAndSortedNotifications.some(fn => fn.id === n.id)
+      ));
+      if (filteredNewChanges.length > 0) {
+        this.sendWebNotification(filteredNewChanges);
+      }
     }
 
     return {

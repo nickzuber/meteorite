@@ -1,9 +1,9 @@
 import React from 'react';
 import moment from 'moment';
 import {Status} from '../constants/status';
-import {createMockNotifications} from '../utils/mocks';
+// import {createMockNotifications} from '../utils/mocks';
 
-const mockNotifications = createMockNotifications(100);
+// const mockNotifications = createMockNotifications(100);
 
 export const LOCAL_STORAGE_PREFIX = '__meteorite_noti_cache__';
 export const LOCAL_STORAGE_USER_PREFIX = '__meteorite_user_cache__';
