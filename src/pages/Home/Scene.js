@@ -14,7 +14,7 @@ const version = require('../../../package.json').version + hash;
 
 function createImagePlaceholder (highlight) {
   return (
-    <ImagePlaceholder>
+    <ImagePlaceholder className="hover">
       {/* navigation backdrop */}
       <div style={{
         position: 'absolute',
@@ -638,7 +638,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
             </SmallText>
           </BottomLinkContainer>
         </LandingMessage>
-        <ImageContainer />
+        <ImageContainer className="hover" />
         <Curve />
       </div>
       <Section className="section">
