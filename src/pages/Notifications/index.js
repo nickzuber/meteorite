@@ -274,6 +274,7 @@ class NotificationsPage extends React.Component {
     });
 
     notification.addEventListener('click', () => {
+      this.updateTabIcon(false);
       this.enhancedOnStageThread(n.id, n.repository);
       window.open(n.url);
     })
