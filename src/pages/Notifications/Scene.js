@@ -829,7 +829,7 @@ export default function Scene ({
               active={activeStatus === Status.CLOSED}
               onClick={() => onSetActiveStatus(Status.CLOSED)}
               href="javascript:void(0);">
-              Discarded
+              Archived
             </EnhancedNavTab>
           </GeneralOptionsContainer>
           <NotificationsContainer>
@@ -857,7 +857,7 @@ export default function Scene ({
                   ) : activeStatus === Status.STAGED ? (
                     ' read '
                   ) : (
-                    ' discarded '
+                    ' archived '
                     )}
                   notifications
                 </p>
@@ -1002,7 +1002,7 @@ export default function Scene ({
                             <span>&nbsp;</span>
                           </EnhancedNotificationTab>
                           ) : (
-                          <EnhancedNotificationTab tooltip={!loading ? "Discard notification" : null}>
+                          <EnhancedNotificationTab tooltip={!loading ? "Archive notification" : null}>
                             <Icon.X
                               opacity={0.9}
                               onClick={!loading ? (() => onMarkAsRead(n.id, n.repository)) : undefined}
