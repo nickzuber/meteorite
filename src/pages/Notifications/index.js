@@ -154,6 +154,7 @@ class NotificationsPage extends React.Component {
 
     this.syncer = setInterval(() => {
       this.props.notificationsApi.fetchNotificationsSync()
+        .then(error => this.setState({error: null}))
         .catch(error => this.setState({error}));
       this.setState({currentTime: moment()});
     }, 8 * 1000);
