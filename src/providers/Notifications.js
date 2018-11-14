@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import {AuthConsumer} from './Auth';
 import {StorageProvider, LOCAL_STORAGE_PREFIX} from './Storage';
 import {Status} from '../constants/status';
@@ -99,6 +100,15 @@ class NotificationsProvider extends React.Component {
   }
 
   requestPage = (page = 1, optimizePolling = true) => {
+    // Fetch all notifications from a month ago, including ones that have been read.
+    // We can tell in the response if a notification has been read or not, so we can
+    // properly triage that on our side. We want to fetch from a while back so we can
+    // learn more information on each notification thread, instead of just jumping in
+    // the middle of the things you're working on and only having part of the story.
+    //
+    // 1 month is pretty arbitrary, we can raise this if we want.
+    const since = moment().subtract(1, 'month').toISOString().split('.')[0] + 'Z';
+
     const headers = {
       'Authorization': `token ${this.props.token}`,
       'Content-Type': 'application/json',
@@ -108,7 +118,7 @@ class NotificationsProvider extends React.Component {
       headers['If-Modified-Since'] = this.last_modified;
     }
 
-    return fetch(`${BASE_GITHUB_API_URL}/notifications?page=${page}&per_page=${PER_PAGE}`, {
+    return fetch(`${BASE_GITHUB_API_URL}/notifications?page=${page}&per_page=${PER_PAGE}&since=${since}&all=true`, {
       method: 'GET',
       headers: headers
     })
@@ -197,6 +207,8 @@ class NotificationsProvider extends React.Component {
         // We don't want to send notifications for the first time the page loads.
         this.setState({newChanges: processedNotifications});
       }
+
+      console.log('everythingUpdated', everythingUpdated);
 
       if (nextPage && everythingUpdated) {
         // Still need to fetch more updates.
@@ -370,7 +382,7 @@ class NotificationsProvider extends React.Component {
       id: n.id,
       isAuthor: reasons.some(r => r.reason === 'author'),
       updated_at: n.updated_at,
-      status: Status.QUEUED,
+      status: n.unread ? Status.QUEUED : Status.STAGED,
       reasons: reasons,
       type: n.subject.type,
       name: n.subject.title,
