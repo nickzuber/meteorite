@@ -518,6 +518,7 @@ const BarContainer = styled('div')({
 
 const stripe_size = 3;
 const Bar = styled('div')({
+  cursor: 'pointer',
   position: 'relative',
   width: 20,
   minHeight: 5,
@@ -758,11 +759,10 @@ export default function Scene ({
               </EnhancedSidebarLink>
               <div style={{
                 padding: 14,
-                margin: 8,
                 borderRadius: 4,
                 height: 100,
                 fontSize: 11,
-                marginBottom: 20,
+                margin: '24px 8px 20px'
               }}>
                 <BarGraph>
                   {/* Last week's statistics */}
@@ -793,8 +793,10 @@ export default function Scene ({
                     {lastWeekStats.map((_, i) => (
                       <EnhancedBar
                         key={i}
+                        style={{width: 33}}
                         tooltip={getWeekday(i)}
-                        tooltipOffsetY={50}
+                        tooltipOffsetY={-15}
+                        tooltipOffsetX={5}
                         tooltipSpeed={0}
                         height={100}
                       />

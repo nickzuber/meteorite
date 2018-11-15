@@ -91,5 +91,5 @@ p {
   white-space: nowrap;
   transform: translateX(-35%) translateY(-15px);
   opacity: 0;
-  transition: all 100ms ease-in;
+  transition: all 75ms ease-in;
 }
