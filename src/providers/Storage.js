@@ -87,9 +87,7 @@ class StorageProvider extends React.Component {
     for (let m = startTime.clone(); m.isBefore(endTime); m.add(1, 'day')) {
       const key = m.format('YYYY-MM-DD');
       const value = window.localStorage.getItem(`${LOCAL_STORAGE_STATISTIC_PREFIX}${key}-${stat}`);
-      if (value !== null) {
-        response.push(value);
-      }
+      response.push(value || 0);
     }
     return response;
   }

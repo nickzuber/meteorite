@@ -20,7 +20,8 @@ class Tooltip extends React.Component {
 
   static defaultProps = {
     tooltipOffsetX: 0,
-    tooltipOffsetY: 0
+    tooltipOffsetY: 0,
+    tooltipSpeed: 350
   }
 
   getTooltipElement = () => document.querySelector(`#${this.id}`);
@@ -39,7 +40,7 @@ class Tooltip extends React.Component {
     tooltipElement.setAttribute('class', 'react-tooltip');
     tooltipElement.setAttribute(
       'style',
-      `top: ${y + tooltipOffsetY}px; left: ${x + tooltipOffsetX}px;`
+      `top: ${y + tooltipOffsetY + window.scrollY}px; left: ${x + tooltipOffsetX}px;`
     );
     tooltipElement.appendChild(text);
 
@@ -48,9 +49,9 @@ class Tooltip extends React.Component {
     this.timeout = setTimeout(() => {
       tooltipElement.setAttribute(
         'style',
-        `top: ${y + tooltipOffsetY}px; left: ${x + tooltipOffsetX}px; opacity: .83;`
+        `top: ${y + tooltipOffsetY + window.scrollY}px; left: ${x + tooltipOffsetX}px; opacity: .83;`
       );
-    }, 500);
+    }, this.props.tooltipSpeed);
   }
 
   removeTooltip = () => {
@@ -70,16 +71,23 @@ class Tooltip extends React.Component {
   }
 }
 
-export const withTooltip = WrappedComponent => ({tooltip, tooltipOffsetX, tooltipOffsetY, ...props}) => (
-  <Tooltip
-    message={tooltip}
-    tooltipOffsetX={tooltipOffsetX}
-    tooltipOffsetY={tooltipOffsetY}
-  >
-    {mouseEvents => tooltip ? (
-      <WrappedComponent {...props} {...mouseEvents} />
-    ) : (
-      <WrappedComponent {...props} />
-    )}
-  </Tooltip>
+export const withTooltip = WrappedComponent => ({
+    tooltip,
+    tooltipOffsetX,
+    tooltipOffsetY,
+    tooltipSpeed,
+    ...props
+  }) => (
+    <Tooltip
+      message={tooltip}
+      tooltipOffsetX={tooltipOffsetX}
+      tooltipOffsetY={tooltipOffsetY}
+      tooltipSpeed={tooltipSpeed}
+    >
+      {mouseEvents => tooltip ? (
+        <WrappedComponent {...props} {...mouseEvents} />
+      ) : (
+        <WrappedComponent {...props} />
+      )}
+    </Tooltip>
 );

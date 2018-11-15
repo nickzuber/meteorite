@@ -17,6 +17,40 @@ import '../../styles/gradient.css';
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable no-script-url */
 
+function getColorFromFilter (activeFilter) {
+  switch (activeFilter) {
+    case Filters.ASSIGNED:
+      return '#f12c3f';
+    case Filters.PARTICIPATING:
+      return '#00d19a';
+    case Filters.COMMENT:
+      return '#24292e';
+    case Filters.REVIEW_REQUESTED:
+      return '#00A0F5';
+    default:
+      return '#24292e';
+  }
+}
+
+function getWeekday (day) {
+  switch (day) {
+    case 0:
+      return 'Sunday';
+    case 1:
+      return 'Monday';
+    case 2:
+      return 'Tuesday';
+    case 3:
+      return 'Wednesday';
+    case 4:
+      return 'Thursday';
+    case 5:
+      return 'Friday';
+    case 6:
+      return 'Saturday';
+  }
+}
+
 function stringOfType (type) {
   switch (type) {
     case 'PullRequest':
@@ -87,7 +121,7 @@ const FixedContainer = styled('div')({
   height: '80%',
   maxWidth: 270,
   display: 'block',
-  position: 'fixed'
+  position: 'relative'
 });
 
 const InlineBlockContainer = styled('div')({
@@ -451,6 +485,54 @@ const SmallLink = styled('a')({
   }
 });
 
+const BarGraph = styled('div')({
+  position: 'relative',
+  height: 100,
+  ':after': {
+    content: `"Triaged notifications compared to last week"`,
+    position: 'absolute',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    fontSize: 10,
+    width: '100%',
+    bottom: -30,
+    fontWeight: 500
+  }
+});
+
+const BarContainer = styled('div')({
+  position: 'absolute',
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'space-around',
+  width: '100%',
+  height: 100,
+  alignItems: 'flex-end',
+}, ({opacity}) => ({
+  'div': {
+    opacity: opacity === undefined ? 1 : opacity
+  }
+}));
+
+const stripe_size = 3;
+const Bar = styled('div')({
+  position: 'relative',
+  width: 20,
+  minHeight: 5,
+  background: '#00d19a',
+  borderRadius: 4,
+}, ({height, active, color = '#00d19a', visible = true}) => ({
+  height,
+  background: !visible
+    ? 'none'
+    : active
+      ? `repeating-linear-gradient(45deg, ${color}, ${color} ${stripe_size}px, ${color}55 ${stripe_size}px, ${color}55 ${stripe_size * 2}px)`
+      : color,
+}));
+
+const EnhancedBar = withTooltip(Bar);
 const EnhancedTab = withTooltip(Tab);
 const EnhancedNavTab = withTooltip(NavTab);
 const EnhancedNotificationTab = withTooltip(NotificationTab);
@@ -477,6 +559,7 @@ function getPRIssueIcon (type, reasons) {
 
 export default function Scene ({
   currentTime,
+  stagedStatistics,
   isFirstTimeUser,
   notificationsPermission,
   queuedCount,
@@ -521,9 +604,14 @@ export default function Scene ({
   // console.log('isFirstTimeUser', isFirstTimeUser)
   // console.log('notificationsPermission', notificationsPermission)
 
-  if (isFirstTimeUser && notifications.length > 5) {
-    // alert('hello, clear ur shit');
+  if (isFirstTimeUser && notifications.length > 10) {
+    // probably prompt to mark all as read to start out since they prob don't use notifs
   }
+
+  stagedStatistics = stagedStatistics.map(n => parseInt(n, 10));
+  const highestStagedCount = stagedStatistics.reduce((n, m) => Math.max(n, m), 0);
+  const lastWeekStats = stagedStatistics.slice(0, 7);
+  const thisWeekStats = stagedStatistics.slice(7);
 
   return (
     <div style={{marginTop: 60}}>
@@ -670,20 +758,55 @@ export default function Scene ({
               </EnhancedSidebarLink>
               <div style={{
                 padding: 14,
-                margin: 21,
-                background: '#f5f5f5',
+                margin: 8,
                 borderRadius: 4,
                 height: 100,
                 fontSize: 11,
-                // color: 'rgba(36, 41, 46, 0.75)',
-                // fontStyle: 'italic'
+                marginBottom: 20,
               }}>
-                <Icon.Bubbles style={{display: 'inline-block', verticalAlign: 'middle'}} shrink={.6} />
-                statistics coming soon™
+                <BarGraph>
+                  {/* Last week's statistics */}
+                  <BarContainer opacity={0.15}>
+                    {lastWeekStats.map((dayStats, i) => (
+                      <Bar
+                        key={i}
+                        color={getColorFromFilter(activeFilter)}
+                        height={(dayStats / highestStagedCount) * 100}
+                      />
+                    ))}
+                  </BarContainer>
+                  {/* This week's ongoing statistics */}
+                  <BarContainer>
+                    {thisWeekStats.map((dayStats, i) => (
+                      <Bar
+                        key={i}
+                        color={getColorFromFilter(activeFilter)}
+                        active={currentTime.day() === i}
+                        label="Sunday"
+                        height={(dayStats / highestStagedCount) * 100}
+                        visible={currentTime.day() >= i}
+                      />
+                    ))}
+                  </BarContainer>
+                  {/* Wrapper for tooltips */}
+                  <BarContainer opacity={0}>
+                    {lastWeekStats.map((_, i) => (
+                      <EnhancedBar
+                        key={i}
+                        tooltip={getWeekday(i)}
+                        tooltipOffsetY={50}
+                        tooltipSpeed={0}
+                        height={100}
+                      />
+                    ))}
+                  </BarContainer>
+                </BarGraph>
               </div>
               <div style={{
                 padding: 14,
-                margin: 21,
+                margin: 34,
+                position: 'relative',
+                display: 'block',
               }}>
                 <SmallLink target="_blank" href="https://github.com/nickzuber/meteorite/issues">Report bugs</SmallLink>
                 <SmallLink target="_blank" href="https://github.com/nickzuber/meteorite/issues">Submit feedback</SmallLink>

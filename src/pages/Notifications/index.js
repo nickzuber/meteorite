@@ -403,10 +403,16 @@ class NotificationsPage extends React.Component {
     }
 
     const stagedTodayCount = this.props.storageApi.getStat('stagedCount')[0];
+    const stagedStatistics = this.props.storageApi.getStat(
+      'stagedCount',
+      this.state.currentTime.clone().startOf('week').subtract(1, 'week'),
+      this.state.currentTime.clone().endOf('week')
+    );
 
     return (
       <Scene
         currentTime={this.state.currentTime}
+        stagedStatistics={stagedStatistics}
         isFirstTimeUser={this.state.isFirstTimeUser}
         setNotificationsPermission={this.setNotificationsPermission}
         notificationsPermission={notificationsPermission}
