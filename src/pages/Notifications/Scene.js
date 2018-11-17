@@ -518,7 +518,6 @@ const BarContainer = styled('div')({
 
 const stripe_size = 3;
 const Bar = styled('div')({
-  cursor: 'pointer',
   position: 'relative',
   width: 20,
   minHeight: 5,
@@ -790,12 +789,14 @@ export default function Scene ({
                   </BarContainer>
                   {/* Wrapper for tooltips */}
                   <BarContainer opacity={0}>
-                    {lastWeekStats.map((_, i) => (
+                    {thisWeekStats.map((dayStats, i) => (
                       <EnhancedBar
                         key={i}
                         style={{width: 33}}
                         tooltip={getWeekday(i)}
-                        tooltipOffsetY={-15}
+                        tooltipOffsetY={
+                          (Math.max((dayStats / highestStagedCount) * 100, 5) * -1) + 85
+                        }
                         tooltipOffsetX={5}
                         tooltipSpeed={0}
                         height={100}
