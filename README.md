@@ -42,7 +42,7 @@ We're also able to categorize some types of notifications and put a badge on the
  - Built from an ejected [CRA](https://github.com/facebook/create-react-app) app
  - Authenticates with the help of [Gatekeeper](https://github.com/prose/gatekeeper)
 
-# Alternatives
+## Alternatives
 
 Meteorite aims to solve the problem where GitHub notifications don't provide enough context, nor have enough smart functionality to help you be as productive as possible.
 
@@ -50,7 +50,7 @@ However, you might be looking for more general tools for managing your notificat
 
 I believe these two tools solve different (but related) problems, but at the end of the day you should use whichever tool makes you more productive.
 
-# Contributing
+## Contributing
 
 All contributions are welcome, even if its just submitting feedback, giving a suggestion, or reporting a bug. If you're looking to add a feature to Meteorite, make sure you open an issue first (if there's not one open already), and make it known that you're going to be working on it as to avoid multiple people trying to pick up the same issue.
 
