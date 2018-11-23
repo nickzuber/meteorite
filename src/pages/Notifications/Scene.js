@@ -485,52 +485,163 @@ const SmallLink = styled('a')({
   }
 });
 
-const BarGraph = styled('div')({
+const BarGraphDiv = styled('div')({
   position: 'relative',
   height: 100,
   ':after': {
-    content: `"Triaged notifications compared to last week"`,
+    content: `"Notifications Read"`,
     position: 'absolute',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    textAlign: 'center',
-    fontSize: 10,
-    width: '100%',
-    bottom: -30,
+    textAlign: 'left',
+    fontSize: 16,
+    top: -67,
+    left: -23,
     fontWeight: 500
   }
+});
+
+const FauxGridLine = styled('div')({
+  position: 'absolute',
+  width: '100%',
+  height: 1,
+  background: '#f3f3f3',
+}, ({offsetY, tick, showDecimals}) => ({
+  bottom: offsetY,
+  ':after': tick !== false ? {
+    content: showDecimals
+      ? `"${tick.toFixed(2).replace('.00', '')}"`
+      : `"${Math.round(tick)}"`,
+    position: 'absolute',
+    top: '-6px',
+    left: '-30px',
+    width: '20px',
+    textAlign: 'right',
+  } : {}
+}));
+
+const Legend = styled('div')({
+  position: 'absolute',
+  textAlign: 'left',
+  top: -35,
+  left: -23,
+});
+
+const LegendItem = styled('div')({
+  position: 'relative',
+  display: 'inline-block',
+  fontSize: 12,
+  marginRight: 15,
+}, ({color}) => ({
+  ':before': {
+    content: '" "',
+    background: color,
+    display: 'inline-block',
+    height: 12,
+    width: 12,
+    borderRadius: 2,
+    marginRight: 5,
+    verticalAlign: 'middle'
+  }
+}));
+
+function BarGraph ({children, numLines, max, ...props}) {
+  const height = 100;
+  const gapSize = height / (numLines - 1);
+  const yAxisTickOffset = gapSize / 100 * max;
+  // Only show decimals if we have to, e.g. the steps are under 1.
+  const showDecimals = yAxisTickOffset * numLines < 2;
+  return (
+    <BarGraphDiv>
+      <Legend>
+        <LegendItem color="#f2f9ff">Last week</LegendItem>
+        <LegendItem color="#17aaf3">This week</LegendItem>
+      </Legend>
+      {new Array(numLines).fill(0).map((_, i) => (
+        <FauxGridLine
+          key={i}
+          offsetY={i * gapSize}
+          showDecimals={showDecimals}
+          tick={yAxisTickOffset > 0 || i === 0 ? (
+             i % 2 === 0 ? i * yAxisTickOffset : false
+          ) : (
+            false
+          )}
+        />
+      ))}
+      {children}
+    </BarGraphDiv>
+  );
+}
+
+const Separator = styled('div')({
+  position: 'relative',
+  background: '#f3f3f3',
+  width: '100%',
+  height: 1,
+  margin: '30px 0'
 });
 
 const BarContainer = styled('div')({
   position: 'absolute',
   display: 'flex',
   flexDirection: 'row',
-  justifyContent: 'space-around',
+  justifyContent: 'space-evenly',
   width: '100%',
   height: 100,
   alignItems: 'flex-end',
-}, ({opacity}) => ({
+}, ({opacity, hide}) => ({
   'div': {
-    opacity: opacity === undefined ? 1 : opacity
+    background: opacity ? '#f2f9ff' : undefined,
+    opacity: hide ? 0 : 1
   }
 }));
 
 const stripe_size = 3;
 const Bar = styled('div')({
   position: 'relative',
-  width: 20,
+  width: 30,
   minHeight: 5,
   background: '#00d19a',
   borderRadius: 4,
-}, ({height, active, color = '#00d19a', visible = true}) => ({
+}, ({height, active, label, visible = true, bottomTick}) => ({
   height,
   background: !visible
     ? 'none'
-    : active
-      ? `repeating-linear-gradient(45deg, ${color}, ${color} ${stripe_size}px, ${color}55 ${stripe_size}px, ${color}55 ${stripe_size * 2}px)`
-      : color,
+    : active && false
+      ? `repeating-linear-gradient(45deg, #28abf0, #28abf0 ${stripe_size}px, #28abf055 ${stripe_size}px, #28abf055 ${stripe_size * 2}px)`
+      : '#28abf0',
+  ':after': label ? {
+    content: `"${label}"`,
+    position: 'absolute',
+    left: '-20px',
+    width: '70px',
+    textAlign: 'center',
+    bottom: '-25px',
+    color: '#3f464c',
+  } : {},
+  ':before': bottomTick ? {
+    content: '" "',
+    position: 'absolute',
+    background: '#f3f3f3',
+    width: '1px',
+    height: '8px',
+    bottom: '-8px',
+    left: '14px',
+  } : {},
 }));
+
+const PageCount = styled('div')({
+  fontSize: 12,
+  margin: '12px auto',
+  width: '100%',
+  textAlign: 'center',
+  color: 'rgb(32, 33, 36)'
+});
+
+const NotificationIconWrapper = styled('div')({
+  background: '#22303f',
+  borderRadius: 4,
+  transform: 'scale(.65)'
+});
 
 const EnhancedBar = withTooltip(Bar);
 const EnhancedTab = withTooltip(Tab);
@@ -541,16 +652,22 @@ const EnhancedIconHot = withTooltip(Icon.Hot);
 const EnhancedIconTimer = withTooltip(Icon.Timer);
 const EnhancedIconConvo = withTooltip(Icon.Convo);
 
-function getPRIssueIcon (type, reasons) {
-  const grow = 1.0;
+// @TODO if GitHub ever fixes their API, we can use `reasons` to know when
+// a PR/Issue merges/closes/etc.
+function getPRIssueIcon (type, _reasons) {
+  const scale = 1.0;
   switch (type) {
     case 'PullRequest':
       return (
-        <Icon.PrMerged shrink={grow} />
+        <NotificationIconWrapper style={{background: '#00d299'}}>
+          <Icon.PrMerged shrink={scale} style={{filter: 'invert(1)'}} />
+        </NotificationIconWrapper>
       );
     case 'Issue':
       return (
-        <Icon.IssueOpen shrink={grow} />
+        <NotificationIconWrapper style={{background: '#00a8f6'}}>
+          <Icon.IssueOpen shrink={scale} style={{filter: 'invert(1)'}} />
+        </NotificationIconWrapper>
       );
     default:
       return null;
@@ -600,18 +717,19 @@ export default function Scene ({
     ? Icon.NotificationsOn
     : Icon.NotificationsOff;
 
-  // console.log('notifications', notifications)
-  // console.log('isFirstTimeUser', isFirstTimeUser)
-  // console.log('notificationsPermission', notificationsPermission)
-
   if (isFirstTimeUser && notifications.length > 10) {
     // probably prompt to mark all as read to start out since they prob don't use notifs
   }
 
   stagedStatistics = stagedStatistics.map(n => parseInt(n, 10));
+
   const highestStagedCount = stagedStatistics.reduce((n, m) => Math.max(n, m), 0);
-  const lastWeekStats = stagedStatistics.slice(0, 7);
-  const thisWeekStats = stagedStatistics.slice(7);
+  let lastWeekStats = stagedStatistics.slice(0, 7);
+  let thisWeekStats = stagedStatistics.slice(7);
+
+  // Trim off the weekends.
+  lastWeekStats = lastWeekStats.slice(1, -1);
+  thisWeekStats = thisWeekStats.slice(1, -1);
 
   return (
     <div style={{marginTop: 60}}>
@@ -756,21 +874,23 @@ export default function Scene ({
                 )}
                 commented
               </EnhancedSidebarLink>
+              <Separator style={{marginBottom: 90}} />
               <div style={{
                 padding: 14,
                 borderRadius: 4,
                 height: 100,
                 fontSize: 11,
-                margin: '24px 8px 20px'
+                margin: '62px 8px 20px',
+                marginLeft: 30,
               }}>
-                <BarGraph>
+                <BarGraph numLines={6} max={highestStagedCount * 1.15}>
                   {/* Last week's statistics */}
-                  <BarContainer opacity={0.15}>
+                  <BarContainer opacity={true}>
                     {lastWeekStats.map((dayStats, i) => (
                       <Bar
                         key={i}
-                        color={getColorFromFilter(activeFilter)}
-                        height={(dayStats / highestStagedCount) * 100}
+                        // color={getColorFromFilter(activeFilter)}
+                        height={(dayStats / (highestStagedCount * 1.15)) * 100}
                       />
                     ))}
                   </BarContainer>
@@ -779,35 +899,39 @@ export default function Scene ({
                     {thisWeekStats.map((dayStats, i) => (
                       <Bar
                         key={i}
-                        color={getColorFromFilter(activeFilter)}
-                        active={currentTime.day() === i}
-                        label="Sunday"
-                        height={(dayStats / highestStagedCount) * 100}
-                        visible={currentTime.day() >= i}
+                        label={i % 2 === 0 ? getWeekday(i + 1) : null}
+                        bottomTick={true}
+                        // color={getColorFromFilter(activeFilter)}
+                        active={currentTime.day() === i + 1}
+                        height={(dayStats / (highestStagedCount * 1.15)) * 100}
+                        visible={currentTime.day() >= i + 1}
                       />
                     ))}
                   </BarContainer>
                   {/* Wrapper for tooltips */}
-                  <BarContainer opacity={0}>
+                  {/* <BarContainer hide={true}>
                     {thisWeekStats.map((dayStats, i) => (
                       <EnhancedBar
                         key={i}
-                        style={{width: 33}}
-                        tooltip={getWeekday(i)}
+                        style={{width: 45}}
+                        tooltip={dayStats || '0'}
                         tooltipOffsetY={
                           (Math.max((dayStats / highestStagedCount) * 100, 5) * -1) + 85
                         }
-                        tooltipOffsetX={5}
+                        tooltipOffsetX={17}
                         tooltipSpeed={0}
                         height={100}
                       />
                     ))}
-                  </BarContainer>
+                  </BarContainer> */}
                 </BarGraph>
               </div>
+              <Separator style={{marginTop: 60}} />
               <div style={{
                 padding: 14,
+                paddingTop: 8,
                 margin: 34,
+                marginTop: 0,
                 position: 'relative',
                 display: 'block',
               }}>
@@ -853,8 +977,8 @@ export default function Scene ({
             <EnhancedTab
               tooltip={!loading ? (
                 notificationsPermission === 'granted'
-                  ? "Turn off web notifications"
-                  : "Turn on web notifications"
+                  ? "Turn off desktop notifications"
+                  : "Turn on desktop notifications"
                 ) : null}
               disabled={loading}>
               <NotificationsIcon
@@ -1044,7 +1168,7 @@ export default function Scene ({
                       </TableItem>
                       <TableItem width={100}>
                         <InlineBlockContainer>
-                          {n.badges.map(badge => {
+                          {activeStatus === Status.QUEUED && n.badges.map(badge => {
                             switch (badge) {
                               case Badges.HOT:
                                 // lots of `reasons` within short time frame
@@ -1143,6 +1267,7 @@ export default function Scene ({
             )}
           </Notifications>
         </NotificationsContainer>
+        {!loading && <PageCount>Page {page} out of {lastPage}</PageCount>}
         </div>
       </div>
     </div>

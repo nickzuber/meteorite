@@ -713,7 +713,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
             </ItemText>
             <ItemText>
               <Icon.NotificationsOn style={{filter: 'invert(1)'}} />
-              <p>Allows you to opt in for web notifications whenever you recieve important update to help notify you right away.</p>
+              <p>Allows you to opt in for desktop notifications whenever you recieve important update to help notify you right away.</p>
             </ItemText>
           </Item>
           <Item className="item-text">
