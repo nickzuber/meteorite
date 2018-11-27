@@ -1119,155 +1119,157 @@ export default function Scene ({
                   <span role="img" aria-label="hooray">🎉</span> You're all set here for the moment</p>
               </Message>
             ) : (
-              <Table>
-                <tbody style={{
-                  display: 'flex',
-                  flexDirection: 'column'
-                }}>
-                  {notifications.map(n => (
-                    <NotificationRow key={n.id}>
-                      <TableItem>
-                        <div style={{ float: 'left', marginTop: 2 }}>
-                          {getPRIssueIcon(n.type, n.reasons)}
-                        </div>
-                      </TableItem>
-                      <TableItem
-                        style={{height: 36, cursor: 'pointer', userSelect: 'none'}}
-                        width={400}
-                        flex={.65}
-                        onClick={() => {
-                          window.open(n.url);
-                          onStageThread(n.id, n.repository)
-                        }}>
-                        <NotificationTitle>
-                          <PRIssue after={n.number}>{n.name}</PRIssue>
-                        </NotificationTitle>
-                        <Timestamp>
-                          {getRelativeTime(n.updated_at)}
-                          {n.isAuthor && (
-                            <Icon.User
-                              shrink={0.5}
+              <React.Fragment>
+                <Table>
+                  <tbody style={{
+                    display: 'flex',
+                    flexDirection: 'column'
+                  }}>
+                    {notifications.map(n => (
+                      <NotificationRow key={n.id}>
+                        <TableItem>
+                          <div style={{ float: 'left', marginTop: 2 }}>
+                            {getPRIssueIcon(n.type, n.reasons)}
+                          </div>
+                        </TableItem>
+                        <TableItem
+                          style={{height: 36, cursor: 'pointer', userSelect: 'none'}}
+                          width={400}
+                          flex={.65}
+                          onClick={() => {
+                            window.open(n.url);
+                            onStageThread(n.id, n.repository)
+                          }}>
+                          <NotificationTitle>
+                            <PRIssue after={n.number}>{n.name}</PRIssue>
+                          </NotificationTitle>
+                          <Timestamp>
+                            {getRelativeTime(n.updated_at)}
+                            {n.isAuthor && (
+                              <Icon.User
+                                shrink={0.5}
+                                style={{
+                                  display: 'inline-block',
+                                  top: -3
+                                }}
+                              />
+                            )}
+                          </Timestamp>
+                          <ReasonMessage style={{left: -5}}>
+                            <Icon.Sync
                               style={{
                                 display: 'inline-block',
-                                top: -3
+                                top: -3,
+                                right: -4
                               }}
+                              shrink={.5}
                             />
-                          )}
-                        </Timestamp>
-                        <ReasonMessage style={{left: -5}}>
-                          <Icon.Sync
-                            style={{
-                              display: 'inline-block',
-                              top: -3,
-                              right: -4
-                            }}
-                            shrink={.5}
-                          />
-                          {getMessageFromReasons(n.reasons, n.type)}
-                        </ReasonMessage>
-                      </TableItem>
-                      <TableItem width={100}>
-                        <InlineBlockContainer>
-                          {activeStatus === Status.QUEUED && n.badges.map(badge => {
-                            switch (badge) {
-                              case Badges.HOT:
-                                // lots of `reasons` within short time frame
-                                return (
-                                  <EnhancedIconHot
-                                    key={n.id}
-                                    tooltip="Lots of recent activity"
-                                    tooltipOffsetX={-15}
-                                    tooltipOffsetY={-10}
-                                    shrink={0.75}
-                                  />
-                                );
-                              case Badges.OLD:
-                                // old
-                                return (
-                                  <EnhancedIconTimer
-                                    key={n.id}
-                                    tooltip="Old pull request that needs your review"
-                                    tooltipOffsetX={-15}
-                                    tooltipOffsetY={-10}
-                                    shrink={0.75}
-                                  />
-                                );
-                              case Badges.COMMENTS:
-                                // lots of `reasons`
-                                return (
-                                  <EnhancedIconConvo
-                                    key={n.id}
-                                    tooltip="Very talkative thread"
-                                    tooltipOffsetX={-15}
-                                    tooltipOffsetY={-10}
-                                    shrink={0.75}
-                                  />
-                                );
-                              default:
-                                return null;
-                            }
-                          })}
-                        </InlineBlockContainer>
-                      </TableItem>
-                      <TableItem width={250} flex={.35}>
-                        <Repository
-                          onClick={() => window.open(n.repositoryUrl)}
-                          style={{cursor: 'pointer', userSelect: 'none'}}>
-                          {n.repository}</Repository>
-                      </TableItem>
-                      <TableItem width={150} style={{textAlign: 'right'}}>
-                        <EnhancedNotificationTab
-                          style={{fontWeight: 600}}
-                          tooltip={!loading ? "Score representing this notification's importance" : null}
-                          tooltipOffsetX={-20}
-                        >
-                          +{n.score}
-                        </EnhancedNotificationTab>
-                        {activeStatus === Status.QUEUED ? (
+                            {getMessageFromReasons(n.reasons, n.type)}
+                          </ReasonMessage>
+                        </TableItem>
+                        <TableItem width={100}>
+                          <InlineBlockContainer>
+                            {activeStatus === Status.QUEUED && n.badges.map(badge => {
+                              switch (badge) {
+                                case Badges.HOT:
+                                  // lots of `reasons` within short time frame
+                                  return (
+                                    <EnhancedIconHot
+                                      key={n.id}
+                                      tooltip="Lots of recent activity"
+                                      tooltipOffsetX={-15}
+                                      tooltipOffsetY={-10}
+                                      shrink={0.75}
+                                    />
+                                  );
+                                case Badges.OLD:
+                                  // old
+                                  return (
+                                    <EnhancedIconTimer
+                                      key={n.id}
+                                      tooltip="Old pull request that needs your review"
+                                      tooltipOffsetX={-15}
+                                      tooltipOffsetY={-10}
+                                      shrink={0.75}
+                                    />
+                                  );
+                                case Badges.COMMENTS:
+                                  // lots of `reasons`
+                                  return (
+                                    <EnhancedIconConvo
+                                      key={n.id}
+                                      tooltip="Very talkative thread"
+                                      tooltipOffsetX={-15}
+                                      tooltipOffsetY={-10}
+                                      shrink={0.75}
+                                    />
+                                  );
+                                default:
+                                  return null;
+                              }
+                            })}
+                          </InlineBlockContainer>
+                        </TableItem>
+                        <TableItem width={250} flex={.35}>
+                          <Repository
+                            onClick={() => window.open(n.repositoryUrl)}
+                            style={{cursor: 'pointer', userSelect: 'none'}}>
+                            {n.repository}</Repository>
+                        </TableItem>
+                        <TableItem width={150} style={{textAlign: 'right'}}>
                           <EnhancedNotificationTab
-                            tooltip={!loading ? "Mark as read" : null}
-                            tooltipOffsetX={-10}
+                            style={{fontWeight: 600}}
+                            tooltip={!loading ? "Score representing this notification's importance" : null}
+                            tooltipOffsetX={-20}
                           >
-                            <Icon.Check
-                              opacity={0.9}
-                              onClick={!loading ? (() => onStageThread(n.id, n.repository)) : undefined}
-                            />
+                            +{n.score}
                           </EnhancedNotificationTab>
-                        ) : (
-                          <EnhancedNotificationTab
-                            tooltip={!loading ? "Revert back to unread" : null}
-                            tooltipOffsetX={-10}
-                          >
-                            <Icon.Undo
-                              opacity={0.9}
-                              onClick={!loading ? (() => onRestoreThread(n.id)) : undefined}
-                            />
-                          </EnhancedNotificationTab>
-                        )}
-                        {activeStatus === Status.CLOSED ? (
-                          <EnhancedNotificationTab
-                            tooltip="There's nothing here at right now, back off dude"
-                            tooltipOffsetX={-80}
-                          >
-                            <span>&nbsp;</span>
-                          </EnhancedNotificationTab>
+                          {activeStatus === Status.QUEUED ? (
+                            <EnhancedNotificationTab
+                              tooltip={!loading ? "Mark as read" : null}
+                              tooltipOffsetX={-10}
+                            >
+                              <Icon.Check
+                                opacity={0.9}
+                                onClick={!loading ? (() => onStageThread(n.id, n.repository)) : undefined}
+                              />
+                            </EnhancedNotificationTab>
                           ) : (
-                          <EnhancedNotificationTab tooltip={!loading ? "Archive notification" : null}>
-                            <Icon.X
-                              opacity={0.9}
-                              onClick={!loading ? (() => onMarkAsRead(n.id, n.repository)) : undefined}
-                            />
-                          </EnhancedNotificationTab>
-                        )}
-                      </TableItem>
-                    </NotificationRow>
-                  ))}
-                </tbody>
-              </Table>
+                            <EnhancedNotificationTab
+                              tooltip={!loading ? "Revert back to unread" : null}
+                              tooltipOffsetX={-10}
+                            >
+                              <Icon.Undo
+                                opacity={0.9}
+                                onClick={!loading ? (() => onRestoreThread(n.id)) : undefined}
+                              />
+                            </EnhancedNotificationTab>
+                          )}
+                          {activeStatus === Status.CLOSED ? (
+                            <EnhancedNotificationTab
+                              tooltip="There's nothing here at right now, back off dude"
+                              tooltipOffsetX={-80}
+                            >
+                              <span>&nbsp;</span>
+                            </EnhancedNotificationTab>
+                            ) : (
+                            <EnhancedNotificationTab tooltip={!loading ? "Archive notification" : null}>
+                              <Icon.X
+                                opacity={0.9}
+                                onClick={!loading ? (() => onMarkAsRead(n.id, n.repository)) : undefined}
+                              />
+                            </EnhancedNotificationTab>
+                          )}
+                        </TableItem>
+                      </NotificationRow>
+                    ))}
+                  </tbody>
+                </Table>
+                {!loading && <PageCount>Page {page} out of {lastPage}</PageCount>}
+              </React.Fragment>
             )}
           </Notifications>
         </NotificationsContainer>
-        {!loading && <PageCount>Page {page} out of {lastPage}</PageCount>}
         </div>
       </div>
     </div>
