@@ -368,7 +368,7 @@ class NotificationsPage extends React.Component {
 
   render () {
     if (!this.props.authApi.token) {
-      return <Redirect noThrow to={routes.LOGIN} />
+      return <Redirect noThrow to={routes.HOME} />
     }
 
     const {
