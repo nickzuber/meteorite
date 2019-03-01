@@ -786,7 +786,8 @@ export default function Scene ({
       </NavigationContainer>
       <div style={{
         display: 'flex',
-        flexDirection: 'row'
+		  flexDirection: 'row',
+		  backgroundColor: '#24292e',
       }}>
         <div style={{
           flex: '0 0 300px'
