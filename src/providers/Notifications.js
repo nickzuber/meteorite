@@ -174,7 +174,6 @@ class NotificationsProvider extends React.Component {
 
   processNotificationsChunk = (nextPage, notificationsChunk) => {
     return new Promise((resolve, reject) => {
-      console.log('chunk', notificationsChunk);
       let everythingUpdated = true;
 
       if (notificationsChunk.length === 0) {
@@ -207,8 +206,6 @@ class NotificationsProvider extends React.Component {
         // We don't want to send notifications for the first time the page loads.
         this.setState({newChanges: processedNotifications});
       }
-
-      console.log('everythingUpdated', everythingUpdated);
 
       if (nextPage && everythingUpdated) {
         // Still need to fetch more updates.

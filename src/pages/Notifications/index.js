@@ -17,7 +17,20 @@ import prIcon from '../../images/pr-bg.png';
 import tabIcon from '../../images/icon.png';
 import tabDotIcon from '../../images/iconDot.png';
 
-const PER_PAGE = 10;
+export const PER_PAGE = 10;
+
+export const Sort = {
+  TYPE: 1,
+  TITLE: 0,
+  REPOSITORY: 2,
+  SCORE: 3
+};
+
+export const View = {
+  UNREAD: 1,
+  READ: 0,
+  ARCHIVED: 2
+};
 
 // @TODO Move these functions.
 
@@ -132,8 +145,10 @@ class NotificationsPage extends React.Component {
     isSearching: false,
     query: null,
     activeFilter: Filters.PARTICIPATING,
-    activeStatus: Status.QUEUED,
-    currentPage: 1
+    activeStatus: View.UNREAD,
+    currentPage: 1,
+    sort: Sort.SCORE,
+    descending: false
   }
 
   componentDidMount () {
@@ -210,7 +225,7 @@ class NotificationsPage extends React.Component {
         query: text,
         isSearching: false
        });
-    }, 500);
+    }, 800);
   }
 
   enhancedOnStageThread = (thread_id, repository) => {
@@ -326,20 +341,48 @@ class NotificationsPage extends React.Component {
 
     let notificationsToRender = [];
     switch (this.state.activeStatus) {
-      case Status.CLOSED:
+      case View.ARCHIVED:
         notificationsToRender = notificationsClosed;
         break;
-      case Status.STAGED:
+      case View.READ:
         notificationsToRender = notificationsStaged;
         break;
-      case Status.QUEUED:
+      case View.UNREAD:
       default:
         notificationsToRender = notificationsQueued;
     }
 
     let scoredAndSortedNotifications = notificationsToRender
-      .map(decorateWithScore)
-      .sort((a, b) => b.score - a.score);
+      .map(decorateWithScore);
+
+    if (this.state.sort === Sort.TITLE) {
+      if (this.state.descending) {
+        scoredAndSortedNotifications.sort((a, b) => a.name.localeCompare(b.name));
+      } else {
+        scoredAndSortedNotifications.sort((a, b) => b.name.localeCompare(a.name));
+      }
+    }
+    if (this.state.sort === Sort.SCORE) {
+      if (this.state.descending) {
+        scoredAndSortedNotifications.sort((a, b) => a.score - b.score);
+      } else {
+        scoredAndSortedNotifications.sort((a, b) => b.score - a.score);
+      }
+    }
+    if (this.state.sort === Sort.REPOSITORY) {
+      if (this.state.descending) {
+        scoredAndSortedNotifications.sort((a, b) => a.repository.localeCompare(b.repository));
+      } else {
+        scoredAndSortedNotifications.sort((a, b) => b.repository.localeCompare(a.repository));
+      }
+    }
+    if (this.state.sort === Sort.TYPE) {
+      if (this.state.descending) {
+        scoredAndSortedNotifications.sort((a, b) => a.type.localeCompare(b.type));
+      } else {
+        scoredAndSortedNotifications.sort((a, b) => b.type.localeCompare(a.type));
+      }
+    }
 
     // We gotta make sure to search notifications before we paginate.
     // Otherwise we'd just end up searching on the current page, which is bad.
@@ -385,6 +428,12 @@ class NotificationsPage extends React.Component {
       stagedCount,
       closedCount,
     } = this.getFilteredNotifications();
+
+    const [highestScore, lowestScore] = scoredAndSortedNotifications.reduce(([h, l], notification) => {
+      h = Math.max(notification.score, h);
+      l = Math.min(notification.score, l);
+      return [h, l];
+    }, [0, Infinity]);
 
     let firstIndex = (this.state.currentPage - 1) * PER_PAGE;
     let lastIndex = (this.state.currentPage * PER_PAGE);
@@ -445,6 +494,15 @@ class NotificationsPage extends React.Component {
         isFetchingNotifications={isFetchingNotifications}
         fetchingNotificationsError={fetchingNotificationsError || this.state.error}
         onSetActiveFilter={this.onSetActiveFilter}
+        highestScore={highestScore}
+        lowestScore={lowestScore}
+        hasUnread={this.isUnreadTab}
+        sort={this.state.sort}
+        setSort={sort => this.setState({sort})}
+        descending={this.state.descending}
+        setDescending={descending => this.setState({descending})}
+        view={this.state.activeStatus}
+        setView={this.onSetActiveStatus}
       />
     );
   }

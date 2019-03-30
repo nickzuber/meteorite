@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from "@reach/router";
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import { routes } from '../../constants';
 import { AuthenticationButton } from '../../components/buttons';
 import LoadingIcon from '../../components/LoadingIcon';

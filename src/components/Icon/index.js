@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 
 import alarm from './svg/alarm.svg';
 import allInbox from './svg/all_inbox.svg';

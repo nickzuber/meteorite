@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link as RouterLink } from "@reach/router";
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import { routes } from '../../constants';
 import Curve from '../../components/Curve';
 import Icon from '../../components/Icon';

@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment';
 // import {VictoryPie, VictoryChart} from "victory";
 import {Link} from "@reach/router";
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import Icon from '../../components/Icon';
 import Logo from '../../components/Logo';
 import LoadingIcon from '../../components/LoadingIcon';
@@ -13,6 +13,8 @@ import {withOnEnter, withTooltip} from '../../enhance';
 import {Status} from '../../constants/status';
 import {Reasons, Badges} from '../../constants/reasons';
 import '../../styles/gradient.css';
+
+import {default as RedesignScene} from './redesign/Scene';
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable no-script-url */
@@ -707,7 +709,11 @@ export default function Scene ({
   fetchingNotificationsError,
   activeFilter,
   onSetActiveFilter,
-  setNotificationsPermission
+  setNotificationsPermission,
+  highestScore,
+  lowestScore,
+  hasUnread,
+  ...props
 }) {
   const loading = isSearching || isFetchingNotifications;
   const isFirstPage = page === 1;
@@ -730,6 +736,31 @@ export default function Scene ({
   // Trim off the weekends.
   lastWeekStats = lastWeekStats.slice(1, -1);
   thisWeekStats = thisWeekStats.slice(1, -1);
+
+  return (
+    <RedesignScene
+      notifications={notifications}
+      notificationsPermission={notificationsPermission}
+      highestScore={highestScore}
+      lowestScore={lowestScore}
+      hasUnread={hasUnread}
+      unreadCount={queuedCount}
+      readCount={stagedCount}
+      archivedCount={closedCount}
+      loading={loading}
+      isLastPage={isLastPage}
+      isFirstPage={isFirstPage}
+      page={page}
+      onChangePage={onChangePage}
+      view={activeFilter}
+      setView={onSetActiveFilter}
+      query={query}
+      onClearQuery={onClearQuery}
+      onSearch={onSearch}
+      isSearching={isSearching}
+      {...props}
+    />
+  );
 
   return (
     <div style={{marginTop: 60}}>
