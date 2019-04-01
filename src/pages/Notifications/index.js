@@ -23,7 +23,8 @@ export const Sort = {
   TYPE: 1,
   TITLE: 0,
   REPOSITORY: 2,
-  SCORE: 3
+  SCORE: 3,
+  DATE: 4
 };
 
 export const View = {
@@ -386,6 +387,13 @@ class NotificationsPage extends React.Component {
         scoredAndSortedNotifications.sort((a, b) => a.type.localeCompare(b.type));
       } else {
         scoredAndSortedNotifications.sort((a, b) => b.type.localeCompare(a.type));
+      }
+    }
+    if (this.state.sort === Sort.DATE) {
+      if (this.state.descending) {
+        scoredAndSortedNotifications.sort((a, b) => moment(a.updated_at).diff(b.updated_at));
+      } else {
+        scoredAndSortedNotifications.sort((a, b) => moment(b.updated_at).diff(a.updated_at));
       }
     }
 

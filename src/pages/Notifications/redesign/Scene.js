@@ -577,6 +577,7 @@ const NotificationByline = styled('span')`
 
 const ProfileContainer = styled('div')`
   display: flex;
+  height: 100%;
   justify-content: center;
   align-items: center;
   border-left: 1px solid #edeef0;
@@ -700,8 +701,9 @@ function SortingItem ({children, selected, onChange, descending, setDescending, 
         }
         onChange(props.sort)
       }}
+      {...props}
     >
-      <span {...props}>
+      <span>
         {children}
       </span>
       <i css={css`
@@ -825,10 +827,10 @@ export default function Scene ({
               position: absolute !important;
               left: 50%;
               margin-left: -18px;
-              opacity: 0.75;
+              opacity: 0.6;
               transition: all 200ms ease;
               &:hover {
-                opacity: 0.5;
+                opacity: 0.7;
               }
             `}
             onClick={() => window.scrollTo(0, 0)}
@@ -892,7 +894,7 @@ export default function Scene ({
                     <i className="fas fa-ellipsis-v"></i>
                   </IconLink>
                   <InteractionMenu show={dropdownOpen}>
-                    <Card>
+                    <Card css={css`padding: 0;`}>
                       <div onClick={event => {
                         event.stopPropagation();
                         onFetchNotifications();
@@ -1120,7 +1122,16 @@ export default function Scene ({
                 </NotificationCell>
                 {/* Actions */}
                 <NotificationCell width={70}>
-                  &nbsp;
+                  <SortingItem
+                    sort={Sort.DATE}
+                    descending={descending}
+                    setDescending={setDescending}
+                    selected={sort === Sort.DATE}
+                    onChange={setSort}
+                    css={css`justify-content: center;`}
+                  >
+                    {'Date'}
+                  </SortingItem>
                 </NotificationCell>
               </NotificationRowHeader>
               {loading ? (
