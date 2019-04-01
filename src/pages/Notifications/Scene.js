@@ -698,7 +698,7 @@ export default function Scene ({
   // onClearQuery,
   // onLogout,
   // onSearch,
-  // onMarkAsRead,
+  onMarkAsRead,
   // onMarkAllAsStaged,
   // onFetchNotifications,
   // onStageThread,
@@ -742,6 +742,7 @@ export default function Scene ({
       loading={loading}
       isFirstPage={isFirstPage}
       isLastPage={isLastPage}
+      onArchiveThread={onMarkAsRead}
       {...props}
     />
   );

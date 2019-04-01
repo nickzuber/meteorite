@@ -99,9 +99,6 @@ function getMessageFromReasons (reasons, type) {
       return 'Something was updated';
   }
 }
-// ========================================================================
-// END OF 'MOVE TO A UTILS FILE'
-// ========================================================================
 
 function createColorOfScore (min, max) {
   return function (score) {
@@ -118,6 +115,10 @@ function createColorOfScore (min, max) {
     return '#ecc114';
   }
 }
+
+// ========================================================================
+// END OF 'MOVE TO A UTILS FILE'
+// ========================================================================
 
 const loadingKeyframe = keyframes`
   100% {
@@ -736,8 +737,8 @@ export default function Scene ({
   onClearCache,
   setNotificationsPermission,
   onStageThread,
+  onArchiveThread,
 }) {
-  console.warn('unreadCount', unreadCount)
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [mode, setMode] = React.useState(Mode.ALL);
@@ -1121,7 +1122,8 @@ export default function Scene ({
                   notifications={notifications}
                   page={page}
                   colorOfScore={createColorOfScore(lowestScore, highestScore)}
-                  onTitleClick={onStageThread}
+                  markAsRead={onStageThread}
+                  markAsArchived={onArchiveThread}
                 />
               )}
             </NotificationsTable>
@@ -1135,7 +1137,8 @@ export default function Scene ({
 function NotificationCollection ({
   notifications,
   colorOfScore,
-  onTitleClick,
+  markAsRead,
+  markAsArchived,
   page
 }) {
   const props = useSpring({
@@ -1159,7 +1162,7 @@ function NotificationCollection ({
             flex={4}
             onClick={() => {
               window.open(item.url);
-              onTitleClick(item.id, item.repository);
+              markAsRead(item.id, item.repository);
             }}
             css={css`
               font-weight: 500;
@@ -1198,10 +1201,10 @@ function NotificationCollection ({
               width: 40px;
             }
           `}>
-            <IconLink>
+            <IconLink onClick={() => markAsRead(item.id, item.repository)}>
               <i className="fas fa-check"></i>
             </IconLink>
-            <IconLink>
+            <IconLink onClick={() => markAsArchived(item.id, item.repository)}>
               <i className="fas fa-times"></i>
             </IconLink>
           </NotificationCell>
