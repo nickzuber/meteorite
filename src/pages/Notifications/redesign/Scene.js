@@ -37,11 +37,10 @@ function stringOfType (type) {
 }
 
 function getPRIssueIcon (type, _reasons) {
-  const scale = 1.5;
   switch (type) {
     case 'PullRequest':
       return (
-        <NotificationIconWrapper>
+        <NotificationIconWrapper css={css`background: #DBE7FF;`}>
           <i className="fas fa-code-branch" css={css`
             color: #4C84FF;
             font-size: 18px;
@@ -50,8 +49,11 @@ function getPRIssueIcon (type, _reasons) {
       );
     case 'Issue':
       return (
-        <NotificationIconWrapper>
-          <Icon.IssueOpen shrink={scale} />
+        <NotificationIconWrapper css={css`background: #47af4c24;`}>
+          <i className="fas fa-exclamation" css={css`
+            color: #47af4c;
+            font-size: 18px;
+          `}></i>
         </NotificationIconWrapper>
       );
     default:
@@ -126,6 +128,14 @@ const loadingKeyframe = keyframes`
   }
 `;
 
+const Title = styled('h1')`
+  margin: 0;
+  font-size: 2rem;
+  line-height: 3rem;
+  font-weight: 500;
+  letter-spacing: -1.05px;
+`;
+
 const Container = styled('div')`
   position: relative;
   display: block;
@@ -184,13 +194,18 @@ const CardSection = styled('div')`
 `;
 
 const Card = styled('div')`
-  width: 298px;
+  width: 250px;
+  padding: 20px 24px;
   height: 100px;
   margin: 32px auto 0;
   background: ${WHITE};
   border: 1px solid #E5E6EB;
   box-shadow: rgba(84, 70, 35, 0) 0px 2px 8px, rgba(84,70,35,0.15) 0px 1px 3px;
   border-radius: 6px;
+`;
+
+const CardTitle = styled(Title)`
+  font-size: 1.5em;
 `;
 
 const IconContainer = styled('div')`
@@ -257,14 +272,6 @@ const SubTitleSection = styled('div')`
     font-size: 1rem;
     color: #19223dab;
   }
-`;
-
-const Title = styled('h1')`
-  margin: 0;
-  font-size: 2rem;
-  line-height: 3rem;
-  font-weight: 500;
-  letter-spacing: -1.05px;
 `;
 
 const UnorderedList = styled('ul')`
@@ -604,7 +611,6 @@ const ProfilePicture = styled('img')`
 `;
 
 const NotificationIconWrapper = styled('div')`
-  background: #DBE7FF;
   width: 48px;
   height: 48px;
   display: flex;
@@ -710,6 +716,7 @@ function SortingItem ({children, selected, onChange, descending, setDescending, 
 export default function Scene ({
   notifications,
   notificationsPermission,
+  currentTime,
   highestScore,
   lowestScore,
   hasUnread,
@@ -814,11 +821,18 @@ export default function Scene ({
             }} />}
           </SearchField>
           <Logo
-            style={{left: '50%', marginLeft: -18, position: 'absolute', opacity: 0.25}}
-            onClick={() => {
-              window.scrollTo(0, 0);
-            }}
-            size={36}
+            css={css`
+              position: absolute !important;
+              left: 50%;
+              margin-left: -18px;
+              opacity: 0.5;
+              transition: all 200ms ease;
+              &:hover {
+                opacity: 0.75;
+              }
+            `}
+            onClick={() => window.scrollTo(0, 0)}
+            size={32}
           />
           {user && (
             <ProfileContainer>
@@ -864,7 +878,9 @@ export default function Scene ({
         </MenuContainerItem>
         <ContentItem>
           <CardSection>
-            <Card />
+            <Card>
+              <CardTitle>{currentTime.format('dddd, MMMM Do')}</CardTitle>
+            </Card>
             <Card />
           </CardSection>
           <NotificationsSection>

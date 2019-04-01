@@ -1,5 +1,5 @@
 import React from 'react';
-import meteoriteLogo from './icon-black.png';
+import meteoriteLogo from './icon-gray.png';
 
 export default function LoadingIcon ({ style, size, ...props }) {
   return (
@@ -7,6 +7,7 @@ export default function LoadingIcon ({ style, size, ...props }) {
       background: `url(${meteoriteLogo}) center center no-repeat`,
       backgroundSize: 'contain',
       position: 'relative',
+      cursor: props.onClick ? 'pointer' : 'default',
       height: size,
       width: size,
       ...style
