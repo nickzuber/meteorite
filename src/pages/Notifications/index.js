@@ -14,8 +14,8 @@ import { Reasons, Badges } from '../../constants/reasons';
 import Scene, { getMessageFromReasons } from './Scene';
 import issueIcon from '../../images/issue-bg.png';
 import prIcon from '../../images/pr-bg.png';
-import tabIcon from '../../images/icon.png';
-import tabDotIcon from '../../images/iconDot.png';
+import tabIcon from '../../images/iconCircle.png';
+import tabDotIcon from '../../images/iconCircleDotAlt.png';
 
 export const PER_PAGE = 10;
 

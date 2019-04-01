@@ -825,10 +825,10 @@ export default function Scene ({
               position: absolute !important;
               left: 50%;
               margin-left: -18px;
-              opacity: 0.5;
+              opacity: 0.75;
               transition: all 200ms ease;
               &:hover {
-                opacity: 0.75;
+                opacity: 0.5;
               }
             `}
             onClick={() => window.scrollTo(0, 0)}
