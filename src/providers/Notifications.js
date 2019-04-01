@@ -119,6 +119,7 @@ class NotificationsProvider extends React.Component {
     }).then(processHeadersAndBodyJson)
       .then(({json}) => {
         this.props.setUserItem('user-model', json);
+        return json;
       });
   }
 
