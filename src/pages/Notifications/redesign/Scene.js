@@ -3,10 +3,12 @@
 import React from 'react';
 import moment from 'moment';
 import styled from '@emotion/styled';
-import {css, jsx} from '@emotion/core';
+import {css, jsx, keyframes} from '@emotion/core';
 import {useSpring, useTransition, animated} from 'react-spring'
 import Icon from '../../../components/Icon';
+import Logo from '../../../components/Logo';
 import LoadingIcon from '../../../components/LoadingIcon';
+import {Reasons, Badges} from '../../../constants/reasons';
 import {withOnEnter} from '../../../enhance';
 import {Sort, View} from '../index';
 
@@ -19,8 +21,21 @@ const Mode = {
   COMMENTED: 2
 };
 
-// @TODO if GitHub ever fixes their API, we can use `reasons` to know when
-// a PR/Issue merges/closes/etc.
+// ========================================================================
+// START OF 'MOVE TO A UTILS FILE'
+// ========================================================================
+
+function stringOfType (type) {
+  switch (type) {
+    case 'PullRequest':
+      return 'pull request';
+    case 'Issue':
+      return 'issue';
+    default:
+      return 'task';
+  }
+}
+
 function getPRIssueIcon (type, _reasons) {
   const scale = 1.5;
   switch (type) {
@@ -43,20 +58,72 @@ function getPRIssueIcon (type, _reasons) {
       return null;
   }
 }
+function getRelativeTime (time) {
+  const currentTime = moment();
+  const targetTime = moment(time);
+  const diffMinutes = currentTime.diff(targetTime, 'minutes');
+  if (diffMinutes < 1)
+    return 'Just now';
+  if (diffMinutes < 5)
+    return 'Few minutes ago';
+  if (diffMinutes < 60)
+    return diffMinutes + ' minutes ago';
+  if (diffMinutes < 60 * 24)
+    return Math.floor(diffMinutes / 60) + ' hours ago';
 
-function colorOfScore (score, min, max) {
-  const ratio = (score - min) / (max - min);
-  if (ratio > .9) return '#ec1461';
-  if (ratio > .8) return '#ec5314';
-  if (ratio > .7) return '#ec5314';
-  if (ratio > .6) return '#ec7b14';
-  if (ratio > .5) return '#ec7b14';
-  if (ratio > .4) return '#ec9914';
-  if (ratio > .3) return '#ec9914';
-  if (ratio > .2) return '#ecad14';
-  if (ratio > .1) return '#ecad14';
-  return '#ecc114';
+  const diffDays = currentTime.diff(targetTime, 'days');
+  if (diffDays === 1)
+    return 'Yesterday';
+  if (diffDays <= 7)
+    return 'Last ' + targetTime.format('dddd');
+  // @TODO implement longer diffs
+  return 'Over a week ago';
 }
+
+function getMessageFromReasons (reasons, type) {
+  switch (reasons[reasons.length - 1].reason) {
+    case Reasons.ASSIGN:
+      return 'You were assigned';
+    case Reasons.AUTHOR:
+      return 'There was activity on this thread you created';
+    case Reasons.COMMENT:
+      return 'Somebody left a comment';
+    case Reasons.MENTION:
+      return 'You were mentioned';
+    case Reasons.REVIEW_REQUESTED:
+      return 'Your review was requested';
+    case Reasons.SUBSCRIBED:
+      return 'There was an update and you\'re subscribed';
+    case Reasons.OTHER:
+    default:
+      return 'Something was updated';
+  }
+}
+// ========================================================================
+// END OF 'MOVE TO A UTILS FILE'
+// ========================================================================
+
+function createColorOfScore (min, max) {
+  return function (score) {
+    const ratio = (score - min) / (max - min);
+    if (ratio > .9) return '#ec1461';
+    if (ratio > .8) return '#ec5314';
+    if (ratio > .7) return '#ec5314';
+    if (ratio > .6) return '#ec7b14';
+    if (ratio > .5) return '#ec7b14';
+    if (ratio > .4) return '#ec9914';
+    if (ratio > .3) return '#ec9914';
+    if (ratio > .2) return '#ecad14';
+    if (ratio > .1) return '#ecad14';
+    return '#ecc114';
+  }
+}
+
+const loadingKeyframe = keyframes`
+  100% {
+    transform: translateX(100%);
+  }
+`;
 
 const Container = styled('div')`
   position: relative;
@@ -219,7 +286,6 @@ const SearchField = styled('div')`
   position: relative;
   float: left;
   text-align: left;
-  // box-shadow: rgba(84,70,35,0.01) 0px 2px 19px 8px, rgba(84, 70, 35, 0.11) 0px 2px 12px;
   align-items: center;
   height: 36px;
   font-size: 13px;
@@ -236,6 +302,7 @@ const SearchField = styled('div')`
   }
   &:focus-within {
     border: 1px solid #457cff;
+    box-shadow: rgba(84,70,35,0.01) 0px 2px 19px 8px, rgba(84, 70, 35, 0.11) 0px 2px 12px;
   }
   i {
     color: #bfc5d1;
@@ -271,7 +338,7 @@ const SearchInput = styled('input')`
   &:focus {
     opacity: 1;
     color: rgb(55, 53, 47);
-    width: 500px;
+    width: 300px;
   }
 `;
 const EnhancedSearchInput = withOnEnter(SearchInput);
@@ -415,7 +482,7 @@ const NotificationRow = styled(NotificationRowHeader)`
   position: relative;
   background: ${WHITE};
   border-radius: 4px;
-  padding: 2px 18px;
+  padding: 6px 18px;
   font-size: 14px;
   margin-bottom: 12px;
   border-radius: 6px;
@@ -424,13 +491,41 @@ const NotificationRow = styled(NotificationRowHeader)`
   transition: all 200ms ease;
   &:hover {
     box-shadow: rgba(84,70,35,0.01) 0px 2px 19px 8px, rgba(84, 70, 35, 0.11) 0px 2px 12px;
-    // background: rgb(252, 250, 248);
+  };
+  &:active {
+    background: rgb(252, 250, 248);
   };
 `;
 
-const NotificationBlock = styled('tbody')`
-
+const LoadingNotificationRow = styled(NotificationRowHeader)`
+  position: relative;
+  background: ${WHITE};
+  height: 62px;
+  overflow: hidden;
+  border-radius: 4px;
+  padding: 6px 18px;
+  font-size: 14px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 200ms ease;
+  opacity: 0.75;
+  &:after {
+    background: linear-gradient(90deg, transparent, #f9f8f5, transparent);
+    display: block;
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    animation: ${loadingKeyframe} 2.0s infinite;
+  }
 `;
+
+const NotificationBlock = styled('tbody')``;
 
 const AnimatedNotificationRow = animated(NotificationRow);
 const AnimatedNotificationsBlock = animated(NotificationBlock);
@@ -446,6 +541,65 @@ const NotificationCell = styled('td')`
       return props.flex || 1;
     }
   }};
+`;
+
+const NotificationTitle = styled('span')``;
+const NotificationByline = styled('span')`
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #8893a7cc;
+  i {
+    margin-right: 4px;
+    font-size: 10px;
+    color: #8893a7cc;
+  }
+  span {
+    margin-left: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #8893a7cc;
+    i {
+      margin-right: 4px;
+      font-size: 9px;
+      color: #8893a7cc;
+    }
+  }
+`;
+
+const ProfileContainer = styled('div')`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-left: 1px solid #edeef0;
+  padding: 0 22px;
+  position: absolute;
+  right: 0;
+  transition: all 200ms ease;
+  user-select: none;
+  cursor: pointer;
+  i {
+    transition: all 200ms ease;
+    color: #bfc5d1a3
+  }
+  &:hover {
+    background: rgba(233, 233, 233, .25);
+    i {
+      color: #bfc5d1
+    }
+  }
+`;
+
+const ProfileName = styled('span')`
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0 12px;
+`;
+
+const ProfilePicture = styled('img')`
+  height: 36px;
+  width: 36px;
+  border-radius: 4px;
 `;
 
 const NotificationIconWrapper = styled('div')`
@@ -535,7 +689,7 @@ function SortingItem ({children, selected, onChange, descending, setDescending, 
         if (selected) {
           setDescending(!descending);
         } else {
-          setDescending(true);
+          setDescending(false);
         }
         onChange(props.sort)
       }}
@@ -576,7 +730,14 @@ export default function Scene ({
   onClearQuery,
   onSearch,
   isSearching,
+  user,
+  onFetchNotifications,
+  onMarkAllAsStaged,
+  onClearCache,
+  setNotificationsPermission,
+  onStageThread,
 }) {
+  console.warn('unreadCount', unreadCount)
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [mode, setMode] = React.useState(Mode.ALL);
@@ -603,15 +764,6 @@ export default function Scene ({
   //   }
   // });
 
-  const props = useSpring({
-    from: {opacity: 0, transform: 'translate3d(50px, 0, 0)'},
-    to: {opacity: 1, transform: 'translate3d(0, 0, 0)'},
-    config: {
-      tension: 300,
-      duration: 200,
-    }
-  });
-
   React.useEffect(() => {
     const body = window.document.querySelector('body');
     const hideDropdownMenu = () => setDropdownOpen(false);
@@ -621,7 +773,14 @@ export default function Scene ({
 
   return (
     <Container>
-      <Row style={{height: COLLAPSED_WIDTH}}>
+      <Row css={css`
+        position: fixed;
+        top: 0;
+        height: ${COLLAPSED_WIDTH};
+        background: ${WHITE};
+        z-index: 10;
+        width: 100%;
+      `}>
         <MenuHeaderItem expand={menuOpen}>
           <MenuIconItem
             alwaysActive
@@ -653,9 +812,26 @@ export default function Scene ({
               backgroundColor: 'white'
             }} />}
           </SearchField>
+          <Logo
+            style={{left: '50%', marginLeft: -18, position: 'absolute', opacity: 0.25}}
+            onClick={() => {
+              window.scrollTo(0, 0);
+            }}
+            size={36}
+          />
+          {user && (
+            <ProfileContainer>
+              <ProfilePicture src={user.avatar_url} />
+              <ProfileName>{user.name}</ProfileName>
+              <i className="fas fa-caret-down"></i>
+            </ProfileContainer>
+          )}
         </ContentHeaderItem>
       </Row>
-      <Row style={{height: `calc(100% - ${COLLAPSED_WIDTH})`}}>
+      <Row css={css`
+        height: calc(100% - ${COLLAPSED_WIDTH});
+        margin-top: ${COLLAPSED_WIDTH};
+      `}>
         <MenuContainerItem expand={menuOpen}>
           <MenuIconItem
             mode={Mode.ALL}
@@ -700,19 +876,46 @@ export default function Scene ({
                   </IconLink>
                   <InteractionMenu show={dropdownOpen}>
                     <Card>
-                      <div>
+                      <div onClick={event => {
+                        event.stopPropagation();
+                        onFetchNotifications();
+                        setDropdownOpen(false);
+                      }}>
                         <h2>Reload notifications</h2>
                         <p>Manually fetch new notifications instead of waiting for the sync</p>
                       </div>
-                      <div>
+                      <div onClick={event => {
+                        event.stopPropagation();
+                        const response = window.confirm('Are you sure you want to mark all your notifications as read?');
+                        void (response && onMarkAllAsStaged());
+                        setDropdownOpen(false);
+                      }}>
                         <h2>Mark all as read</h2>
                         <p>Move all your unread notifications to the read tab</p>
                       </div>
-                      <div>
+                      <div onClick={event => {
+                        event.stopPropagation();
+                        const response = window.confirm('Are you sure you want to clear the cache?');
+                        void (response && onClearCache());
+                        setDropdownOpen(false);
+                      }}>
                         <h2>Empty cache</h2>
                         <p>Clear all the notifications that are being tracked in your local storage</p>
                       </div>
-                      <div>
+                      <div onClick={event => {
+                        event.stopPropagation();
+                        switch(notificationsPermission) {
+                          case 'granted':
+                            return setNotificationsPermission('denied');
+                          case 'denied':
+                          case 'default':
+                          default:
+                            Notification.requestPermission().then(result => {
+                              return setNotificationsPermission(result);
+                            });
+                        }
+                        setDropdownOpen(false);
+                      }}>
                         <h2>Turn {hasNotificationsOn ? 'off' : 'on'} notifications</h2>
                         <p>
                           {hasNotificationsOn
@@ -740,6 +943,7 @@ export default function Scene ({
                 {'Unread'}
                 {unreadCount > 0 && (
                   <span css={css`
+                    transition: all 200ms ease;
                     background: ${view === View.UNREAD ? '#4880ff' : '#bfc5d1'};
                     color: ${WHITE};
                     font-size: 9px;
@@ -762,6 +966,7 @@ export default function Scene ({
                 {'Read'}
                 {readCount > 0 && (
                   <span css={css`
+                    transition: all 200ms ease;
                     background: ${view === View.READ ? '#4880ff' : '#bfc5d1'};
                     color: ${WHITE};
                     font-size: 9px;
@@ -784,6 +989,7 @@ export default function Scene ({
                 {'Archived'}
                 {archivedCount > 0 && (
                   <span css={css`
+                    transition: all 200ms ease;
                     background: ${view === View.ARCHIVED ? '#4880ff' : '#bfc5d1'};
                     color: ${WHITE};
                     font-size: 9px;
@@ -815,7 +1021,7 @@ export default function Scene ({
                       margin-right: 8px;
                       span {
                         font-size: 13px;
-                        color: #797d8c;
+                        color: #37352f;
                         font-weight: 600;
                         vertical-align: text-top;
                       }
@@ -900,56 +1106,107 @@ export default function Scene ({
                   &nbsp;
                 </NotificationCell>
               </NotificationRowHeader>
-              <AnimatedNotificationsBlock style={props} page={page}>
-                {notifications.map(item => (
-                  <AnimatedNotificationRow key={notifications.id}>
-                    {/* Type */}
-                    <NotificationCell width={80}>
-                      {getPRIssueIcon(item.type, item.reasons)}
-                    </NotificationCell>
-                    {/* Title */}
-                    <NotificationCell flex={4} css={css`
-                        font-weight: 500;
-                    `}>
-                      {item.name}
-                    </NotificationCell>
-                    {/* Repository */}
-                    <NotificationCell flex={2} css={css`
-                        font-weight: 500;
-                        color: #8994A6;
-                    `}>
-                      {'@' + item.repository}
-                    </NotificationCell>
-                    {/* Score */}
-                    <NotificationCell width={60} css={css`
-                        font-weight: 600;
-                        color: ${colorOfScore(item.score, lowestScore, highestScore)};
-                        font-size: 12px;
-                        text-align: center;
-                    `}>
-                      {'+' + item.score}
-                    </NotificationCell>
-                    <NotificationCell width={80} css={css`
-                      i {
-                        padding: 13px 0;
-                        text-align: center;
-                        width: 40px;
-                      }
-                    `}>
-                      <IconLink>
-                        <i className="fas fa-check"></i>
-                      </IconLink>
-                      <IconLink>
-                        <i className="fas fa-times"></i>
-                      </IconLink>
-                    </NotificationCell>
-                  </AnimatedNotificationRow>
-                ))}
-              </AnimatedNotificationsBlock>
+              {loading ? (
+                <NotificationBlock>
+                  <LoadingNotificationRow />
+                  <LoadingNotificationRow />
+                  <LoadingNotificationRow />
+                  <LoadingNotificationRow />
+                  <LoadingNotificationRow />
+                  <LoadingNotificationRow />
+                  <LoadingNotificationRow />
+                </NotificationBlock>
+              ) : (
+                <NotificationCollection
+                  notifications={notifications}
+                  page={page}
+                  colorOfScore={createColorOfScore(lowestScore, highestScore)}
+                  onTitleClick={onStageThread}
+                />
+              )}
             </NotificationsTable>
           </NotificationsSection>
         </ContentItem>
       </Row>
     </Container>
+  );
+}
+
+function NotificationCollection ({
+  notifications,
+  colorOfScore,
+  onTitleClick,
+  page
+}) {
+  const props = useSpring({
+    from: {opacity: 0},
+    to: {opacity: 1},
+    config: {
+      duration: 200,
+    }
+  });
+
+  return (
+    <AnimatedNotificationsBlock style={props} page={page}>
+      {notifications.map(item => (
+        <AnimatedNotificationRow key={notifications.id}>
+          {/* Type */}
+          <NotificationCell width={80}>
+            {getPRIssueIcon(item.type, item.reasons)}
+          </NotificationCell>
+          {/* Title */}
+          <NotificationCell
+            flex={4}
+            onClick={() => {
+              window.open(item.url);
+              onTitleClick(item.id, item.repository);
+            }}
+            css={css`
+              font-weight: 500;
+          `}>
+            <NotificationTitle>
+              {item.name}
+            </NotificationTitle>
+            <NotificationByline>
+              {getMessageFromReasons(item.reasons, item.type)}
+              {` ${getRelativeTime(item.updated_at).toLowerCase()}`}
+            </NotificationByline>
+          </NotificationCell>
+          {/* Repository */}
+          <NotificationCell
+            flex={2}
+            onClick={() => window.open(item.repositoryUrl)}
+            css={css`
+              font-weight: 500;
+              color: #8994A6;
+          `}>
+            {'@' + item.repository}
+          </NotificationCell>
+          {/* Score */}
+          <NotificationCell width={60} css={css`
+            font-weight: 600;
+            color: ${colorOfScore(item.score)};
+            font-size: 12px;
+            text-align: center;
+          `}>
+            {'+' + item.score}
+          </NotificationCell>
+          <NotificationCell width={80} css={css`
+            i {
+              padding: 13px 0;
+              text-align: center;
+              width: 40px;
+            }
+          `}>
+            <IconLink>
+              <i className="fas fa-check"></i>
+            </IconLink>
+            <IconLink>
+              <i className="fas fa-times"></i>
+            </IconLink>
+          </NotificationCell>
+        </AnimatedNotificationRow>
+      ))}
+    </AnimatedNotificationsBlock>
   );
 }

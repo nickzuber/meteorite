@@ -148,7 +148,8 @@ class NotificationsPage extends React.Component {
     activeStatus: View.UNREAD,
     currentPage: 1,
     sort: Sort.SCORE,
-    descending: false
+    descending: false,
+    user: null
   }
 
   componentDidMount () {
@@ -160,6 +161,9 @@ class NotificationsPage extends React.Component {
     }
 
     this.props.notificationsApi.fetchNotifications();
+    this.props.notificationsApi.requestUser().then(user => {
+      this.setState({user});
+    });
 
     this.tabSyncer = setInterval(() => {
       if (!document.hidden && this.isUnreadTab) {
@@ -216,6 +220,7 @@ class NotificationsPage extends React.Component {
 
     // Ignore empty queries.
     if (text.length <= 0) {
+      this.onClearQuery();
       return;
     }
 
@@ -335,9 +340,9 @@ class NotificationsPage extends React.Component {
 
     const filteredNotifications = notifications.filter(filterMethod);
 
-    const notificationsQueued = filteredNotifications.filter(n => n.status === Status.QUEUED);
-    const notificationsStaged = filteredNotifications.filter(n => n.status === Status.STAGED);
-    const notificationsClosed = filteredNotifications.filter(n => n.status === Status.CLOSED);
+    let notificationsQueued = filteredNotifications.filter(n => n.status === Status.QUEUED);
+    let notificationsStaged = filteredNotifications.filter(n => n.status === Status.STAGED);
+    let notificationsClosed = filteredNotifications.filter(n => n.status === Status.CLOSED);
 
     let notificationsToRender = [];
     switch (this.state.activeStatus) {
@@ -389,7 +394,16 @@ class NotificationsPage extends React.Component {
     if (this.state.query) {
       scoredAndSortedNotifications = scoredAndSortedNotifications.filter(n => (
         n.name.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1)
-      )
+      );
+      notificationsQueued = notificationsQueued.filter(n => (
+        n.name.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1)
+      );
+      notificationsStaged = notificationsStaged.filter(n => (
+        n.name.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1)
+      );
+      notificationsClosed = notificationsClosed.filter(n => (
+        n.name.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1)
+      );
     }
 
     if (this.props.notificationsApi.newChanges) {
@@ -465,9 +479,9 @@ class NotificationsPage extends React.Component {
         isFirstTimeUser={this.state.isFirstTimeUser}
         setNotificationsPermission={this.setNotificationsPermission}
         notificationsPermission={notificationsPermission}
-        queuedCount={queuedCount}
-        stagedCount={stagedCount}
-        closedCount={closedCount}
+        unreadCount={queuedCount}
+        readCount={stagedCount}
+        archivedCount={closedCount}
         stagedTodayCount={stagedTodayCount || 0}
         first={firstNumbered}
         last={lastNumbered}
@@ -503,6 +517,7 @@ class NotificationsPage extends React.Component {
         setDescending={descending => this.setState({descending})}
         view={this.state.activeStatus}
         setView={this.onSetActiveStatus}
+        user={this.state.user}
       />
     );
   }

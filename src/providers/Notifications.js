@@ -86,7 +86,9 @@ class NotificationsProvider extends React.Component {
     }
     // Only update if our notifications prop changes.
     // All other props "changing" should NOT trigger a rerender.
-    return this.props.notifications !== nextProps.notifications;
+    return (
+      this.props.notifications !== nextProps.notifications
+    );
   }
 
   // The web notificaitons API doesn't let users revoke notifications permission
@@ -97,6 +99,27 @@ class NotificationsProvider extends React.Component {
     this.setState({notificationsPermission: permission});
     this.props.setUserItem('notificationsPermission', permission);
     this.forceUpdate();
+  }
+
+  requestUser = () => {
+    const headers = {
+      'Authorization': `token ${this.props.token}`,
+      'Content-Type': 'application/json',
+    };
+
+    // @TODO probably add timestamp
+    const cachedUser = this.props.getUserItem('user-model');
+    if (cachedUser) {
+      return Promise.resolve(cachedUser);
+    }
+
+    return fetch(`${BASE_GITHUB_API_URL}/user`, {
+      method: 'GET',
+      headers: headers
+    }).then(processHeadersAndBodyJson)
+      .then(({json}) => {
+        this.props.setUserItem('user-model', json);
+      });
   }
 
   requestPage = (page = 1, optimizePolling = true) => {
@@ -395,6 +418,7 @@ class NotificationsProvider extends React.Component {
   render () {
     return this.props.children({
       ...this.state,
+      requestUser: this.requestUser,
       notifications: this.props.notifications,
       fetchNotifications: this.fetchNotifications,
       fetchNotificationsSync: this.requestFetchNotifications,

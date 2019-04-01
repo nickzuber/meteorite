@@ -18,12 +18,13 @@
 
 ::selection {
   color: #fff;
-  background: #24292e;
+  background: #4880ff;
 }
 
 html, body {
   /* height: 100%; */
   width: 100%;
+  scroll-behavior: smooth;
 }
 
 html, body, * {

@@ -1,5 +1,5 @@
 import React from 'react';
-import meteoriteLogo from './logo-white.png';
+import meteoriteLogo from './icon-black.png';
 
 export default function LoadingIcon ({ style, size, ...props }) {
   return (
