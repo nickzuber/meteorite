@@ -473,7 +473,14 @@ class NotificationsPage extends React.Component {
       lastNumbered = 0;
     }
 
+    const todayLastWeek = this.state.currentTime.clone().subtract(1, 'week');
+
     const stagedTodayCount = this.props.storageApi.getStat('stagedCount')[0];
+    const stagedTodayLastWeekCount = this.props.storageApi.getStat(
+      'stagedCount',
+      todayLastWeek,
+      todayLastWeek.clone().add(1, 'day')
+    )[0];
     const stagedStatistics = this.props.storageApi.getStat(
       'stagedCount',
       this.state.currentTime.clone().startOf('week').subtract(1, 'week'),
@@ -483,14 +490,15 @@ class NotificationsPage extends React.Component {
     return (
       <Scene
         currentTime={this.state.currentTime}
-        stagedStatistics={stagedStatistics}
+        readStatistics={stagedStatistics}
         isFirstTimeUser={this.state.isFirstTimeUser}
         setNotificationsPermission={this.setNotificationsPermission}
         notificationsPermission={notificationsPermission}
         unreadCount={queuedCount}
         readCount={stagedCount}
         archivedCount={closedCount}
-        stagedTodayCount={stagedTodayCount || 0}
+        readTodayCount={stagedTodayCount || 0}
+        readTodayLastWeekCount={stagedTodayLastWeekCount || 0}
         first={firstNumbered}
         last={lastNumbered}
         lastPage={lastPage}

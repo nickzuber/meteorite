@@ -5,6 +5,15 @@ import moment from 'moment';
 import styled from '@emotion/styled';
 import {css, jsx, keyframes} from '@emotion/core';
 import {useSpring, useTransition, animated} from 'react-spring'
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend
+} from 'recharts';
 import Icon from '../../../components/Icon';
 import Logo from '../../../components/Logo';
 import LoadingIcon from '../../../components/LoadingIcon';
@@ -118,6 +127,24 @@ function createColorOfScore (min, max) {
   }
 }
 
+function getPercentageDelta (n, o) {
+  if (n === o) {
+    return 0;
+  } else if (n > o) {
+    return (n - o) / o * 100;
+  } else {
+    return (o - n) / o * 100;
+  }
+}
+
+function prettify (n) {
+  if (Math.floor(n) === n) {
+    return n.toString();
+  } else {
+    return n.toFixed(1);
+  }
+}
+
 // ========================================================================
 // END OF 'MOVE TO A UTILS FILE'
 // ========================================================================
@@ -194,9 +221,10 @@ const CardSection = styled('div')`
 `;
 
 const Card = styled('div')`
+  position: relative;
   width: 250px;
   padding: 20px 24px;
-  height: 100px;
+  min-height: 100px;
   margin: 32px auto 0;
   background: ${WHITE};
   border: 1px solid #E5E6EB;
@@ -205,7 +233,20 @@ const Card = styled('div')`
 `;
 
 const CardTitle = styled(Title)`
+  line-height: 1.5em;
   font-size: 1.5em;
+`;
+
+const CardSubTitle = styled(CardTitle)`
+  font-size: 1.2em;
+  color: #9d9b97;
+`;
+
+const ScoreDiff = styled(CardTitle)`
+  position: absolute;
+  top: 30px;
+  right: 24px;
+  color: ${props => props.under ? '#ef055f' : '#457cff'};
 `;
 
 const IconContainer = styled('div')`
@@ -223,7 +264,7 @@ const IconContainer = styled('div')`
     content: "";
     position: absolute;
     width: 3px;
-    background: ${props => !props.noBorder && props.selected ? props.primary : WHITE};
+    background: ${props => !props.noBorder && props.selected ? props.primary : 'transparent'};
     right: 0;
     top: 4px;
     bottom: 4px;
@@ -270,7 +311,7 @@ const SubTitleSection = styled('div')`
     margin: 8px 0;
     font-weight: 500;
     font-size: 1rem;
-    color: #19223dab;
+    color: #9d9b97;
   }
 `;
 
@@ -715,6 +756,97 @@ function SortingItem ({children, selected, onChange, descending, setDescending, 
   );
 }
 
+function CustomTick ({x, y, stroke, payload}) {
+  if (!payload) return null;
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text
+        x={0}
+        y={0}
+        dy={16}
+        textAnchor="middle"
+        fill="#BFC5D1"
+        fontWeight="600"
+        transform="scale(0.65)"
+      >
+        {payload.value.substring(0, 2)}
+      </text>
+    </g>
+  );
+}
+
+function ReadCountGraph ({data}) {
+  return (
+    <LineChart width={250} height={200} data={data}>
+      <XAxis
+        dataKey="name"
+        interval={0}
+        tickSize={5}
+        tick={<CustomTick />}
+        tickFormatter={tick => tick.substring(0, 2)}
+      />
+      <Tooltip
+        wrapperStyle={{
+          opacity: 0.9
+        }}
+        contentStyle={{
+          background: 'rgb(255,254,252)',
+          border: '1px solid #E5E6EB',
+          borderRadius: 6,
+          boxShadow: 'rgba(84,70,35,0) 0px 2px 8px, rgba(84,70,35,0.15) 0px 1px 3px',
+          minWidth: 100,
+          padding: '6px 12px 8px'
+        }}
+        itemStyle={{
+          fontSize: 12,
+          fontWeight: '500',
+          padding: 0,
+          opacity: .75
+        }}
+        labelStyle={{
+          color: 'rgb(55, 53, 47)',
+          fontSize: 14,
+          fontWeight: '600',
+          padding: 0
+        }}
+        cursor={{
+          stroke: '#BFC5D144',
+          strokeWidth: 2
+        }}
+        animationDuration={400}
+        formatter={(value, name) => {
+          switch (name) {
+            case 'cur':
+              return [value, 'This week'];
+            case 'prev':
+              return [value, 'Last week'];
+            default:
+              return [value, name];
+          }
+        }}
+      />
+      <Line
+        type="monotone"
+        dataKey="prev"
+        stroke="#BFC5D166"
+        strokeWidth="2"
+        animationDuration={0}
+        dot={{ stroke: '#00000000', fill: '#00000000', r: 0 }}
+        activeDot={{ stroke: '#BFC5D166', fill: '#BFC5D166', r: 2 }}
+      />
+      <Line
+        type="monotone"
+        dataKey="cur"
+        stroke="#4880ff"
+        strokeWidth="2"
+        animationDuration={0}
+        dot={{ stroke: '#00000000', fill: '#00000000', r: 0 }}
+        activeDot={{ stroke: '#4880ff', fill: '#4880ff', r: 2 }}
+      />
+    </LineChart>
+  );
+}
+
 export default function Scene ({
   notifications,
   notificationsPermission,
@@ -747,20 +879,30 @@ export default function Scene ({
   setNotificationsPermission,
   onStageThread,
   onArchiveThread,
+  readStatistics,
+  readTodayCount,
+  readTodayLastWeekCount,
 }) {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [mode, setMode] = React.useState(Mode.ALL);
   const hasNotificationsOn = notificationsPermission === 'granted';
 
-  // @TODO move to index file
-  if (sort === Sort.TITLE) {
-    if (descending) {
-      notifications.sort((a, b) => a.name.localeCompare(b.name));
-    } else {
-      notifications.sort((a, b) => b.name.localeCompare(a.name));
-    }
-  }
+  readStatistics = readStatistics.map(n => parseInt(n, 10));
+  const lastWeekStats = readStatistics.slice(0, 7).map(n => n || null);
+  const thisWeekStats = readStatistics.slice(7).map(n => n || null);
+
+  const percentageDeltaToday = getPercentageDelta(readTodayCount, readTodayLastWeekCount);
+
+  const data = [
+    {name: 'Sunday', cur: thisWeekStats[0], prev: lastWeekStats[0]},
+    {name: 'Monday', cur: thisWeekStats[1], prev: lastWeekStats[1]},
+    {name: 'Tuesday', cur: thisWeekStats[2], prev: lastWeekStats[2]},
+    {name: 'Wednesday', cur: thisWeekStats[3], prev: lastWeekStats[3]},
+    {name: 'Thursday', cur: thisWeekStats[4], prev: lastWeekStats[4]},
+    {name: 'Friday', cur: thisWeekStats[5], prev: lastWeekStats[5]},
+    {name: 'Saturday', cur: thisWeekStats[6], prev: lastWeekStats[6]},
+  ];
 
   // const notificationTransitions = useTransition(notifications, item => item.id, {
   //   from: {background: 'green', opacity: 0, transform: 'translate3d(50px, 0, 0)'},
@@ -881,7 +1023,14 @@ export default function Scene ({
         <ContentItem>
           <CardSection>
             <Card>
-              <CardTitle>{currentTime.format('dddd, MMMM Do')}</CardTitle>
+              <CardTitle>{currentTime.format('dddd')}</CardTitle>
+              <CardSubTitle>{currentTime.format('MMMM Do, YYYY')}</CardSubTitle>
+              <ScoreDiff under={readTodayLastWeekCount > readTodayCount}>
+                {readTodayLastWeekCount > readTodayCount ? '-' : '+'}
+                {prettify(percentageDeltaToday)}
+                {'%'}
+              </ScoreDiff>
+              <ReadCountGraph data={data} />
             </Card>
             <Card />
           </CardSection>

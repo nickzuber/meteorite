@@ -90,6 +90,11 @@ div {
   vertical-align: top;
 }
 
+line[stroke="#666"] {
+  stroke-width: 2;
+  stroke: #e5e7ea;
+}
+
 .react-tooltip {
   z-index: 999999;
   pointer-events: none;
