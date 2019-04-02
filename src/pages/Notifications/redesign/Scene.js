@@ -756,7 +756,7 @@ function SortingItem ({children, selected, onChange, descending, setDescending, 
   );
 }
 
-function CustomTick ({x, y, stroke, payload}) {
+function CustomTick ({x, y, payload}) {
   if (!payload) return null;
   return (
     <g transform={`translate(${x},${y})`}>
@@ -775,9 +775,16 @@ function CustomTick ({x, y, stroke, payload}) {
   );
 }
 
-function ReadCountGraph ({data}) {
+function ReadCountGraph ({data, onHover, onExit}) {
   return (
-    <LineChart width={250} height={200} data={data}>
+    <LineChart
+      width={250}
+      height={200}
+      data={data}
+      onMouseEnter={({activePayload}) => onHover(activePayload)}
+      onMouseMove={({activePayload}) => onHover(activePayload)}
+      onMouseLeave={onExit}
+    >
       <XAxis
         dataKey="name"
         interval={0}
@@ -786,6 +793,7 @@ function ReadCountGraph ({data}) {
         tickFormatter={tick => tick.substring(0, 2)}
       />
       <Tooltip
+        isAnimationActive={false}
         wrapperStyle={{
           opacity: 0.9
         }}
@@ -814,6 +822,7 @@ function ReadCountGraph ({data}) {
           strokeWidth: 2
         }}
         animationDuration={400}
+        labelFormatter={() => 'Notifications read'}
         formatter={(value, name) => {
           switch (name) {
             case 'cur':
@@ -883,16 +892,20 @@ export default function Scene ({
   readTodayCount,
   readTodayLastWeekCount,
 }) {
+  const hasNotificationsOn = notificationsPermission === 'granted';
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [mode, setMode] = React.useState(Mode.ALL);
-  const hasNotificationsOn = notificationsPermission === 'granted';
+  const [counts, setCounts] = React.useState({
+    cur: readTodayCount,
+    prev: readTodayLastWeekCount
+  });
 
   readStatistics = readStatistics.map(n => parseInt(n, 10));
   const lastWeekStats = readStatistics.slice(0, 7).map(n => n || null);
   const thisWeekStats = readStatistics.slice(7).map(n => n || null);
 
-  const percentageDeltaToday = getPercentageDelta(readTodayCount, readTodayLastWeekCount);
+  const percentageDeltaToday = getPercentageDelta(counts.cur, counts.prev);
 
   const data = [
     {name: 'Sunday', cur: thisWeekStats[0], prev: lastWeekStats[0]},
@@ -916,12 +929,21 @@ export default function Scene ({
   //   }
   // });
 
+  // Global event listeners for things like the dropdowns & popups.
   React.useEffect(() => {
     const body = window.document.querySelector('body');
     const hideDropdownMenu = () => setDropdownOpen(false);
     body.addEventListener('click', hideDropdownMenu);
     return () => body.removeEventListener('click', hideDropdownMenu);
   }, []);
+
+  // Updating the counts when new stats come in.
+  React.useEffect(() => {
+    setCounts({
+      cur: readTodayCount,
+      prev: readTodayLastWeekCount
+    });
+  }, [readTodayCount, readTodayLastWeekCount]);
 
   return (
     <Container>
@@ -1030,7 +1052,26 @@ export default function Scene ({
                 {prettify(percentageDeltaToday)}
                 {'%'}
               </ScoreDiff>
-              <ReadCountGraph data={data} />
+              <ReadCountGraph
+                data={data}
+                onExit={() => {
+                  setCounts({
+                    cur: readTodayCount,
+                    prev: readTodayLastWeekCount
+                  });
+                }}
+                onHover={payloads => {
+                  if (payloads && payloads.length > 0) {
+                    const [prev, cur] = payloads;
+                    if (counts.prev !== prev.value || counts.cur !== cur.value) {
+                      setCounts({
+                        cur: cur.value,
+                        prev: prev.value
+                      });
+                    }
+                  }
+                }}
+              />
             </Card>
             <Card />
           </CardSection>
@@ -1324,6 +1365,20 @@ function NotificationCollection ({
       duration: 200,
     }
   });
+
+  if (notifications.length === 0) {
+    return (
+      <div css={css`
+        text-align: center;
+        margin: 128px auto 0;
+        font-size: 15px;
+        font-weight: 500;
+        color: #bfc5d1;
+      `}>
+        {'Nothing to show'}
+      </div>
+    );
+  }
 
   return (
     <AnimatedNotificationsBlock style={props} page={page}>

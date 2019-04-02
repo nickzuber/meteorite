@@ -497,8 +497,8 @@ class NotificationsPage extends React.Component {
         unreadCount={queuedCount}
         readCount={stagedCount}
         archivedCount={closedCount}
-        readTodayCount={stagedTodayCount || 0}
-        readTodayLastWeekCount={stagedTodayLastWeekCount || 0}
+        readTodayCount={parseInt(stagedTodayCount, 10) || 0}
+        readTodayLastWeekCount={parseInt(stagedTodayLastWeekCount, 10) || 0}
         first={firstNumbered}
         last={lastNumbered}
         lastPage={lastPage}

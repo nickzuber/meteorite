@@ -90,6 +90,7 @@ div {
   vertical-align: top;
 }
 
+svg { overflow: visible; }
 line[stroke="#666"] {
   stroke-width: 2;
   stroke: #e5e7ea;
