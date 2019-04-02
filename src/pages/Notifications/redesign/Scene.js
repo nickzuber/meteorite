@@ -246,7 +246,9 @@ const ScoreDiff = styled(CardTitle)`
   position: absolute;
   top: 30px;
   right: 24px;
+  opacity: ${props => props.show ? '1' : '0'};
   color: ${props => props.under ? '#ef055f' : '#457cff'};
+  transition: all 0ms ease;
 `;
 
 const IconContainer = styled('div')`
@@ -497,8 +499,10 @@ const SortingItemComponent = styled('div')`
     font-weight: 600;
     color: ${props => props.selected ? '#8c93a5' : '#8c93a5a1'};
   }
-  span:hover {
-    color: #8c93a5dd;
+  &:hover {
+    span {
+      color: #8c93a5dd;
+    }
   }
   span:active {
     color: #8c93a5;
@@ -891,6 +895,7 @@ export default function Scene ({
   readStatistics,
   readTodayCount,
   readTodayLastWeekCount,
+  onRestoreThread,
 }) {
   const hasNotificationsOn = notificationsPermission === 'granted';
   const [menuOpen, setMenuOpen] = React.useState(false);
@@ -917,18 +922,6 @@ export default function Scene ({
     {name: 'Saturday', cur: thisWeekStats[6], prev: lastWeekStats[6]},
   ];
 
-  // const notificationTransitions = useTransition(notifications, item => item.id, {
-  //   from: {background: 'green', opacity: 0, transform: 'translate3d(50px, 0, 0)'},
-  //   enter: {background: 'yellow', opacity: 1, transform: 'translate3d(0, 0, 0)'},
-  //   leave: {opacity: 0, transform: 'translate3d(-50px, 0, 0)', display: 'none'},
-  //   unique: true,
-  //   trail: 50,
-  //   config: {
-  //     tension: 300,
-  //     duration: 1000,
-  //   }
-  // });
-
   // Global event listeners for things like the dropdowns & popups.
   React.useEffect(() => {
     const body = window.document.querySelector('body');
@@ -944,6 +937,14 @@ export default function Scene ({
       prev: readTodayLastWeekCount
     });
   }, [readTodayCount, readTodayLastWeekCount]);
+
+  const props = useSpring({
+    from: {opacity: 0},
+    to: {opacity: 1},
+    config: {
+      duration: 200,
+    }
+  });
 
   return (
     <Container>
@@ -1047,8 +1048,8 @@ export default function Scene ({
             <Card>
               <CardTitle>{currentTime.format('dddd')}</CardTitle>
               <CardSubTitle>{currentTime.format('MMMM Do, YYYY')}</CardSubTitle>
-              <ScoreDiff under={readTodayLastWeekCount > readTodayCount}>
-                {readTodayLastWeekCount > readTodayCount ? '-' : '+'}
+              <ScoreDiff under={counts.prev > counts.cur} show={counts.prev > 0 && counts.cur > 0}>
+                {counts.prev > counts.cur ? '-' : '+'}
                 {prettify(percentageDeltaToday)}
                 {'%'}
               </ScoreDiff>
@@ -1336,11 +1337,13 @@ export default function Scene ({
                 </NotificationBlock>
               ) : (
                 <NotificationCollection
-                  notifications={notifications}
                   page={page}
+                  view={view}
+                  notifications={notifications}
                   colorOfScore={createColorOfScore(lowestScore, highestScore)}
                   markAsRead={onStageThread}
                   markAsArchived={onArchiveThread}
+                  markAsUnread={onRestoreThread}
                 />
               )}
             </NotificationsTable>
@@ -1352,11 +1355,13 @@ export default function Scene ({
 }
 
 function NotificationCollection ({
+  page,
+  view,
   notifications,
   colorOfScore,
   markAsRead,
   markAsArchived,
-  page
+  markAsUnread
 }) {
   const props = useSpring({
     from: {opacity: 0},
@@ -1432,15 +1437,56 @@ function NotificationCollection ({
               width: 40px;
             }
           `}>
-            <IconLink onClick={() => markAsRead(item.id, item.repository)}>
-              <i className="fas fa-check"></i>
-            </IconLink>
-            <IconLink onClick={() => markAsArchived(item.id, item.repository)}>
-              <i className="fas fa-times"></i>
-            </IconLink>
+            <ActionItems
+              item={item}
+              view={view}
+              markAsUnread={markAsUnread}
+              markAsRead={markAsRead}
+              markAsArchived={markAsArchived}
+            />
           </NotificationCell>
         </AnimatedNotificationRow>
       ))}
     </AnimatedNotificationsBlock>
   );
+}
+
+function ActionItems ({item, view, markAsRead, markAsArchived, markAsUnread}) {
+  switch (view) {
+    case View.UNREAD:
+      return (
+        <>
+          <IconLink onClick={() => markAsRead(item.id, item.repository)}>
+            <i className="fas fa-check"></i>
+          </IconLink>
+          <IconLink onClick={() => markAsArchived(item.id, item.repository)}>
+            <i className="fas fa-times"></i>
+          </IconLink>
+        </>
+      );
+    case View.READ:
+      return (
+        <>
+          <IconLink onClick={() => markAsUnread(item.id)}>
+            <i className="fas fa-undo"></i>
+          </IconLink>
+          <IconLink onClick={() => markAsArchived(item.id, item.repository)}>
+            <i className="fas fa-times"></i>
+          </IconLink>
+        </>
+      );
+    case View.ARCHIVED:
+      return (
+        <>
+          <IconLink onClick={() => markAsUnread(item.id)}>
+            <i className="fas fa-undo"></i>
+          </IconLink>
+          <IconLink onClick={() => markAsRead(item.id, item.repository)}>
+            <i className="fas fa-check"></i>
+          </IconLink>
+        </>
+      );
+    default:
+      return null
+  }
 }
