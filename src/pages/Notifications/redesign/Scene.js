@@ -247,7 +247,9 @@ const ScoreDiff = styled(CardTitle)`
   top: 30px;
   right: 24px;
   opacity: ${props => props.show ? '1' : '0'};
-  color: ${props => props.under ? '#ef055f' : '#457cff'};
+  // color: ${props => props.under ? '#ef055f' : '#457cff'};
+  // color: ${props => props.under ? '#457cff' : '#47af4c'};
+  color: ${props => props.under ? '#bfc5d1' : '#457cff'};
   transition: all 0ms ease;
 `;
 
