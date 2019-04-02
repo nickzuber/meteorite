@@ -363,7 +363,7 @@ const ImageContainer = styled('div')({
   background: `url(${screenshot}) center center no-repeat`,
   backgroundSize: 'cover',
   backgroundColor: '#fff',
-  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.51)',
+  boxShadow: 'rgba(84,70,35,0) 0px 2px 8px, rgba(68, 58, 32, 0.16) 0px 1px 9px 4px',
   marginLeft: 100,
   borderRadius: 8,
   display: 'block',
@@ -395,7 +395,7 @@ const Section = styled('div')({
   margin: '28px auto 0',
   padding: '60px 0'
 }, ({alt}) => alt && ({
-  background: '#24292e',
+  background: '#457cff',
   'p': {
     color: '#fff'
   },
@@ -534,7 +534,7 @@ const BottomLinkContainer = styled(LandingHeader)({
   margin: '32px 20px 0',
 });
 
-const LinkButton = styled('a')({});
+const LinkButton = styled('a')({boxShadow: '0 0 0 transparent'});
 const U = styled('span')({
   color: 'inherit',});
 //   background: '#009cfb',
@@ -571,8 +571,8 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
         paddingBottom: 50
       }}>
         <LandingHeader style={{paddingLeft: '5%'}}>
-          <Logo size={75}>
-            <UnofficialReleaseTag>beta</UnofficialReleaseTag>
+          <Logo white size={75}>
+            {/* <UnofficialReleaseTag>beta</UnofficialReleaseTag> */}
           </Logo>
           {loggedIn ? (
             <div className="button-container-alt">
@@ -788,7 +788,8 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
             style={{
               marginLeft: 15,
               color: '#fff',
-              background: 'none'
+              background: 'none',
+              boxShadow: '0 0 0 transparent'
             }} href="https://github.com/nickzuber/meteorite/">check out the github</LinkButton>
         </div>
       </Section>

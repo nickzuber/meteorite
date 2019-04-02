@@ -6,6 +6,7 @@ import {
   Home,
   Login,
   Notifications,
+  NotificationsRedesign,
 } from './pages';
 
 class App extends Component {
@@ -16,6 +17,7 @@ class App extends Component {
           <Home path={routes.HOME} />
           <Login path={routes.LOGIN} />
           <Notifications path={routes.NOTIFICATIONS} />
+          <NotificationsRedesign path={routes.REDESIGN_NOTIFICATIONS} />
         </Router>
       </AuthProvider>
     );

@@ -91,7 +91,7 @@ function getRelativeTime (time) {
   return 'Over a week ago';
 }
 
-function getMessageFromReasons (reasons, type) {
+export function getMessageFromReasons (reasons, type) {
   switch (reasons[reasons.length - 1].reason) {
     case Reasons.ASSIGN:
       return 'You were assigned';
@@ -451,7 +451,7 @@ const InteractionSection = styled('ul')`
 `;
 
 const InteractionMenu = styled('div')`
-  height: ${props => props.show ? 338 : 0}px;
+  height: ${props => props.show ? 345 : 0}px;
   opacity: ${props => props.show ? 1 : 0};
   top: 32px;
   left: 32px;
@@ -1329,8 +1329,6 @@ export default function Scene ({
               </NotificationRowHeader>
               {loading ? (
                 <NotificationBlock>
-                  <LoadingNotificationRow />
-                  <LoadingNotificationRow />
                   <LoadingNotificationRow />
                   <LoadingNotificationRow />
                   <LoadingNotificationRow />

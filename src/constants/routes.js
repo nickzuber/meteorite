@@ -1,5 +1,6 @@
 export default {
   HOME: '/',
-  NOTIFICATIONS: 'notifications',
-  LOGIN: 'login'
+  NOTIFICATIONS: '/notifications',
+  REDESIGN_NOTIFICATIONS: '/notifications-redesign',
+  LOGIN: '/login'
 };
