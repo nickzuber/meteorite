@@ -97,14 +97,31 @@ class StorageProvider extends React.Component {
    * increment. This is a pretty bold assumption that makes things simpler for now,
    * so we're going to go with it for the time being.
    */
-  incrStat = (stat, time = moment()) => {
-    const key = time.format('YYYY-MM-DD');
-    const oldValue = window.localStorage.getItem(`${LOCAL_STORAGE_STATISTIC_PREFIX}${key}-${stat}`);
+  incrStat = (stat, additionalPrefix = moment().format('YYYY-MM-DD')) => {
+    const key = additionalPrefix ? `${additionalPrefix}-` : '';
+    const oldValue = window.localStorage.getItem(`${LOCAL_STORAGE_STATISTIC_PREFIX}${key}${stat}`);
     if (oldValue !== null) {
-      window.localStorage.setItem(`${LOCAL_STORAGE_STATISTIC_PREFIX}${key}-${stat}`, parseInt(oldValue, 10) + 1);
+      window.localStorage.setItem(`${LOCAL_STORAGE_STATISTIC_PREFIX}${key}${stat}`, parseInt(oldValue, 10) + 1);
     } else {
-      window.localStorage.setItem(`${LOCAL_STORAGE_STATISTIC_PREFIX}${key}-${stat}`, 1);
+      window.localStorage.setItem(`${LOCAL_STORAGE_STATISTIC_PREFIX}${key}${stat}`, 1);
     }
+  }
+
+  getAllRepoStagedCounts = () => {
+    return Object.keys(window.localStorage)
+      .filter(key => key.includes('__REPO__'))
+      .reduce((repos, key) => {
+        const value = JSON.parse(window.localStorage.getItem(key));
+        if (!value) {
+          return repos;
+        }
+
+        // Janky but will work.
+        const repo = key.split('__REPO__-').pop().split('-stagedCount')[0];
+
+        repos[repo] = value;
+        return repos;
+      }, {});
   }
 
   // val value : Object
@@ -161,6 +178,7 @@ class StorageProvider extends React.Component {
       clearCache: this.clearCache,
       refreshNotifications: this.refreshNotifications,
       getStat: this.getStat,
+      getAllRepoStagedCounts: this.getAllRepoStagedCounts,
       incrStat: this.incrStat,
     });
   }

@@ -237,13 +237,13 @@ class NotificationsPage extends React.Component {
 
   enhancedOnStageThread = (thread_id, repository) => {
     this.props.storageApi.incrStat('stagedCount');
-    this.props.storageApi.incrStat(repository + '-stagedCount');
+    this.props.storageApi.incrStat(repository + '-stagedCount', '__REPO__');
     this.props.notificationsApi.stageThread(thread_id);
   }
 
   enhancedOnMarkAsRead = (thread_id, repository) => {
     this.props.storageApi.incrStat('stagedCount');
-    this.props.storageApi.incrStat(repository + '-stagedCount');
+    this.props.storageApi.incrStat(repository + '-stagedCount', '__REPO__');
     this.props.notificationsApi.markAsRead(thread_id);
   }
 
@@ -474,6 +474,8 @@ class NotificationsPage extends React.Component {
       lastNumbered = 0;
     }
 
+
+    const reposReadCounts = this.props.storageApi.getAllRepoStagedCounts();
     const todayLastWeek = this.state.currentTime.clone().subtract(1, 'week');
 
     const stagedTodayCount = this.props.storageApi.getStat('stagedCount')[0];
@@ -535,6 +537,7 @@ class NotificationsPage extends React.Component {
         view={this.state.activeStatus}
         setView={this.onSetActiveStatus}
         user={this.state.user}
+        reposReadCounts={reposReadCounts}
       />
     );
   }

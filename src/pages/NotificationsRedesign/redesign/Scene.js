@@ -21,6 +21,7 @@ import {Reasons, Badges} from '../../../constants/reasons';
 import {withOnEnter} from '../../../enhance';
 import {Sort, View} from '../index';
 
+const BLUE = '#457cff';
 const WHITE = 'rgb(255, 254, 252)';
 const COLLAPSED_WIDTH = '72px';
 const EXPANDED_WIDTH = '286px';
@@ -210,6 +211,7 @@ const ContentItem = styled(Item)`
   min-height: calc(100vh - ${COLLAPSED_WIDTH});
   width: calc(100% - ${COLLAPSED_WIDTH});
   background: #f7f6f3;
+  padding-bottom: 48px;
   border-left: 1px solid #E5E6EB;
 `;
 
@@ -247,9 +249,9 @@ const ScoreDiff = styled(CardTitle)`
   top: 30px;
   right: 24px;
   opacity: ${props => props.show ? '1' : '0'};
-  // color: ${props => props.under ? '#ef055f' : '#457cff'};
-  // color: ${props => props.under ? '#457cff' : '#47af4c'};
-  color: ${props => props.under ? '#bfc5d1' : '#457cff'};
+  // color: ${props => props.under ? '#ef055f' : BLUE};
+  // color: ${props => props.under ? BLUE : '#47af4c'};
+  color: ${props => props.under ? '#bfc5d1' : BLUE};
   transition: all 0ms ease;
 `;
 
@@ -354,7 +356,7 @@ const SearchField = styled('div')`
     border: 1px solid #bfc5d1aa;
   }
   &:focus-within {
-    border: 1px solid #457cff;
+    border: 1px solid ${BLUE};
     box-shadow: rgba(84,70,35,0.01) 0px 2px 19px 8px, rgba(84, 70, 35, 0.11) 0px 2px 12px;
   }
   i {
@@ -712,6 +714,40 @@ const Divider = styled('div')`
   margin: 0 8px;
 `;
 
+const RepoBarContainer = styled('div')`
+  position: relative;
+  width: 100%;
+  margin-bottom: 22px;
+  p {
+    font-size: 14px;
+    font-weight: 500;
+    margin: 10px 0;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 100%;
+    display: block;
+  }
+`;
+
+const Bar = styled('div')`
+  position: relative;
+  width: 100%;
+  height: 5px;
+  border-radius: 8px;
+  background: #e5e7ea;
+  &:after {
+    content: "";
+    position: absolute;
+    width: ${props => Math.max(Math.min((props.value * 100), 100), 0)}%;
+    border-radius: 8px;
+    background: ${props => props.color};
+    left: 0;
+    top: 0;
+    bottom: 0;
+  }
+`;
+
 function PageItem ({children, onChange, ...props}) {
   return (
     <PageItemComponent
@@ -778,6 +814,19 @@ function CustomTick ({x, y, payload}) {
         {payload.value.substring(0, 2)}
       </text>
     </g>
+  );
+}
+
+function RepoBar ({name, value, max, colorOfValue}) {
+  return (
+    <RepoBarContainer>
+      <p>@{name}</p>
+      <Bar
+        color={BLUE}
+        // color={colorOfValue(value)}
+        value={value / max}
+      />
+    </RepoBarContainer>
   );
 }
 
@@ -896,6 +945,7 @@ export default function Scene ({
   onArchiveThread,
   readStatistics,
   readTodayCount,
+  reposReadCounts,
   readTodayLastWeekCount,
   onRestoreThread,
 }) {
@@ -913,6 +963,10 @@ export default function Scene ({
   const thisWeekStats = readStatistics.slice(7).map(n => n || null);
 
   const percentageDeltaToday = getPercentageDelta(counts.cur, counts.prev);
+  const highestRepoReadCount = Object.values(reposReadCounts).reduce((h, c) => Math.max(h, c), 0);
+  const colorOfRepoCount = createColorOfScore(0, highestRepoReadCount);
+
+  // order repo count by highest
 
   const data = [
     {name: 'Sunday', cur: thisWeekStats[0], prev: lastWeekStats[0]},
@@ -939,14 +993,6 @@ export default function Scene ({
       prev: readTodayLastWeekCount
     });
   }, [readTodayCount, readTodayLastWeekCount]);
-
-  const props = useSpring({
-    from: {opacity: 0},
-    to: {opacity: 1},
-    config: {
-      duration: 200,
-    }
-  });
 
   return (
     <Container>
@@ -1076,7 +1122,18 @@ export default function Scene ({
                 }}
               />
             </Card>
-            <Card />
+            <Card>
+              <CardTitle>{'Activity'}</CardTitle>
+              <CardSubTitle css={css`margin-bottom: 22px;`}>{'Your interactions'}</CardSubTitle>
+              {Object.keys(reposReadCounts).sort((a, b) => a.localeCompare(b)).map(repo => (
+                <RepoBar
+                  name={repo}
+                  value={reposReadCounts[repo]}
+                  max={highestRepoReadCount}
+                  colorOfValue={colorOfRepoCount}
+                />
+              ))}
+            </Card>
           </CardSection>
           <NotificationsSection>
             <TitleSection>
@@ -1387,8 +1444,8 @@ function NotificationCollection ({
 
   return (
     <AnimatedNotificationsBlock style={props} page={page}>
-      {notifications.map(item => (
-        <AnimatedNotificationRow key={notifications.id}>
+      {notifications.map((item, xid) => (
+        <AnimatedNotificationRow key={notifications.id || xid}>
           {/* Type */}
           <NotificationCell width={80}>
             {getPRIssueIcon(item.type, item.reasons)}

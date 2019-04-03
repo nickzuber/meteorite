@@ -474,7 +474,6 @@ class NotificationsPage extends React.Component {
     }
 
     const todayLastWeek = this.state.currentTime.clone().subtract(1, 'week');
-
     const stagedTodayCount = this.props.storageApi.getStat('stagedCount')[0];
     const stagedTodayLastWeekCount = this.props.storageApi.getStat(
       'stagedCount',
