@@ -26,7 +26,7 @@ const Mode = {
   ALL: 0,
   HOT: 1,
   COMMENTS: 2,
-  OLD: 2,
+  OLD: 3
 };
 
 // ========================================================================
@@ -1100,12 +1100,13 @@ export default function Scene ({
   const hasNotificationsOn = notificationsPermission === 'granted';
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
-  const [mode, setMode] = React.useState(Mode.ALL);
   const [counts, setCounts] = React.useState({
     cur: readTodayCount,
     prev: readTodayLastWeekCount
   });
 
+  // @TODO this needs to live in the index too so we can adjust the counts AND the pages.
+  const [mode, setMode] = React.useState(Mode.ALL);
   if (mode === Mode.HOT) {
     notifications = notifications.filter(item => console.warn(item.badges) || item.badges.includes(Badges.HOT));
   } else if (mode === Mode.COMMENTS) {
@@ -1121,8 +1122,6 @@ export default function Scene ({
   const percentageDeltaToday = getPercentageDelta(counts.cur, counts.prev);
   const highestRepoReadCount = Object.values(reposReadCounts).reduce((h, c) => Math.max(h, c), 0);
   const colorOfRepoCount = createColorOfScore(0, highestRepoReadCount);
-
-  // order repo count by highest
 
   const data = [
     {name: 'Sunday', cur: thisWeekStats[0], prev: lastWeekStats[0]},
@@ -1197,10 +1196,10 @@ export default function Scene ({
               position: absolute !important;
               left: 50%;
               margin-left: -18px;
-              opacity: 0.6;
+              opacity: 0.35;
               transition: all 200ms ease;
               &:hover {
-                opacity: 0.7;
+                opacity: 0.5;
               }
             `}
             onClick={() => window.scrollTo(0, 0)}
@@ -1222,7 +1221,7 @@ export default function Scene ({
             onChange={setMode}
             style={{margin: '8px 0'}}
           >
-            <i className="fas fa-seedling"></i>
+            <i className="fas fa-leaf"></i>
           </MenuIconItem>
           <MenuIconItem
             mode={Mode.HOT}
@@ -1240,7 +1239,16 @@ export default function Scene ({
             onChange={setMode}
             style={{margin: '8px 0'}}
           >
-            <i className="fas fa-splotch"></i>
+            <i className="fas fa-users"></i>
+          </MenuIconItem>
+          <MenuIconItem
+            mode={Mode.OLD}
+            primary="#4C84FF"
+            selected={mode === Mode.OLD}
+            onChange={setMode}
+            style={{margin: '8px 0'}}
+          >
+            <i className="fas fa-hourglass-half"></i>
           </MenuIconItem>
         </MenuContainerItem>
         <ContentItem>
@@ -1304,9 +1312,9 @@ export default function Scene ({
                 }}>
                   <IconLink>
                     {hasNotificationsOn ? (
-                        <i class="fas fa-bell"></i>
+                        <i className="fas fa-bell"></i>
                       ) : (
-                        <i class="fas fa-bell-slash"></i>
+                        <i className="fas fa-bell-slash"></i>
                     )}
                   </IconLink>
                 </li>
