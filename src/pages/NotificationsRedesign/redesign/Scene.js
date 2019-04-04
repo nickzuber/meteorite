@@ -10,7 +10,7 @@ import {LineChart, Line, XAxis, Tooltip} from 'recharts';
 import Logo from '../../../components/Logo';
 import LoadingIcon from '../../../components/LoadingIcon'
 import {routes} from '../../../constants';
-import {Reasons} from '../../../constants/reasons';
+import {Badges, Reasons} from '../../../constants/reasons';
 import {withOnEnter} from '../../../enhance';
 import {Sort, View} from '../index';
 
@@ -24,8 +24,9 @@ const COLLAPSED_WIDTH = '72px';
 const EXPANDED_WIDTH = '326px';
 const Mode = {
   ALL: 0,
-  REVIEWS: 1,
-  COMMENTED: 2
+  HOT: 1,
+  COMMENTS: 2,
+  OLD: 2,
 };
 
 // ========================================================================
@@ -1105,6 +1106,14 @@ export default function Scene ({
     prev: readTodayLastWeekCount
   });
 
+  if (mode === Mode.HOT) {
+    notifications = notifications.filter(item => console.warn(item.badges) || item.badges.includes(Badges.HOT));
+  } else if (mode === Mode.COMMENTS) {
+    notifications = notifications.filter(item => console.warn(item.badges) || item.badges.includes(Badges.COMMENTS));
+  } else if (mode === Mode.OLD) {
+    notifications = notifications.filter(item => console.warn(item.badges) || item.badges.includes(Badges.OLD));
+  }
+
   readStatistics = readStatistics.map(n => parseInt(n, 10));
   const lastWeekStats = readStatistics.slice(0, 7).map(n => n || null);
   const thisWeekStats = readStatistics.slice(7).map(n => n || null);
@@ -1216,18 +1225,18 @@ export default function Scene ({
             <i className="fas fa-seedling"></i>
           </MenuIconItem>
           <MenuIconItem
-            mode={Mode.REVIEWS}
+            mode={Mode.HOT}
             primary="#e91e63"
-            selected={mode === Mode.REVIEWS}
+            selected={mode === Mode.HOT}
             onChange={setMode}
             style={{margin: '8px 0'}}
           >
             <i className="fas fa-fire"></i>
           </MenuIconItem>
           <MenuIconItem
-            mode={Mode.COMMENTED}
+            mode={Mode.COMMENTS}
             primary="#4C84FF"
-            selected={mode === Mode.COMMENTED}
+            selected={mode === Mode.COMMENTS}
             onChange={setMode}
             style={{margin: '8px 0'}}
           >
@@ -1640,6 +1649,7 @@ function NotificationCollection ({
         font-size: 15px;
         font-weight: 500;
         color: #bfc5d1;
+        user-select: none;
       `}>
         {'Nothing to show'}
       </div>
