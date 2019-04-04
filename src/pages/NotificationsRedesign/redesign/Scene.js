@@ -924,11 +924,12 @@ function CustomTick ({x, y, payload}) {
 }
 
 function RepoBarGroup ({reposReadCounts, highestRepoReadCount, colorOfRepoCount}) {
+  const numReposToShow = 3;
   const [show, setShow] = React.useState(false);
   const repos = Object.keys(reposReadCounts).sort((a, b) => reposReadCounts[b] - reposReadCounts[a]);
 
-  const shownRepos = repos.slice(0, 4);
-  const hiddenRepos = repos.slice(4);
+  const shownRepos = repos.slice(0, numReposToShow);
+  const hiddenRepos = repos.slice(numReposToShow);
 
   return (
     <>
