@@ -378,9 +378,19 @@ class NotificationsPage extends React.Component {
     }
     if (this.state.sort === Sort.REPOSITORY) {
       if (this.state.descending) {
-        scoredAndSortedNotifications.sort((a, b) => a.repository.localeCompare(b.repository));
+        scoredAndSortedNotifications.sort((a, b) => {
+          const diff = a.repository.localeCompare(b.repository);
+          return diff === 0
+            ? b.score - a.score
+            : diff;
+        });
       } else {
-        scoredAndSortedNotifications.sort((a, b) => b.repository.localeCompare(a.repository));
+        scoredAndSortedNotifications.sort((a, b) => {
+          const diff = b.repository.localeCompare(a.repository);
+          return diff === 0
+            ? b.score - a.score
+            : diff;
+        });
       }
     }
     if (this.state.sort === Sort.TYPE) {

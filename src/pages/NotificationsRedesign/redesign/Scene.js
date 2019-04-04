@@ -3,28 +3,25 @@
 import React from 'react';
 import moment from 'moment';
 import styled from '@emotion/styled';
+import {navigate} from "@reach/router"
 import {css, jsx, keyframes} from '@emotion/core';
 import {useSpring, useTransition, animated} from 'react-spring'
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend
-} from 'recharts';
-import Icon from '../../../components/Icon';
+import {LineChart, Line, XAxis, Tooltip} from 'recharts';
 import Logo from '../../../components/Logo';
-import LoadingIcon from '../../../components/LoadingIcon';
-import {Reasons, Badges} from '../../../constants/reasons';
+import LoadingIcon from '../../../components/LoadingIcon'
+import {routes} from '../../../constants';
+import {Reasons} from '../../../constants/reasons';
 import {withOnEnter} from '../../../enhance';
 import {Sort, View} from '../index';
 
+const hash = process.env.GIT_HASH ? `#${process.env.GIT_HASH}` : '';
+const version = require('../../../../package.json').version + hash;
+
 const BLUE = '#457cff';
 const WHITE = 'rgb(255, 254, 252)';
+const FOOTER_HEIGHT = '96px';
 const COLLAPSED_WIDTH = '72px';
-const EXPANDED_WIDTH = '286px';
+const EXPANDED_WIDTH = '326px';
 const Mode = {
   ALL: 0,
   REVIEWS: 1,
@@ -187,8 +184,9 @@ const Item = styled('div')`
 const MenuHeaderItem = styled(Item)`
   height: ${COLLAPSED_WIDTH};
   width: ${({expand}) => expand ? EXPANDED_WIDTH : COLLAPSED_WIDTH};
-  border-bottom: 1px solid #EDEEF0;
-  border-right: 1px solid #EDEEF0;
+  border-bottom: 1px solid #292d35;
+  border-right: 1px solid #292d35;
+  background: #2f343e;
   z-index: 1;
 `;
 
@@ -208,11 +206,10 @@ const MenuContainerItem = styled(Item)`
 // Faded gray: #fbfbfb
 const ContentItem = styled(Item)`
   height: 100%;
-  min-height: calc(100vh - ${COLLAPSED_WIDTH});
+  min-height: calc(100vh - ${COLLAPSED_WIDTH} - ${FOOTER_HEIGHT});
   width: calc(100% - ${COLLAPSED_WIDTH});
   background: #f7f6f3;
-  padding-bottom: 48px;
-  border-left: 1px solid #E5E6EB;
+  border-left: 1px solid #292d35;
 `;
 
 const CardSection = styled('div')`
@@ -265,27 +262,27 @@ const IconContainer = styled('div')`
   outline: none;
   user-select: none;
   transition: all 200ms ease;
-  &:after {
-    transition: all 200ms ease;
-    content: "";
-    position: absolute;
-    width: 3px;
-    background: ${props => !props.noBorder && props.selected ? props.primary : 'transparent'};
-    right: 0;
-    top: 4px;
-    bottom: 4px;
-    border-top-left-radius: 8px;
-    border-bottom-left-radius: 8px;
-  }
+  // &:after {
+  //   transition: all 200ms ease;
+  //   content: "";
+  //   position: absolute;
+  //   width: 3px;
+  //   background: ${props => !props.noBorder && props.selected ? '#fff' : 'transparent'};
+  //   right: 0;
+  //   top: 4px;
+  //   bottom: 4px;
+  //   border-top-left-radius: 8px;
+  //   border-bottom-left-radius: 8px;
+  // }
   i {
     transition: all 200ms ease;
-    color: ${props => props.selected ? props.primary : '#BFC5D1'}
+    color: ${props => props.selected ? WHITE : '#bfc5d15e'}
   }
   &:hover {
-    background: ${props => props.selected ? WHITE : 'rgba(233, 233, 233, .25)'};
-    i {
-      color: ${props => props.selected ? props.primary : '#616671'}
-    }
+    background: ${props => props.selected ? 'transparent' : 'rgba(233, 233, 233, .1)'};
+    // i {
+    //   color: ${props => props.selected ? props.primary : '#616671'}
+    // }
   }
 `;
 
@@ -431,7 +428,7 @@ const PageItemComponent = styled('li')`
 
 const InteractionSection = styled('ul')`
   position: relative;
-  width: 50px;
+  width: 100px;
   height: 50px;
   padding: 0;
   margin: 0;
@@ -456,7 +453,7 @@ const InteractionMenu = styled('div')`
   height: ${props => props.show ? 345 : 0}px;
   opacity: ${props => props.show ? 1 : 0};
   top: 32px;
-  left: 32px;
+  left: 82px;
   margin-left: 2px;
   overflow: hidden;
   cursor: initial;
@@ -633,6 +630,8 @@ const ProfileContainer = styled('div')`
   padding: 0 22px;
   position: absolute;
   right: 0;
+  z-index: 3;
+  background: #fffefc;
   transition: all 200ms ease;
   user-select: none;
   cursor: pointer;
@@ -659,6 +658,89 @@ const ProfilePicture = styled('img')`
   width: 36px;
   border-radius: 4px;
 `;
+
+function ProfileSection ({user, onLogout}) {
+  const [menuShow, setMenuShow] = React.useState(false);
+  React.useEffect(() => {
+    const body = window.document.querySelector('body');
+    const hideMenu = () => setMenuShow(false);
+    body.addEventListener('click', hideMenu);
+    return () => body.removeEventListener('click', hideMenu);
+  }, []);
+
+  return (
+    <>
+      <ProfileContainer onClick={() => setMenuShow(true)}>
+        <ProfilePicture src={user.avatar_url} />
+        <ProfileName>{user.name}</ProfileName>
+        <i className="fas fa-caret-down" css={css`
+          transform: ${menuShow ? 'rotate(180deg)' : 'rotate(0deg)'};
+        `}></i>
+      </ProfileContainer>
+      <InteractionMenu show={menuShow} css={css`
+        top: ${COLLAPSED_WIDTH};
+        height: ${menuShow ? 'auto' : '0px'};
+        border-bottom-right-radius: 4px;
+        border-bottom-left-radius: 4px;
+        right: 0;
+        left: auto;
+        background: ${WHITE};
+        border: 1px solid #edeef0;
+        width: ${22 + 142 + 22}px;
+        cursor: pointer;
+        outline: none;
+        user-select: none;
+        box-shadow: rgba(84,70,35,0) 0px 2px 8px, rgba(84,70,35,0.15) 0px 1px 3px;
+        transition: all 200ms ease;
+        div {
+          margin: 0;
+          padding: 12px 16px;
+          cursor: pointer;
+          outline: none;
+          user-select: none;
+          transition: all 200ms ease;
+          &:hover {
+            background: rgba(233, 233, 233, .25);
+          }
+        }
+        h2 {
+          margin: 0 0 4px;
+          font-size: 15px;
+        }
+        p {
+          margin: 0;
+          font-size: 13px;
+          opacity: 0.7;
+        }
+      `}>
+        <div onClick={event => {
+          event.stopPropagation();
+          navigate(routes.HOME);
+          setMenuShow(false);
+        }}>
+          <h2>Go home</h2>
+          <p>Head over back to the home page</p>
+        </div>
+        <div onClick={event => {
+          event.stopPropagation();
+          navigate(routes.NOTIFICATIONS);
+          setMenuShow(false);
+        }}>
+          <h2>Use old design</h2>
+          <p>Switch back to the original Meteorite design</p>
+        </div>
+        <div onClick={event => {
+          event.stopPropagation();
+          onLogout();
+          setMenuShow(false);
+        }}>
+          <h2>Sign out</h2>
+          <p>Log off your account and return to home page</p>
+        </div>
+      </InteractionMenu>
+    </>
+  );
+}
 
 const NotificationIconWrapper = styled('div')`
   width: 48px;
@@ -717,16 +799,40 @@ const Divider = styled('div')`
 const RepoBarContainer = styled('div')`
   position: relative;
   width: 100%;
-  margin-bottom: 22px;
+  margin-bottom: 28px;
   p {
-    font-size: 14px;
-    font-weight: 500;
-    margin: 10px 0;
+    font-size: 15px;
+    font-weight: 600;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
     width: 100%;
     display: block;
+    margin: 8px 0 0;
+  }
+  span {
+    margin: 2px 0 8px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 100%;
+    display: block;
+    color: #bfc5d1;
+  }
+`;
+
+const LinkText = styled('div')`
+  text-decoration: underline;
+  font-size: 12px;
+  color: #37352f59;
+  font-weight: 500;
+  text-underline-position: under;
+  cursor: pointer;
+  transition: all 200ms ease;
+  &:hover {
+    color: #37352faa;
   }
 `;
 
@@ -817,13 +923,52 @@ function CustomTick ({x, y, payload}) {
   );
 }
 
+function RepoBarGroup ({reposReadCounts, highestRepoReadCount, colorOfRepoCount}) {
+  const [show, setShow] = React.useState(false);
+  const repos = Object.keys(reposReadCounts).sort((a, b) => reposReadCounts[b] - reposReadCounts[a]);
+
+  const shownRepos = repos.slice(0, 4);
+  const hiddenRepos = repos.slice(4);
+
+  return (
+    <>
+      {shownRepos.map(repo => (
+        <RepoBar
+          name={repo}
+          value={reposReadCounts[repo]}
+          max={highestRepoReadCount}
+          colorOfValue={colorOfRepoCount}
+        />
+      ))}
+      {hiddenRepos.length > 0 && (
+        show ? (
+          <>
+            {hiddenRepos.map(repo => (
+              <RepoBar
+                name={repo}
+                value={reposReadCounts[repo]}
+                max={highestRepoReadCount}
+                colorOfValue={colorOfRepoCount}
+              />
+            ))}
+            <LinkText onClick={() => setShow(false)}>Show less</LinkText>
+          </>
+        ) : (
+          <LinkText onClick={() => setShow(true)}>Show more</LinkText>
+        )
+      )}
+    </>
+  );
+}
+
 function RepoBar ({name, value, max, colorOfValue}) {
   return (
     <RepoBarContainer>
-      <p>@{name}</p>
+      <p>{name.split('/')[1]}</p>
+      <span>{name.split('/')[0]}</span>
       <Bar
-        color={BLUE}
-        // color={colorOfValue(value)}
+        title={value}
+        color={'#4880ffd1'}
         value={value / max}
       />
     </RepoBarContainer>
@@ -948,6 +1093,7 @@ export default function Scene ({
   reposReadCounts,
   readTodayLastWeekCount,
   onRestoreThread,
+  onLogout,
 }) {
   const hasNotificationsOn = notificationsPermission === 'granted';
   const [menuOpen, setMenuOpen] = React.useState(false);
@@ -980,6 +1126,7 @@ export default function Scene ({
 
   // Global event listeners for things like the dropdowns & popups.
   React.useEffect(() => {
+    window.scrollTo(0, 0);
     const body = window.document.querySelector('body');
     const hideDropdownMenu = () => setDropdownOpen(false);
     body.addEventListener('click', hideDropdownMenu);
@@ -1049,18 +1196,13 @@ export default function Scene ({
             onClick={() => window.scrollTo(0, 0)}
             size={32}
           />
-          {user && (
-            <ProfileContainer>
-              <ProfilePicture src={user.avatar_url} />
-              <ProfileName>{user.name}</ProfileName>
-              <i className="fas fa-caret-down"></i>
-            </ProfileContainer>
-          )}
+          {user && <ProfileSection user={user} onLogout={onLogout} />}
         </ContentHeaderItem>
       </Row>
       <Row css={css`
         height: calc(100% - ${COLLAPSED_WIDTH});
         margin-top: ${COLLAPSED_WIDTH};
+        background: #2f343e;
       `}>
         <MenuContainerItem expand={menuOpen}>
           <MenuIconItem
@@ -1124,21 +1266,40 @@ export default function Scene ({
             </Card>
             <Card>
               <CardTitle>{'Activity'}</CardTitle>
-              <CardSubTitle css={css`margin-bottom: 22px;`}>{'Your interactions'}</CardSubTitle>
-              {Object.keys(reposReadCounts).sort((a, b) => a.localeCompare(b)).map(repo => (
-                <RepoBar
-                  name={repo}
-                  value={reposReadCounts[repo]}
-                  max={highestRepoReadCount}
-                  colorOfValue={colorOfRepoCount}
-                />
-              ))}
+              <CardSubTitle css={css`margin-bottom: 22px;`}>{'Interactions by repository'}</CardSubTitle>
+              <RepoBarGroup
+                reposReadCounts={reposReadCounts}
+                highestRepoReadCount={highestRepoReadCount}
+                colorOfRepoCount={colorOfRepoCount}
+              />
             </Card>
           </CardSection>
           <NotificationsSection>
             <TitleSection>
               <Title>{'Updates'}</Title>
               <InteractionSection>
+                <li onClick={event => {
+                  event.stopPropagation();
+                  switch(notificationsPermission) {
+                    case 'granted':
+                      return setNotificationsPermission('denied');
+                    case 'denied':
+                    case 'default':
+                    default:
+                      Notification.requestPermission().then(result => {
+                        return setNotificationsPermission(result);
+                      });
+                  }
+                  setDropdownOpen(false);
+                }}>
+                  <IconLink>
+                    {hasNotificationsOn ? (
+                        <i class="fas fa-bell"></i>
+                      ) : (
+                        <i class="fas fa-bell-slash"></i>
+                    )}
+                  </IconLink>
+                </li>
                 <li onClick={() => setDropdownOpen(true)}>
                   <IconLink>
                     <i className="fas fa-ellipsis-v"></i>
@@ -1405,6 +1566,48 @@ export default function Scene ({
               )}
             </NotificationsTable>
           </NotificationsSection>
+        </ContentItem>
+      </Row>
+      <Row css={css`
+        height: calc(100% - ${COLLAPSED_WIDTH});
+        background: #2f343e;
+      `}>
+        <MenuContainerItem expand={menuOpen}>
+        </MenuContainerItem>
+        <ContentItem css={css`
+          min-height: ${FOOTER_HEIGHT};
+          height: ${FOOTER_HEIGHT};
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          span {
+            display: inline-block;
+            font-size: 11px;
+            color: #37352f52;
+            margin: 0 12px;
+            font-weight: 500;
+          }
+          a {
+            display: inline-block;
+            text-decoration: underline;
+            font-size: 11px;
+            color: #37352f52;
+            margin: 0 12px;
+            font-weight: 500;
+            cursor: pointer;
+            text-underline-position: under;
+            transition: all 200ms ease;
+            &:hover {
+              color: #37352faa;
+            }
+          }
+        `}>
+          <a target="_blank" href="https://github.com/nickzuber/meteorite/issues">Submit bugs</a>
+          <a target="_blank" href="https://github.com/nickzuber/meteorite/pulls">Make changes</a>
+          <a target="_blank" href="https://github.com/nickzuber/meteorite/issues">Leave feedback</a>
+          <a target="_blank" href="https://github.com/nickzuber/meteorite">See source code</a>
+          <a target="_blank" href="https://twitter.com/nick_zuber">Follow me on twitter</a>
+          <span css={css`margin-right: 76px !important;`}>v{version}</span>
         </ContentItem>
       </Row>
     </Container>

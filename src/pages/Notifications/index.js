@@ -14,24 +14,10 @@ import { Reasons, Badges } from '../../constants/reasons';
 import Scene, { getMessageFromReasons } from './Scene';
 import issueIcon from '../../images/issue-bg.png';
 import prIcon from '../../images/pr-bg.png';
-import tabIcon from '../../images/iconCircle.png';
-import tabDotIcon from '../../images/iconCircleDotAlt.png';
+import tabIcon from '../../images/icon.png';
+import tabDotIcon from '../../images/iconDot.png';
 
-export const PER_PAGE = 10;
-
-export const Sort = {
-  TYPE: 1,
-  TITLE: 0,
-  REPOSITORY: 2,
-  SCORE: 3,
-  DATE: 4
-};
-
-export const View = {
-  UNREAD: 1,
-  READ: 0,
-  ARCHIVED: 2
-};
+const PER_PAGE = 10;
 
 // @TODO Move these functions.
 
@@ -146,11 +132,8 @@ class NotificationsPage extends React.Component {
     isSearching: false,
     query: null,
     activeFilter: Filters.PARTICIPATING,
-    activeStatus: View.UNREAD,
-    currentPage: 1,
-    sort: Sort.SCORE,
-    descending: false,
-    user: null
+    activeStatus: Status.QUEUED,
+    currentPage: 1
   }
 
   componentDidMount () {
@@ -162,9 +145,6 @@ class NotificationsPage extends React.Component {
     }
 
     this.props.notificationsApi.fetchNotifications();
-    this.props.notificationsApi.requestUser().then(user => {
-      this.setState({user});
-    });
 
     this.tabSyncer = setInterval(() => {
       if (!document.hidden && this.isUnreadTab) {
@@ -221,7 +201,6 @@ class NotificationsPage extends React.Component {
 
     // Ignore empty queries.
     if (text.length <= 0) {
-      this.onClearQuery();
       return;
     }
 
@@ -231,7 +210,7 @@ class NotificationsPage extends React.Component {
         query: text,
         isSearching: false
        });
-    }, 800);
+    }, 500);
   }
 
   enhancedOnStageThread = (thread_id, repository) => {
@@ -341,77 +320,33 @@ class NotificationsPage extends React.Component {
 
     const filteredNotifications = notifications.filter(filterMethod);
 
-    let notificationsQueued = filteredNotifications.filter(n => n.status === Status.QUEUED);
-    let notificationsStaged = filteredNotifications.filter(n => n.status === Status.STAGED);
-    let notificationsClosed = filteredNotifications.filter(n => n.status === Status.CLOSED);
+    const notificationsQueued = filteredNotifications.filter(n => n.status === Status.QUEUED);
+    const notificationsStaged = filteredNotifications.filter(n => n.status === Status.STAGED);
+    const notificationsClosed = filteredNotifications.filter(n => n.status === Status.CLOSED);
 
     let notificationsToRender = [];
     switch (this.state.activeStatus) {
-      case View.ARCHIVED:
+      case Status.CLOSED:
         notificationsToRender = notificationsClosed;
         break;
-      case View.READ:
+      case Status.STAGED:
         notificationsToRender = notificationsStaged;
         break;
-      case View.UNREAD:
+      case Status.QUEUED:
       default:
         notificationsToRender = notificationsQueued;
     }
 
     let scoredAndSortedNotifications = notificationsToRender
-      .map(decorateWithScore);
-
-    if (this.state.sort === Sort.TITLE) {
-      if (this.state.descending) {
-        scoredAndSortedNotifications.sort((a, b) => a.name.localeCompare(b.name));
-      } else {
-        scoredAndSortedNotifications.sort((a, b) => b.name.localeCompare(a.name));
-      }
-    }
-    if (this.state.sort === Sort.SCORE) {
-      if (this.state.descending) {
-        scoredAndSortedNotifications.sort((a, b) => a.score - b.score);
-      } else {
-        scoredAndSortedNotifications.sort((a, b) => b.score - a.score);
-      }
-    }
-    if (this.state.sort === Sort.REPOSITORY) {
-      if (this.state.descending) {
-        scoredAndSortedNotifications.sort((a, b) => a.repository.localeCompare(b.repository));
-      } else {
-        scoredAndSortedNotifications.sort((a, b) => b.repository.localeCompare(a.repository));
-      }
-    }
-    if (this.state.sort === Sort.TYPE) {
-      if (this.state.descending) {
-        scoredAndSortedNotifications.sort((a, b) => a.type.localeCompare(b.type));
-      } else {
-        scoredAndSortedNotifications.sort((a, b) => b.type.localeCompare(a.type));
-      }
-    }
-    if (this.state.sort === Sort.DATE) {
-      if (this.state.descending) {
-        scoredAndSortedNotifications.sort((a, b) => moment(a.updated_at).diff(b.updated_at));
-      } else {
-        scoredAndSortedNotifications.sort((a, b) => moment(b.updated_at).diff(a.updated_at));
-      }
-    }
+      .map(decorateWithScore)
+      .sort((a, b) => b.score - a.score);
 
     // We gotta make sure to search notifications before we paginate.
     // Otherwise we'd just end up searching on the current page, which is bad.
     if (this.state.query) {
       scoredAndSortedNotifications = scoredAndSortedNotifications.filter(n => (
         n.name.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1)
-      );
-      notificationsQueued = notificationsQueued.filter(n => (
-        n.name.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1)
-      );
-      notificationsStaged = notificationsStaged.filter(n => (
-        n.name.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1)
-      );
-      notificationsClosed = notificationsClosed.filter(n => (
-        n.name.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1)
-      );
+      )
     }
 
     if (this.props.notificationsApi.newChanges) {
@@ -433,7 +368,7 @@ class NotificationsPage extends React.Component {
 
   render () {
     if (!this.props.authApi.token) {
-      return <Redirect noThrow to={routes.LOGIN} />
+      return <Redirect noThrow to={routes.HOME} />
     }
 
     const {
@@ -451,12 +386,6 @@ class NotificationsPage extends React.Component {
       closedCount,
     } = this.getFilteredNotifications();
 
-    const [highestScore, lowestScore] = scoredAndSortedNotifications.reduce(([h, l], notification) => {
-      h = Math.max(notification.score, h);
-      l = Math.min(notification.score, l);
-      return [h, l];
-    }, [0, Infinity]);
-
     let firstIndex = (this.state.currentPage - 1) * PER_PAGE;
     let lastIndex = (this.state.currentPage * PER_PAGE);
     let notificationsOnPage = scoredAndSortedNotifications.slice(firstIndex, lastIndex);
@@ -473,13 +402,7 @@ class NotificationsPage extends React.Component {
       lastNumbered = 0;
     }
 
-    const todayLastWeek = this.state.currentTime.clone().subtract(1, 'week');
     const stagedTodayCount = this.props.storageApi.getStat('stagedCount')[0];
-    const stagedTodayLastWeekCount = this.props.storageApi.getStat(
-      'stagedCount',
-      todayLastWeek,
-      todayLastWeek.clone().add(1, 'day')
-    )[0];
     const stagedStatistics = this.props.storageApi.getStat(
       'stagedCount',
       this.state.currentTime.clone().startOf('week').subtract(1, 'week'),
@@ -489,15 +412,14 @@ class NotificationsPage extends React.Component {
     return (
       <Scene
         currentTime={this.state.currentTime}
-        readStatistics={stagedStatistics}
+        stagedStatistics={stagedStatistics}
         isFirstTimeUser={this.state.isFirstTimeUser}
         setNotificationsPermission={this.setNotificationsPermission}
         notificationsPermission={notificationsPermission}
-        unreadCount={queuedCount}
-        readCount={stagedCount}
-        archivedCount={closedCount}
-        readTodayCount={parseInt(stagedTodayCount, 10) || 0}
-        readTodayLastWeekCount={parseInt(stagedTodayLastWeekCount, 10) || 0}
+        queuedCount={queuedCount}
+        stagedCount={stagedCount}
+        closedCount={closedCount}
+        stagedTodayCount={stagedTodayCount || 0}
         first={firstNumbered}
         last={lastNumbered}
         lastPage={lastPage}
@@ -523,16 +445,6 @@ class NotificationsPage extends React.Component {
         isFetchingNotifications={isFetchingNotifications}
         fetchingNotificationsError={fetchingNotificationsError || this.state.error}
         onSetActiveFilter={this.onSetActiveFilter}
-        highestScore={highestScore}
-        lowestScore={lowestScore}
-        hasUnread={this.isUnreadTab}
-        sort={this.state.sort}
-        setSort={sort => this.setState({sort})}
-        descending={this.state.descending}
-        setDescending={descending => this.setState({descending})}
-        view={this.state.activeStatus}
-        setView={this.onSetActiveStatus}
-        user={this.state.user}
       />
     );
   }

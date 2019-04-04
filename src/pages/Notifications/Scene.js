@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment';
 // import {VictoryPie, VictoryChart} from "victory";
 import {Link} from "@reach/router";
-import styled from '@emotion/styled';
+import styled from 'react-emotion';
 import Icon from '../../components/Icon';
 import Logo from '../../components/Logo';
 import LoadingIcon from '../../components/LoadingIcon';
@@ -676,7 +676,7 @@ function getPRIssueIcon (type, _reasons) {
 
 export default function Scene ({
   currentTime,
-  readStatistics,
+  stagedStatistics,
   isFirstTimeUser,
   notificationsPermission,
   queuedCount,
@@ -707,11 +707,7 @@ export default function Scene ({
   fetchingNotificationsError,
   activeFilter,
   onSetActiveFilter,
-  setNotificationsPermission,
-  highestScore,
-  lowestScore,
-  hasUnread,
-  ...props
+  setNotificationsPermission
 }) {
   const loading = isSearching || isFetchingNotifications;
   const isFirstPage = page === 1;
@@ -725,11 +721,11 @@ export default function Scene ({
     // probably prompt to mark all as read to start out since they prob don't use notifs
   }
 
-  readStatistics = readStatistics.map(n => parseInt(n, 10));
+  stagedStatistics = stagedStatistics.map(n => parseInt(n, 10));
 
-  const highestStagedCount = readStatistics.reduce((n, m) => Math.max(n, m), 0);
-  let lastWeekStats = readStatistics.slice(0, 7);
-  let thisWeekStats = readStatistics.slice(7);
+  const highestStagedCount = stagedStatistics.reduce((n, m) => Math.max(n, m), 0);
+  let lastWeekStats = stagedStatistics.slice(0, 7);
+  let thisWeekStats = stagedStatistics.slice(7);
 
   // Trim off the weekends.
   lastWeekStats = lastWeekStats.slice(1, -1);
@@ -748,7 +744,6 @@ export default function Scene ({
             size={36}
             style={{
               float: 'left',
-              filter: 'brightness(2)',
               marginRight: 48,
               cursor: 'pointer'
             }}
@@ -757,7 +752,7 @@ export default function Scene ({
               onSetActiveFilter(Filters.PARTICIPATING);
             }}
           />
-          {/* <UnofficialReleaseTag>beta</UnofficialReleaseTag> */}
+          <UnofficialReleaseTag>beta</UnofficialReleaseTag>
           <SearchField>
             <Icon.Search size={48} opacity={.45} />
             <EnhancedSearchInput
@@ -777,7 +772,6 @@ export default function Scene ({
               height: 36,
               padding: '0 12px'
             }} to={routes.HOME}>home</Link>
-          </div>
           <div style={{display: 'inline-block'}} className="button-container-alt">
             <Link style={{
               marginRight: 15,
@@ -787,7 +781,8 @@ export default function Scene ({
               padding: '0 12px'
             }} to={routes.REDESIGN_NOTIFICATIONS}>use new redesign</Link>
           </div>
-          <div style={{display: 'inline-block'}} className="button-container-alt">
+          </div>
+          <div style={{display: 'inline-block'}}  className="button-container-alt">
             <a style={{
               marginRight: 15,
               background: 'none',
