@@ -12,7 +12,7 @@ import LoadingIcon from '../../../components/LoadingIcon'
 import {routes} from '../../../constants';
 import {Badges, Reasons} from '../../../constants/reasons';
 import {withOnEnter} from '../../../enhance';
-import {Sort, View} from '../index';
+import {Mode, Sort, View} from '../index';
 
 const hash = process.env.GIT_HASH ? `#${process.env.GIT_HASH}` : '';
 const version = require('../../../../package.json').version + hash;
@@ -22,12 +22,6 @@ const WHITE = 'rgb(255, 254, 252)';
 const FOOTER_HEIGHT = '96px';
 const COLLAPSED_WIDTH = '72px';
 const EXPANDED_WIDTH = '326px';
-const Mode = {
-  ALL: 0,
-  HOT: 1,
-  COMMENTS: 2,
-  OLD: 3
-};
 
 // ========================================================================
 // START OF 'MOVE TO A UTILS FILE'
@@ -144,6 +138,36 @@ function prettify (n) {
   }
 }
 
+function titleOfMode (mode) {
+  switch (mode) {
+    case Mode.ALL:
+      return 'All Relevent Threads';
+    case Mode.HOT:
+      return 'Hot Threads';
+    case Mode.COMMENTS:
+      return 'Talkative Threads';
+    case Mode.OLD:
+      return 'Overdue Threads';
+    default:
+      return 'Updates';
+  }
+}
+
+function subtitleOfMode (mode) {
+  switch (mode) {
+    case Mode.ALL:
+      return 'See all of the notifications that matter to you';
+    case Mode.HOT:
+      return 'Some currently very active threads you care about';
+    case Mode.COMMENTS:
+      return 'Issues and pull requests that have a lot of comments';
+    case Mode.OLD:
+      return 'Older threads that need your review';
+    default:
+      return 'See all of the notifications that matter to you';
+  }
+}
+
 // ========================================================================
 // END OF 'MOVE TO A UTILS FILE'
 // ========================================================================
@@ -185,6 +209,7 @@ const Item = styled('div')`
 const MenuHeaderItem = styled(Item)`
   height: ${COLLAPSED_WIDTH};
   width: ${({expand}) => expand ? EXPANDED_WIDTH : COLLAPSED_WIDTH};
+  transition: all 150ms ease;
   border-bottom: 1px solid #292d35;
   border-right: 1px solid #292d35;
   background: #2f343e;
@@ -201,6 +226,7 @@ const ContentHeaderItem = styled(Item)`
 const MenuContainerItem = styled(Item)`
   width: ${({expand}) => expand ? EXPANDED_WIDTH : COLLAPSED_WIDTH};
   height: 100%;
+  transition: all 150ms ease;
 `;
 
 // Faded blue: #F5F6FA
@@ -247,10 +273,7 @@ const ScoreDiff = styled(CardTitle)`
   top: 30px;
   right: 24px;
   opacity: ${props => props.show ? '1' : '0'};
-  // color: ${props => props.under ? '#ef055f' : BLUE};
-  // color: ${props => props.under ? BLUE : '#47af4c'};
   color: ${props => props.under ? '#bfc5d1' : BLUE};
-  transition: all 0ms ease;
 `;
 
 const IconContainer = styled('div')`
@@ -258,32 +281,30 @@ const IconContainer = styled('div')`
   height: 72px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: ${props => props.open ? 'space-between' : 'center'};
+  padding: ${props => props.open ? '0 28px' : 'inherit'};
   cursor: pointer;
   outline: none;
   user-select: none;
   transition: all 200ms ease;
-  // &:after {
-  //   transition: all 200ms ease;
-  //   content: "";
-  //   position: absolute;
-  //   width: 3px;
-  //   background: ${props => !props.noBorder && props.selected ? '#fff' : 'transparent'};
-  //   right: 0;
-  //   top: 4px;
-  //   bottom: 4px;
-  //   border-top-left-radius: 8px;
-  //   border-bottom-left-radius: 8px;
-  // }
   i {
     transition: all 200ms ease;
-    color: ${props => props.selected ? WHITE : '#bfc5d15e'}
+    color: ${props => props.selected ? props.primary : '#bfc5d15e'}
+  }
+  span {
+    transition: all 200ms ease;
+    display: ${props => props.open ? 'inline-block' : 'none'};
+    opacity: ${props => props.open ? 1 : 0};
+    color: ${props => props.selected ? WHITE : '#bfc5d15e'};
+    font-weight: 600;
+    margin: 12px;
+    font-size: 14px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
   &:hover {
     background: ${props => props.selected ? 'transparent' : 'rgba(233, 233, 233, .1)'};
-    // i {
-    //   color: ${props => props.selected ? props.primary : '#616671'}
-    // }
   }
 `;
 
@@ -454,7 +475,7 @@ const InteractionMenu = styled('div')`
   height: ${props => props.show ? 345 : 0}px;
   opacity: ${props => props.show ? 1 : 0};
   top: 32px;
-  left: 82px;
+  left: 72px;
   margin-left: 2px;
   overflow: hidden;
   cursor: initial;
@@ -576,7 +597,7 @@ const LoadingNotificationRow = styled(NotificationRowHeader)`
     right: 0;
     bottom: 0;
     transform: translateX(-100%);
-    animation: ${loadingKeyframe} 2.0s infinite;
+    animation: ${loadingKeyframe} 1.25s infinite;
   }
 `;
 
@@ -625,7 +646,8 @@ const NotificationByline = styled('span')`
 const ProfileContainer = styled('div')`
   display: flex;
   height: 100%;
-  justify-content: center;
+  width: 188px;
+  justify-content: space-between;
   align-items: center;
   border-left: 1px solid #edeef0;
   padding: 0 22px;
@@ -637,6 +659,7 @@ const ProfileContainer = styled('div')`
   user-select: none;
   cursor: pointer;
   i {
+    margin: 6px;
     transition: all 200ms ease;
     color: #bfc5d1a3
   }
@@ -652,12 +675,18 @@ const ProfileName = styled('span')`
   font-size: 14px;
   font-weight: 500;
   margin: 0 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: auto;
 `;
 
 const ProfilePicture = styled('img')`
   height: 36px;
   width: 36px;
   border-radius: 4px;
+  background: silver;
+  opacity: ${props => props.src ? 1 : 0.25};
 `;
 
 function ProfileSection ({user, onLogout}) {
@@ -672,8 +701,8 @@ function ProfileSection ({user, onLogout}) {
   return (
     <>
       <ProfileContainer onClick={() => setMenuShow(true)}>
-        <ProfilePicture src={user.avatar_url} />
-        <ProfileName>{user.name}</ProfileName>
+        <ProfilePicture src={user ? user.avatar_url : null} />
+        <ProfileName>{user ? user.name : 'Settings'}</ProfileName>
         <i className="fas fa-caret-down" css={css`
           transform: ${menuShow ? 'rotate(180deg)' : 'rotate(0deg)'};
         `}></i>
@@ -687,7 +716,7 @@ function ProfileSection ({user, onLogout}) {
         left: auto;
         background: ${WHITE};
         border: 1px solid #edeef0;
-        width: ${22 + 142 + 22}px;
+        width: ${22 + 187 + 22}px;
         cursor: pointer;
         outline: none;
         user-select: none;
@@ -1096,6 +1125,8 @@ export default function Scene ({
   readTodayLastWeekCount,
   onRestoreThread,
   onLogout,
+  mode,
+  setMode
 }) {
   const hasNotificationsOn = notificationsPermission === 'granted';
   const [menuOpen, setMenuOpen] = React.useState(false);
@@ -1104,16 +1135,6 @@ export default function Scene ({
     cur: readTodayCount,
     prev: readTodayLastWeekCount
   });
-
-  // @TODO this needs to live in the index too so we can adjust the counts AND the pages.
-  const [mode, setMode] = React.useState(Mode.ALL);
-  if (mode === Mode.HOT) {
-    notifications = notifications.filter(item => console.warn(item.badges) || item.badges.includes(Badges.HOT));
-  } else if (mode === Mode.COMMENTS) {
-    notifications = notifications.filter(item => console.warn(item.badges) || item.badges.includes(Badges.COMMENTS));
-  } else if (mode === Mode.OLD) {
-    notifications = notifications.filter(item => console.warn(item.badges) || item.badges.includes(Badges.OLD));
-  }
 
   readStatistics = readStatistics.map(n => parseInt(n, 10));
   const lastWeekStats = readStatistics.slice(0, 7).map(n => n || null);
@@ -1166,7 +1187,9 @@ export default function Scene ({
             noBorder
             primary="#BFC5D1"
             onClick={() => setMenuOpen(!menuOpen)}
+            open={menuOpen}
           >
+            <span>{'Menu'}</span>
             <i className="fas fa-bars"></i>
           </MenuIconItem>
         </MenuHeaderItem>
@@ -1205,7 +1228,7 @@ export default function Scene ({
             onClick={() => window.scrollTo(0, 0)}
             size={32}
           />
-          {user && <ProfileSection user={user} onLogout={onLogout} />}
+          <ProfileSection user={user} onLogout={onLogout} />
         </ContentHeaderItem>
       </Row>
       <Row css={css`
@@ -1219,8 +1242,9 @@ export default function Scene ({
             primary="#4caf50"
             selected={mode === Mode.ALL}
             onChange={setMode}
-            style={{margin: '8px 0'}}
+            open={menuOpen}
           >
+            <span>{titleOfMode(Mode.ALL)}</span>
             <i className="fas fa-leaf"></i>
           </MenuIconItem>
           <MenuIconItem
@@ -1228,8 +1252,9 @@ export default function Scene ({
             primary="#e91e63"
             selected={mode === Mode.HOT}
             onChange={setMode}
-            style={{margin: '8px 0'}}
+            open={menuOpen}
           >
+            <span>{titleOfMode(Mode.HOT)}</span>
             <i className="fas fa-fire"></i>
           </MenuIconItem>
           <MenuIconItem
@@ -1237,17 +1262,19 @@ export default function Scene ({
             primary="#4C84FF"
             selected={mode === Mode.COMMENTS}
             onChange={setMode}
-            style={{margin: '8px 0'}}
+            open={menuOpen}
           >
+            <span>{titleOfMode(Mode.COMMENTS)}</span>
             <i className="fas fa-users"></i>
           </MenuIconItem>
           <MenuIconItem
             mode={Mode.OLD}
-            primary="#4C84FF"
+            primary="#e6d435"
             selected={mode === Mode.OLD}
             onChange={setMode}
-            style={{margin: '8px 0'}}
+            open={menuOpen}
           >
+            <span>{titleOfMode(Mode.OLD)}</span>
             <i className="fas fa-hourglass-half"></i>
           </MenuIconItem>
         </MenuContainerItem>
@@ -1294,7 +1321,7 @@ export default function Scene ({
           </CardSection>
           <NotificationsSection>
             <TitleSection>
-              <Title>{'Updates'}</Title>
+              <Title>{titleOfMode(mode)}</Title>
               <InteractionSection>
                 <li onClick={event => {
                   event.stopPropagation();
@@ -1378,7 +1405,7 @@ export default function Scene ({
               </InteractionSection>
             </TitleSection>
             <SubTitleSection>
-              <h4>See all of the notifications that matter to you</h4>
+              <h4>{subtitleOfMode(mode)}</h4>
             </SubTitleSection>
             <PageSelection>
               <PageItem

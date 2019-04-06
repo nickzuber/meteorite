@@ -536,13 +536,8 @@ const BottomLinkContainer = styled(LandingHeader)({
 
 const LinkButton = styled('a')({boxShadow: '0 0 0 transparent'});
 const U = styled('span')({
-  color: 'inherit',});
-//   background: '#009cfb',
-//   padding: '0 6px 2px',
-//   borderRadius: 4,
-// }, ({color}) => ({
-//   background: color
-// }));
+  color: 'inherit'
+});
 
 const UnofficialReleaseTag = styled('span')({
   color: 'white',
@@ -572,7 +567,6 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
       }}>
         <LandingHeader style={{paddingLeft: '5%'}}>
           <Logo white size={75}>
-            {/* <UnofficialReleaseTag>beta</UnofficialReleaseTag> */}
           </Logo>
           {loggedIn ? (
             <div className="button-container-alt">

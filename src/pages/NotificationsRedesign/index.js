@@ -34,6 +34,13 @@ export const View = {
   ARCHIVED: 2
 };
 
+export const Mode = {
+  ALL: 0,
+  HOT: 1,
+  COMMENTS: 2,
+  OLD: 3
+};
+
 // @TODO Move these functions.
 
 /**
@@ -148,6 +155,7 @@ class NotificationsPage extends React.Component {
     query: null,
     activeFilter: Filters.PARTICIPATING,
     activeStatus: View.UNREAD,
+    mode: Mode.ALL,
     currentPage: 1,
     sort: Sort.SCORE,
     descending: false,
@@ -340,7 +348,20 @@ class NotificationsPage extends React.Component {
         filterMethod = () => true;
     }
 
-    const filteredNotifications = notifications.filter(filterMethod);
+    let filteredNotifications = notifications
+      .filter(filterMethod)
+      .map(decorateWithScore);
+
+    if (this.state.mode === Mode.HOT) {
+      filteredNotifications = filteredNotifications
+        .filter(item => item.badges.includes(Badges.HOT));
+    } else if (this.state.mode === Mode.COMMENTS) {
+      filteredNotifications = filteredNotifications
+        .filter(item => item.badges.includes(Badges.COMMENTS));
+    } else if (this.state.mode === Mode.OLD) {
+      filteredNotifications = filteredNotifications
+        .filter(item => item.badges.includes(Badges.OLD));
+    }
 
     let notificationsQueued = filteredNotifications.filter(n => n.status === Status.QUEUED);
     let notificationsStaged = filteredNotifications.filter(n => n.status === Status.STAGED);
@@ -359,33 +380,30 @@ class NotificationsPage extends React.Component {
         notificationsToRender = notificationsQueued;
     }
 
-    let scoredAndSortedNotifications = notificationsToRender
-      .map(decorateWithScore);
-
     if (this.state.sort === Sort.TITLE) {
       if (this.state.descending) {
-        scoredAndSortedNotifications.sort((a, b) => a.name.localeCompare(b.name));
+        notificationsToRender.sort((a, b) => a.name.localeCompare(b.name));
       } else {
-        scoredAndSortedNotifications.sort((a, b) => b.name.localeCompare(a.name));
+        notificationsToRender.sort((a, b) => b.name.localeCompare(a.name));
       }
     }
     if (this.state.sort === Sort.SCORE) {
       if (this.state.descending) {
-        scoredAndSortedNotifications.sort((a, b) => a.score - b.score);
+        notificationsToRender.sort((a, b) => a.score - b.score);
       } else {
-        scoredAndSortedNotifications.sort((a, b) => b.score - a.score);
+        notificationsToRender.sort((a, b) => b.score - a.score);
       }
     }
     if (this.state.sort === Sort.REPOSITORY) {
       if (this.state.descending) {
-        scoredAndSortedNotifications.sort((a, b) => {
+        notificationsToRender.sort((a, b) => {
           const diff = a.repository.localeCompare(b.repository);
           return diff === 0
             ? b.score - a.score
             : diff;
         });
       } else {
-        scoredAndSortedNotifications.sort((a, b) => {
+        notificationsToRender.sort((a, b) => {
           const diff = b.repository.localeCompare(a.repository);
           return diff === 0
             ? b.score - a.score
@@ -395,23 +413,23 @@ class NotificationsPage extends React.Component {
     }
     if (this.state.sort === Sort.TYPE) {
       if (this.state.descending) {
-        scoredAndSortedNotifications.sort((a, b) => a.type.localeCompare(b.type));
+        notificationsToRender.sort((a, b) => a.type.localeCompare(b.type));
       } else {
-        scoredAndSortedNotifications.sort((a, b) => b.type.localeCompare(a.type));
+        notificationsToRender.sort((a, b) => b.type.localeCompare(a.type));
       }
     }
     if (this.state.sort === Sort.DATE) {
       if (this.state.descending) {
-        scoredAndSortedNotifications.sort((a, b) => moment(a.updated_at).diff(b.updated_at));
+        notificationsToRender.sort((a, b) => moment(a.updated_at).diff(b.updated_at));
       } else {
-        scoredAndSortedNotifications.sort((a, b) => moment(b.updated_at).diff(a.updated_at));
+        notificationsToRender.sort((a, b) => moment(b.updated_at).diff(a.updated_at));
       }
     }
 
     // We gotta make sure to search notifications before we paginate.
     // Otherwise we'd just end up searching on the current page, which is bad.
     if (this.state.query) {
-      scoredAndSortedNotifications = scoredAndSortedNotifications.filter(n => (
+      notificationsToRender = notificationsToRender.filter(n => (
         n.name.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1)
       );
       notificationsQueued = notificationsQueued.filter(n => (
@@ -427,7 +445,7 @@ class NotificationsPage extends React.Component {
 
     if (this.props.notificationsApi.newChanges) {
       const filteredNewChanges = this.props.notificationsApi.newChanges.filter(n => (
-        scoredAndSortedNotifications.some(fn => fn.id === n.id)
+        notificationsToRender.some(fn => fn.id === n.id)
       ));
       if (filteredNewChanges.length > 0) {
         this.sendWebNotification(filteredNewChanges);
@@ -435,7 +453,7 @@ class NotificationsPage extends React.Component {
     }
 
     return {
-      notifications: scoredAndSortedNotifications,
+      notifications: notificationsToRender,
       queuedCount: notificationsQueued.length,
       stagedCount: notificationsStaged.length,
       closedCount: notificationsClosed.length,
@@ -548,6 +566,8 @@ class NotificationsPage extends React.Component {
         setView={this.onSetActiveStatus}
         user={this.state.user}
         reposReadCounts={reposReadCounts}
+        mode={this.state.mode}
+        setMode={mode => this.setState({mode})}
       />
     );
   }
