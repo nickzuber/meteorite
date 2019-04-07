@@ -10,8 +10,9 @@ import {LineChart, Line, XAxis, Tooltip} from 'recharts';
 import Logo from '../../../components/Logo';
 import LoadingIcon from '../../../components/LoadingIcon'
 import {routes} from '../../../constants';
-import {Badges, Reasons} from '../../../constants/reasons';
+import {Reasons} from '../../../constants/reasons';
 import {withOnEnter} from '../../../enhance';
+import {getFact} from '../../../utils/facts';
 import {Mode, Sort, View} from '../index';
 
 const hash = process.env.GIT_HASH ? `#${process.env.GIT_HASH}` : '';
@@ -1129,6 +1130,7 @@ export default function Scene ({
   setMode
 }) {
   const hasNotificationsOn = notificationsPermission === 'granted';
+  const [fact, setFact] = React.useState(null);
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [counts, setCounts] = React.useState({
@@ -1170,6 +1172,10 @@ export default function Scene ({
       prev: readTodayLastWeekCount
     });
   }, [readTodayCount, readTodayLastWeekCount]);
+
+  React.useEffect(() => {
+    setFact(getFact());
+  }, [view]);
 
   return (
     <Container>
@@ -1527,69 +1533,71 @@ export default function Scene ({
               </div>
             </PageSelection>
             <NotificationsTable>
-              <NotificationRowHeader>
-                {/* Type */}
-                <NotificationCell width={70}>
-                  <SortingItem
-                    sort={Sort.TYPE}
-                    descending={descending}
-                    setDescending={setDescending}
-                    selected={sort === Sort.TYPE}
-                    onChange={setSort}
-                  >
-                    {'Type'}
-                  </SortingItem>
-                </NotificationCell>
-                {/* Title */}
-                <NotificationCell flex={4}>
-                  <SortingItem
-                    sort={Sort.TITLE}
-                    descending={descending}
-                    setDescending={setDescending}
-                    selected={sort === Sort.TITLE}
-                    onChange={setSort}
-                  >
-                    {'Title'}
-                  </SortingItem>
-                </NotificationCell>
-                {/* Repository */}
-                <NotificationCell flex={2}>
-                  <SortingItem
-                    sort={Sort.REPOSITORY}
-                    descending={descending}
-                    setDescending={setDescending}
-                    selected={sort === Sort.REPOSITORY}
-                    onChange={setSort}
-                  >
-                    {'Repository'}
-                  </SortingItem>
-                </NotificationCell>
-                {/* Score */}
-                <NotificationCell width={60}>
-                  <SortingItem
-                    sort={Sort.SCORE}
-                    descending={descending}
-                    setDescending={setDescending}
-                    selected={sort === Sort.SCORE}
-                    onChange={setSort}
-                  >
-                    {'Score'}
-                  </SortingItem>
-                </NotificationCell>
-                {/* Actions */}
-                <NotificationCell width={70}>
-                  <SortingItem
-                    sort={Sort.DATE}
-                    descending={descending}
-                    setDescending={setDescending}
-                    selected={sort === Sort.DATE}
-                    onChange={setSort}
-                    css={css`justify-content: center;`}
-                  >
-                    {'Date'}
-                  </SortingItem>
-                </NotificationCell>
-              </NotificationRowHeader>
+              {notifications.length > 0 && (
+                 <NotificationRowHeader>
+                  {/* Type */}
+                  <NotificationCell width={70}>
+                    <SortingItem
+                      sort={Sort.TYPE}
+                      descending={descending}
+                      setDescending={setDescending}
+                      selected={sort === Sort.TYPE}
+                      onChange={setSort}
+                    >
+                      {'Type'}
+                    </SortingItem>
+                  </NotificationCell>
+                  {/* Title */}
+                  <NotificationCell flex={4}>
+                    <SortingItem
+                      sort={Sort.TITLE}
+                      descending={descending}
+                      setDescending={setDescending}
+                      selected={sort === Sort.TITLE}
+                      onChange={setSort}
+                    >
+                      {'Title'}
+                    </SortingItem>
+                  </NotificationCell>
+                  {/* Repository */}
+                  <NotificationCell flex={2}>
+                    <SortingItem
+                      sort={Sort.REPOSITORY}
+                      descending={descending}
+                      setDescending={setDescending}
+                      selected={sort === Sort.REPOSITORY}
+                      onChange={setSort}
+                    >
+                      {'Repository'}
+                    </SortingItem>
+                  </NotificationCell>
+                  {/* Score */}
+                  <NotificationCell width={60}>
+                    <SortingItem
+                      sort={Sort.SCORE}
+                      descending={descending}
+                      setDescending={setDescending}
+                      selected={sort === Sort.SCORE}
+                      onChange={setSort}
+                    >
+                      {'Score'}
+                    </SortingItem>
+                  </NotificationCell>
+                  {/* Actions */}
+                  <NotificationCell width={70}>
+                    <SortingItem
+                      sort={Sort.DATE}
+                      descending={descending}
+                      setDescending={setDescending}
+                      selected={sort === Sort.DATE}
+                      onChange={setSort}
+                      css={css`justify-content: center;`}
+                    >
+                      {'Date'}
+                    </SortingItem>
+                  </NotificationCell>
+                </NotificationRowHeader>
+              )}
               {loading ? (
                 <NotificationBlock>
                   <LoadingNotificationRow />
@@ -1602,6 +1610,7 @@ export default function Scene ({
                 <NotificationCollection
                   page={page}
                   view={view}
+                  fact={fact}
                   notifications={notifications}
                   colorOfScore={createColorOfScore(lowestScore, highestScore)}
                   markAsRead={onStageThread}
@@ -1661,6 +1670,7 @@ export default function Scene ({
 
 function NotificationCollection ({
   page,
+  fact,
   view,
   notifications,
   colorOfScore,
@@ -1685,8 +1695,19 @@ function NotificationCollection ({
         font-weight: 500;
         color: #bfc5d1;
         user-select: none;
+        width: 60%;
+        span {
+          text-align: center;
+          margin: 8px auto 0;
+          font-size: 12px;
+          font-weight: 400;
+          display: block;
+          color: #bfc5d1;
+          user-select: none;
+        }
       `}>
-        {'Nothing to show'}
+        {'No new updates to show'}
+        <span>{`Fun fact: ${fact}`}</span>
       </div>
     );
   }
