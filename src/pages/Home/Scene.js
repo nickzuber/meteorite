@@ -43,7 +43,8 @@ function opacity (xid, max) {
     Math.E,
     (-0.5) * (Math.pow(xid - best, 2) / (Math.pow(distribution, 2)))
   ));
-  return Math.max(1 - result, 0.15);
+  console.warn(Math.max(1 - result, 0))
+  return Math.max(1 - result, 0.05) * 1.75;
 }
 
 // function createImagePlaceholder (highlight) {
@@ -636,12 +637,14 @@ const LogoTitle = styled('span')`
 
 const Header = styled('h1')`
   position: relative;
+  text-align: left;
+  width: 680px;
   margin: 0;
   z-index: 2;
   font-size: 64px;
   line-height: 78px;
   font-weight: 800;
-  hyphens: auto;
+  margin: 0 auto 12px;
 `;
 
 function getConfetti (seed) {
@@ -687,11 +690,11 @@ function getConfetti (seed) {
 }
 
 const Confetti = ({offset, row, seed, index, max}) => {
-  const start = row * 120;
-  const end = start + 120;
+  const start = row * 160;
+  const end = start + 160;
   const topDelta = range(start, end, seed) - 120;
   const fade = opacity(index, max);
-  offset -= 180;
+  offset -= 320;
   return (
     <div css={css`
       z-index: 1;
@@ -709,7 +712,7 @@ const Confetti = ({offset, row, seed, index, max}) => {
 
 function ConfettiSection () {
   const SPACING = 82;
-  const AMOUNT = 17;
+  const AMOUNT = 18;
 
   const row = new Array(AMOUNT).fill(0).map((_, i) => i * SPACING);
 
@@ -731,6 +734,8 @@ const SubHeader = styled(Header)`
   font-size: 22px;
   line-height: 26px;
   font-weight: 600;
+  width: 680px;
+  margin: 0 auto;
 `;
 
 const DemoScreenshot = styled('img')`
@@ -871,17 +876,16 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
       `}>
         <div css={css`
           position: relative;
-          margin: 0 auto 64px;
+          margin: 0 auto 36px;
           display: flex;
           justify-content: space-between;
           align-items: center;
           padding: 12px 0;
-          flex-direction: row;
+          flex-direction: column;
         `}>
           <ConfettiSection />
           <Header>
-            {'Control'}<br />
-            {'your GitHub notifications'}
+            {'Control your GitHub notifications'}
           </Header>
           <div css={css`margin: 0 32px;`}>
             <SubHeader>
@@ -890,9 +894,9 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
             <div css={css`
               z-index: 2;
               display: flex;
-              justify-content: start;
+              justify-content: center;
               align-items: center;
-              margin: 18px 0;
+              margin: 24px 0;
               span {
                 z-index: 2;
                 cursor: pointer;
@@ -948,7 +952,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
             <div css={css`
               z-index: 2;
               display: flex;
-              justify-content: start;
+              justify-content: center;
               align-items: center;
               margin: 12px 0;
               i {
