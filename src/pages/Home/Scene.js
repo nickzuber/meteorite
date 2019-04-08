@@ -12,6 +12,7 @@ import Logo from '../../components/Logo';
 import demoPng from '../../images/demo.png';
 import rowExample from '../../images/row.png';
 import '../../styles/gradient.css';
+import '../../styles/font.css';
 
 // const hash = process.env.GIT_HASH ? `#${process.env.GIT_HASH}` : '';
 // const version = require('../../../package.json').version + hash;
@@ -643,8 +644,11 @@ const Header = styled('h1')`
   z-index: 2;
   font-size: 64px;
   line-height: 78px;
-  font-weight: 800;
   margin: 0 auto 12px;
+  font-weight: 800;
+
+  font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
+  font-weight: 500;
 `;
 
 function getConfetti (seed) {
@@ -736,6 +740,10 @@ const SubHeader = styled(Header)`
   font-weight: 600;
   width: 680px;
   margin: 0 auto;
+
+  font-family: Inter UI, system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 500;
 `;
 
 const DemoScreenshot = styled('img')`
