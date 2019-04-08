@@ -642,7 +642,7 @@ const Header = styled('h1')`
   width: 680px;
   margin: 0;
   z-index: 2;
-  font-size: 64px;
+  font-size: 72px;
   line-height: 78px;
   margin: 0 auto 12px;
   font-weight: 800;
