@@ -6,6 +6,7 @@
     "@emotion/core": "^10.0.10",
     "@emotion/styled": "^10.0.10",
     "@reach/router": "^1.2.1",
+    "@rehooks/component-size": "^1.0.2",
     "@svgr/webpack": "2.4.1",
     "ajv": "^6.10.0",
     "axios": "^0.18.0",

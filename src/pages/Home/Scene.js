@@ -3,6 +3,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import {css, jsx, keyframes} from '@emotion/core';
+import useComponentSize from '@rehooks/component-size'
 import {Link as RouterLink} from '@reach/router';
 import {routes} from '../../constants';
 import Curve from '../../components/Curve';
@@ -12,8 +13,37 @@ import demoPng from '../../images/demo.png';
 import rowExample from '../../images/row.png';
 import '../../styles/gradient.css';
 
-const hash = process.env.GIT_HASH ? `#${process.env.GIT_HASH}` : '';
-const version = require('../../../package.json').version + hash;
+// const hash = process.env.GIT_HASH ? `#${process.env.GIT_HASH}` : '';
+// const version = require('../../../package.json').version + hash;
+
+function range (min, max, rand) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(rand * (max - min + 1)) + min;
+}
+
+function color (rand) {
+  const c = [
+    '#4caf50',
+    '#e91e63',
+    '#4C84FF',
+    '#e6d435',
+  ];
+  return c[~~(c.length * rand)];
+}
+
+function opacity (xid, max) {
+  // Max value (best possible score).
+  const cap = .5;
+  // Best value to base distribution on (the center value).
+  const best = Math.floor(max / 2);
+  // How spread out the distribution is from the best value.
+  const distribution = 4;
+  return .5 - Math.min(0.2, cap * Math.pow(
+    Math.E,
+    (-0.5) * (Math.pow(xid - best, 2) / (Math.pow(distribution, 2)))
+  ));
+}
 
 // function createImagePlaceholder (highlight) {
 //   return (
@@ -552,6 +582,7 @@ const version = require('../../../package.json').version + hash;
 // ===========================================================================
 
 const PageContainer = styled('div')`
+  overflow: hidden;
   background: #fcf8f3;
   position: relative;
   height: 100%;
@@ -559,11 +590,12 @@ const PageContainer = styled('div')`
   display: block;
 `;
 
-const FixedCounter = styled('div')`
+const FixedContainer = styled('div')`
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
+  z-index: 10;
 `;
 
 const Container = styled('div')`
@@ -602,20 +634,110 @@ const LogoTitle = styled('span')`
 `;
 
 const Header = styled('h1')`
-  margin-top: 0;
-  font-size: 4rem;
+  position: relative;
+  margin: 0;
+  z-index: 2;
+  font-size: 64px;
+  line-height: 78px;
   font-weight: 800;
   hyphens: auto;
 `;
 
+function getConfetti (seed) {
+  const stroke = color(seed);
+  if (seed > 0.8) {
+    return (
+      <svg css={css`transform: rotate(${~~(seed * 180)}deg);`} width="12" height="9" viewBox="0 0 12 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 0L11.1962 9H0.803848L6 0Z" fill={stroke}/>
+      </svg>
+    );
+  }
+  if (seed > 0.6) {
+    return (
+      <svg css={css`transform: rotate(${~~(seed * 180)}deg);`} width="14" height="18" viewBox="0 0 14 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C0.517508 6.06139 6.6799 11.5502 2 16" stroke={stroke} stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    );
+  }
+  if (seed > 0.4) {
+    return (
+      <svg css={css`transform: rotate(${~~(seed * 180)}deg);`} width="8" height="13" viewBox="0 0 8 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 0L8 6.5L4 13L0 6.5L4 0Z" fill={stroke} />
+      </svg>
+    );
+  }
+  if (seed > 0.2) {
+    return (
+      <svg css={css`transform: rotate(${~~(seed * 180)}deg);`} width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M8 6.6393C8 9.44331 2.33469 14 0.577298 14C-1.1801 14 1.63591 9.44331 1.63591 6.6393C1.63591 3.83529 -0.119245 0 1.63815 0C3.39555 0 8 3.83529 8 6.6393Z"
+          fill={stroke}
+        />
+      </svg>
+    );
+  }
+  return (
+    <svg css={css`transform: rotate(${~~(seed * 180)}deg);`} width="10" height="12" viewBox="0 0 10 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M9.15408 5.477C8.15168 8.67191 7 13.5 5.15408 11.5C3.30816 9.5 2.90284 9.34138 1.15517 5.47695C-2.00009 -1.49991 3.99732 1.50011 5.15408 3.977C6.15408 1.47707 11.5 -2 9.15408 5.477Z"
+        fill={stroke}/>
+    </svg>
+  );
+}
+
+const Confetti = ({offset, row, seed, index, max}) => {
+  const start = row * 120;
+  const end = start + 120;
+  const topDelta = range(start, end, seed) - 120;
+  const fade = opacity(index, max);
+  offset -= 180;
+  return (
+    <div css={css`
+      z-index: 1;
+      opacity: ${fade};
+      transform: scale(1.2);
+      position: absolute;
+      left: ${offset}px;
+      top: ${topDelta}px;
+    `}
+    >
+      {getConfetti(seed)}
+    </div>
+  );
+}
+
+function ConfettiSection () {
+  const SPACING = 82;
+  const AMOUNT = 17;
+
+  const row = new Array(AMOUNT).fill(0).map((_, i) => i * SPACING);
+
+  return (
+    <div css={css`
+      z-index: 0;
+    `}>
+      {row.map((offset, i) => <Confetti index={i} row={0} offset={offset} seed={Math.random()} max={AMOUNT} />)}
+      {row.map((offset, i) => <Confetti index={i} row={1} offset={offset} seed={Math.random()} max={AMOUNT} />)}
+      {row.map((offset, i) => <Confetti index={i} row={2} offset={offset} seed={Math.random()} max={AMOUNT} />)}
+      {row.map((offset, i) => <Confetti index={i} row={3} offset={offset} seed={Math.random()} max={AMOUNT} />)}
+      {row.map((offset, i) => <Confetti index={i} row={4} offset={offset} seed={Math.random()} max={AMOUNT} />)}
+      {row.map((offset, i) => <Confetti index={i} row={5} offset={offset} seed={Math.random()} max={AMOUNT} />)}
+    </div>
+  );
+}
+
 const SubHeader = styled(Header)`
   font-size: 22px;
+  line-height: 26px;
   font-weight: 600;
 `;
 
 const DemoScreenshot = styled('img')`
   max-width: 960px;
   display: block;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 10px 20px, rgb(245, 245, 245) 0px -1px 0px;
+  border-radius: 4px;
+  z-index: 2;
 `;
 
 const SmallText = styled('p')`
@@ -624,6 +746,7 @@ const SmallText = styled('p')`
   font-weight: 500;
   display: inline-block;
   color: #37352f;
+  z-index: 2;
 `;
 
 const SmallLink = styled('a')`
@@ -632,32 +755,51 @@ const SmallLink = styled('a')`
   font-weight: 500;
   display: inline-block;
   color: #37352f;
+  z-index: 2;
   transition: all 200ms ease;
 `;
+
+// const Confetti = styled('div')`
+//   position: absolute;
+//   left: ${props => props.offset}px;
+//   top: ${props => props.top
+//     ? (-1) * range(28, 42, props.seed) + 'px'
+//     : 'auto'
+//   };
+//   bottom: ${props => props.bottom
+//     ? (-1) * range(28, 42, props.seed) + 'px'
+//     : 'auto'
+//   };
+//   transform: rotate(${props => ~~(props.seed * 180)}deg);
+//   height: 16px;
+//   width: 7px;
+//   background: ${props => color(props.seed)};
+// `;
 
 export default function Scene ({loggedIn, onLogout, ...props}) {
   const [showBorder, setShowBorder] = React.useState(false);
 
-  React.useEffect(() => {
-    const PAGE_OFFSET = 100;
-    const onScroll = () => {
-      if (window.pageYOffset >= PAGE_OFFSET) {
-        setShowBorder(true);
-      } else if (window.pageYOffset < PAGE_OFFSET) {
-        setShowBorder(false);
-      }
-    };
-    window.addEventListener('scroll',  onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  // React.useEffect(() => {
+  //   const PAGE_OFFSET = 100;
+  //   const onScroll = () => {
+  //     if (window.pageYOffset >= PAGE_OFFSET) {
+  //       setShowBorder(true);
+  //     } else if (window.pageYOffset < PAGE_OFFSET) {
+  //       setShowBorder(false);
+  //     }
+  //   };
+  //   window.addEventListener('scroll',  onScroll);
+  //   return () => window.removeEventListener('scroll', onScroll);
+  // }, []);
 
   return (
     <PageContainer css={css`padding-top: 84px;`}>
-      <FixedCounter css={css`
+      <FixedContainer css={css`
         transition: all 200ms ease;
+        background: #fcf8f3;
         box-shadow: ${showBorder
           ? 'rgba(84, 70, 35, 0) 0px 2px 8px, rgba(84,70,35,0.15) 0px 1px 3px'
-          : '0 0 0 white'
+          : 'none'
         };
       `}>
         <Container>
@@ -719,7 +861,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
             )}
           </div>
         </Container>
-      </FixedCounter>
+      </FixedContainer>
 
       <Container css={css`
         margin: 36px auto;
@@ -727,24 +869,31 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
         flex-direction: column;
       `}>
         <div css={css`
-          margin: 0 auto;
+          position: relative;
+          margin: 0 auto 64px;
           display: flex;
           justify-content: space-between;
           align-items: center;
           padding: 12px 0;
           flex-direction: row;
         `}>
-          <Header>{'Control'}<br />{'your GitHub notifications'}</Header>
-          <div>
+          <ConfettiSection />
+          <Header>
+            {'Control'}<br />
+            {'your GitHub notifications'}
+          </Header>
+          <div css={css`margin: 0 32px;`}>
             <SubHeader>
               {'Prioritize the tasks that keep you and your team most productive by organizing your notifications'}
             </SubHeader>
             <div css={css`
+              z-index: 2;
               display: flex;
               justify-content: start;
               align-items: center;
-              margin: 24px 0;
+              margin: 18px 0;
               span {
+                z-index: 2;
                 cursor: pointer;
                 user-select: none;
                 margin-right: 24px;
@@ -758,18 +907,19 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
                 line-height: 1;
                 padding-left: 12px;
                 padding-right: 12px;
-                background: rgba(69, 124, 255, 0.12);
+                background: rgb(230, 234, 244);
                 font-weight: 500;
                 box-shadow: rgba(15, 15, 15, 0.1) 0px 1px 2px, rgba(65, 119, 255, 0.29) 0px 0px 0px 1px inset;
                 transition: all 200ms ease;
                 &:hover {
-                  background: rgba(69, 124, 255, 0.18);
+                  background: rgb(217, 223, 239);
                 }
                 &:active {
-                  background: rgba(69, 124, 255, 0.22);
+                  background: rgb(193, 206, 243);
                 }
               }
               i {
+                z-index: 2;
                 margin-left: 8px;
                 color: #457cff;
               }
@@ -795,11 +945,13 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
               </span>
             </div>
             <div css={css`
+              z-index: 2;
               display: flex;
               justify-content: start;
               align-items: center;
               margin: 12px 0;
               i {
+                z-index: 2;
                 color: #37352f;
                 margin-right: 4px;
                 font-size: 10px;
