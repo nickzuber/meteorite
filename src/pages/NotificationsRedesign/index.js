@@ -147,7 +147,7 @@ class NotificationsPage extends React.Component {
   }
 
   state = {
-    currentTime: moment(),
+    currentTime: moment().subtract(3, 'd'),
     error: null,
     notificationSent: false,
     isFirstTimeUser: false,
@@ -501,7 +501,6 @@ class NotificationsPage extends React.Component {
       firstNumbered = 0;
       lastNumbered = 0;
     }
-
 
     const reposReadCounts = this.props.storageApi.getAllRepoStagedCounts();
     const todayLastWeek = this.state.currentTime.clone().subtract(1, 'week');

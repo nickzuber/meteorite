@@ -3,8 +3,8 @@
 import React from 'react';
 import moment from 'moment';
 import styled from '@emotion/styled';
-import {navigate} from "@reach/router"
 import {css, jsx, keyframes} from '@emotion/core';
+import {navigate} from "@reach/router"
 import {useSpring, useTransition, animated} from 'react-spring'
 import {LineChart, Line, XAxis, Tooltip} from 'recharts';
 import Logo from '../../../components/Logo';
@@ -22,22 +22,11 @@ const BLUE = '#457cff';
 const WHITE = 'rgb(255, 254, 252)';
 const FOOTER_HEIGHT = '96px';
 const COLLAPSED_WIDTH = '72px';
-const EXPANDED_WIDTH = '326px';
+const EXPANDED_WIDTH = '286px';
 
 // ========================================================================
 // START OF 'MOVE TO A UTILS FILE'
 // ========================================================================
-
-function stringOfType (type) {
-  switch (type) {
-    case 'PullRequest':
-      return 'pull request';
-    case 'Issue':
-      return 'issue';
-    default:
-      return 'task';
-  }
-}
 
 function getPRIssueIcon (type, _reasons) {
   switch (type) {
@@ -210,6 +199,7 @@ const Item = styled('div')`
 const MenuHeaderItem = styled(Item)`
   height: ${COLLAPSED_WIDTH};
   width: ${({expand}) => expand ? EXPANDED_WIDTH : COLLAPSED_WIDTH};
+  flex: ${({expand}) => expand ? `${EXPANDED_WIDTH} 0 0` : 1};
   transition: all 150ms ease;
   border-bottom: 1px solid #292d35;
   border-right: 1px solid #292d35;
@@ -226,6 +216,7 @@ const ContentHeaderItem = styled(Item)`
 
 const MenuContainerItem = styled(Item)`
   width: ${({expand}) => expand ? EXPANDED_WIDTH : COLLAPSED_WIDTH};
+  flex: ${({expand}) => expand ? `${EXPANDED_WIDTH} 0 0` : 1};
   height: 100%;
   transition: all 150ms ease;
 `;
