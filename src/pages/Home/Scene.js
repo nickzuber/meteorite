@@ -34,15 +34,16 @@ function color (rand) {
 
 function opacity (xid, max) {
   // Max value (best possible score).
-  const cap = .5;
+  const cap = 1;
   // Best value to base distribution on (the center value).
   const best = Math.floor(max / 2);
   // How spread out the distribution is from the best value.
-  const distribution = 4;
-  return .5 - Math.min(0.2, cap * Math.pow(
+  const distribution = 8;
+  const result = Math.min(1, cap * Math.pow(
     Math.E,
     (-0.5) * (Math.pow(xid - best, 2) / (Math.pow(distribution, 2)))
   ));
+  return Math.max(1 - result, 0.15);
 }
 
 // function createImagePlaceholder (highlight) {
