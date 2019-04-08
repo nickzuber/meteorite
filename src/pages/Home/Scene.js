@@ -44,7 +44,6 @@ function opacity (xid, max) {
     Math.E,
     (-0.5) * (Math.pow(xid - best, 2) / (Math.pow(distribution, 2)))
   ));
-  console.warn(Math.max(1 - result, 0))
   return Math.max(1 - result, 0.05) * 1.75;
 }
 
@@ -653,44 +652,65 @@ const Header = styled('h1')`
 
 function getConfetti (seed) {
   const stroke = color(seed);
-  if (seed > 0.8) {
-    return (
-      <svg css={css`transform: rotate(${~~(seed * 180)}deg);`} width="12" height="9" viewBox="0 0 12 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+  const rotation = ~~(seed * 180);
+
+  const svgs = [
+    (
+      <svg css={css`transform: rotate(${rotation}deg);`} width="12" height="9" viewBox="0 0 12 9" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M6 0L11.1962 9H0.803848L6 0Z" fill={stroke}/>
       </svg>
-    );
-  }
-  if (seed > 0.6) {
-    return (
-      <svg css={css`transform: rotate(${~~(seed * 180)}deg);`} width="14" height="18" viewBox="0 0 14 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2C0.517508 6.06139 6.6799 11.5502 2 16" stroke={stroke} stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    ),
+    (
+      <svg css={css`transform: rotate(${rotation}deg);`} width="12" height="9" viewBox="0 0 12 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M6 0L11.1962 9H0.803848L6 0Z"
+          fill={stroke}
+        />
       </svg>
-    );
-  }
-  if (seed > 0.4) {
-    return (
-      <svg css={css`transform: rotate(${~~(seed * 180)}deg);`} width="8" height="13" viewBox="0 0 8 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 0L8 6.5L4 13L0 6.5L4 0Z" fill={stroke} />
+    ),
+    (
+      <svg css={css`transform: rotate(${rotation}deg);`} width="14" height="18" viewBox="0 0 14 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M12 2C0.517508 6.06139 6.6799 11.5502 2 16"
+          stroke={stroke}
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
       </svg>
-    );
-  }
-  if (seed > 0.2) {
-    return (
-      <svg css={css`transform: rotate(${~~(seed * 180)}deg);`} width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+    ),
+    (
+      <svg css={css`transform: rotate(${rotation}deg);`} width="8" height="13" viewBox="0 0 8 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M4 0L8 6.5L4 13L0 6.5L4 0Z"
+          fill={stroke}
+        />
+      </svg>
+    ),
+    (
+      <svg css={css`transform: rotate(${rotation}deg);`} width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
           d="M8 6.6393C8 9.44331 2.33469 14 0.577298 14C-1.1801 14 1.63591 9.44331 1.63591 6.6393C1.63591 3.83529 -0.119245 0 1.63815 0C3.39555 0 8 3.83529 8 6.6393Z"
           fill={stroke}
         />
       </svg>
-    );
-  }
-  return (
-    <svg css={css`transform: rotate(${~~(seed * 180)}deg);`} width="10" height="12" viewBox="0 0 10 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M9.15408 5.477C8.15168 8.67191 7 13.5 5.15408 11.5C3.30816 9.5 2.90284 9.34138 1.15517 5.47695C-2.00009 -1.49991 3.99732 1.50011 5.15408 3.977C6.15408 1.47707 11.5 -2 9.15408 5.477Z"
-        fill={stroke}/>
-    </svg>
-  );
+    ),
+    (
+      <svg css={css`transform: rotate(${rotation}deg);`} width="10" height="12" viewBox="0 0 10 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M9.15408 5.477C8.15168 8.67191 7 13.5 5.15408 11.5C3.30816 9.5 2.90284 9.34138 1.15517 5.47695C-2.00009 -1.49991 3.99732 1.50011 5.15408 3.977C6.15408 1.47707 11.5 -2 9.15408 5.477Z"
+          fill={stroke}/>
+      </svg>
+    ),
+    (
+      <svg css={css`transform: rotate(${rotation}deg);`} width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="5" cy="5" r="5" fill={stroke}/>
+      </svg>
+    )
+  ];
+  // css={css`transform: rotate(${rotation}deg);`}
+
+  return svgs[~~(seed * svgs.length)];
 }
 
 const Confetti = ({offset, row, seed, index, max}) => {
@@ -770,7 +790,12 @@ const SmallLink = styled('a')`
   display: inline-block;
   color: #37352f;
   z-index: 2;
+  text-decoration: none;
+  text-underline-position: initial;
   transition: all 200ms ease;
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 // const Confetti = styled('div')`
@@ -900,67 +925,72 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
               {'Prioritize the tasks that keep you and your team most productive by organizing your notifications'}
             </SubHeader>
             <div css={css`
-              z-index: 2;
               display: flex;
-              justify-content: center;
               align-items: center;
-              margin: 24px 0;
-              span {
-                z-index: 2;
-                cursor: pointer;
-                user-select: none;
-                margin-right: 24px;
-                display: inline-flex;
-                align-items: center;
-                white-space: nowrap;
-                height: 36px;
-                border-radius: 3px;
-                color: #457cff;
-                font-size: 14px;
-                line-height: 1;
-                padding-left: 12px;
-                padding-right: 12px;
-                background: rgb(230, 234, 244);
-                font-weight: 500;
-                box-shadow: rgba(15, 15, 15, 0.1) 0px 1px 2px, rgba(65, 119, 255, 0.29) 0px 0px 0px 1px inset;
-                transition: all 200ms ease;
-                &:hover {
-                  background: rgb(217, 223, 239);
-                }
-                &:active {
-                  background: rgb(193, 206, 243);
-                }
-              }
-              i {
-                z-index: 2;
-                margin-left: 8px;
-                color: #457cff;
-              }
+              justify-content: space-between;
             `}>
-              <span>{'Let\'s get started'}</span>
-              <span css={css`
-                background: none !important;
-                box-shadow: none !important;
-                color: #37352f !important;
-                &:hover {
-                  background: #37352f12 !important;
-                }
-                &:active {
-                  background: #37352f18 !important;
+              <div css={css`
+                z-index: 2;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                margin: 24px 0;
+                span {
+                  z-index: 2;
+                  cursor: pointer;
+                  user-select: none;
+                  margin-right: 12px;
+                  display: inline-flex;
+                  align-items: center;
+                  white-space: nowrap;
+                  height: 36px;
+                  border-radius: 3px;
+                  color: #457cff;
+                  font-size: 14px;
+                  line-height: 1;
+                  padding-left: 12px;
+                  padding-right: 12px;
+                  background: rgb(230, 234, 244);
+                  font-weight: 500;
+                  box-shadow: rgba(15, 15, 15, 0.1) 0px 1px 2px, rgba(65, 119, 255, 0.29) 0px 0px 0px 1px inset;
+                  transition: all 200ms ease;
+                  &:hover {
+                    background: rgb(217, 223, 239);
+                  }
+                  &:active {
+                    background: rgb(193, 206, 243);
+                  }
                 }
                 i {
-                  font-size: 14px;
-                  color: #37352f;
+                  z-index: 2;
+                  margin-left: 8px;
+                  color: #457cff;
                 }
               `}>
-                {'Learn more'}
-                <i className="fas fa-arrow-right"></i>
-              </span>
-            </div>
-            <div css={css`
+                <span>{'Let\'s get started'}</span>
+                <span css={css`
+                  background: none !important;
+                  box-shadow: none !important;
+                  color: #37352f !important;
+                  &:hover {
+                    background: #37352f12 !important;
+                  }
+                  &:active {
+                    background: #37352f18 !important;
+                  }
+                  i {
+                    font-size: 14px;
+                    color: #37352f;
+                  }
+                `}>
+                  {'Learn more'}
+                  <i className="fas fa-arrow-right"></i>
+                </span>
+              </div>
+              <div css={css`
               z-index: 2;
               display: flex;
-              justify-content: center;
+              justify-content: flex-end;
               align-items: center;
               margin: 12px 0;
               i {
@@ -971,18 +1001,18 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
               }
             `}>
               <SmallLink
-                css={css`
-                  margin-right: 32px;
-                `}
+                css={css`margin-right: 16px;`}
                 target="_blank"
                 href="https://github.com/nickzuber/meteorite"
               >
+                <i class="fas fa-code-branch"></i>
                 {'View and contribute on GitHub'}
               </SmallLink>
               <SmallText>
                 <i className="fas fa-user-friends"></i>
                 {'Free and open sourced'}
               </SmallText>
+            </div>
             </div>
           </div>
         </div>
