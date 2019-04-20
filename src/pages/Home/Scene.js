@@ -2,15 +2,20 @@
 
 import React from 'react';
 import styled from '@emotion/styled';
-import {css, jsx, keyframes} from '@emotion/core';
-import useComponentSize from '@rehooks/component-size'
+import {css, jsx} from '@emotion/core';
 import {Link as RouterLink} from '@reach/router';
 import {routes} from '../../constants';
-import Curve from '../../components/Curve';
-import Icon from '../../components/Icon';
 import Logo from '../../components/Logo';
-import demoPng from '../../images/demo.png';
-import rowExample from '../../images/row.png';
+
+import headerPng from '../../images/safari-header.png';
+import regularScreenshotPng from '../../images/traditional-screenshot.png';
+import IPhoneXMockupPng from '../../images/screenshots/iphone-x-mockup.png';
+import IPhoneScreenshotPng from '../../images/screenshots/iphone-x.png';
+
+import RobinLogo from '../../images/logos/robin-logo.png';
+import RemoteHQLogo from '../../images/logos/remote-hq-logo.png';
+import ReactNativeLogo from '../../images/logos/react-logo.png';
+
 import '../../styles/gradient.css';
 import '../../styles/font.css';
 
@@ -29,6 +34,14 @@ function color (rand) {
     '#e91e63',
     '#4C84FF',
     '#e6d435',
+  ];
+  const newer_c = [
+    '#B424E6',
+    '#1ACA6B',
+    '#E62465',
+    '#FFCD4C',
+    '#4C84FF',
+    '#E9519A',
   ];
   return c[~~(c.length * rand)];
 }
@@ -587,9 +600,11 @@ const PageContainer = styled('div')`
   overflow: hidden;
   background: #fcf8f3;
   position: relative;
+  min-height: calc(100vh - 84px);
   height: 100%;
   width: 100%;
   display: block;
+  overflow: hidden;
 `;
 
 const FixedContainer = styled('div')`
@@ -601,6 +616,7 @@ const FixedContainer = styled('div')`
 `;
 
 const Container = styled('div')`
+  position: relative;
   background: rgb(252, 248, 243);
   width: 960px;
   margin: 0 auto;
@@ -644,10 +660,61 @@ const Header = styled('h1')`
   font-size: 72px;
   line-height: 78px;
   margin: 0 auto 12px;
-  font-weight: 800;
 
   font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
   font-weight: 500;
+`;
+
+const ItemHeader = styled(Header)`
+  position: relative;
+  text-align: left;
+  width: 680px;
+  margin: 0;
+  z-index: 2;
+  font-size: 62px;
+  line-height: 64px;
+  margin: 0 0 12px;
+
+  font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
+  font-weight: 500;
+`;
+
+const HorizontalListItem = styled('div')`
+  flex: 1;
+  border-right: ${props => props.last ? '0px' : '1px'} solid rgb(206, 206, 206);
+  padding: 0 32px;
+`;
+
+const Quote = styled('p')`
+  margin: 0;
+  font-size: 15px;
+  font-weight: 400;
+  &:before {
+    content: open-quote;
+  }
+  &:after {
+    content: close-quote;
+  }
+`;
+
+const CompanyPerson = styled('div')`
+  transform: scale(0.95);
+  display: flex;
+  padding: 8px 0;
+  margin: 0;
+  img {
+    display: block;
+    height: 30px;
+    width: 30px;
+    border-radius: 2px;
+  }
+  span {
+    display: inline-block;
+    padding: 0 16px;
+    font-size: 14px;
+    line-height: 18px;
+    color: #37352f80;
+  }
 `;
 
 function getConfetti (seed) {
@@ -755,6 +822,7 @@ function ConfettiSection () {
 }
 
 const SubHeader = styled(Header)`
+  hyphens: auto;
   font-size: 22px;
   line-height: 26px;
   font-weight: 600;
@@ -766,12 +834,37 @@ const SubHeader = styled(Header)`
   font-weight: 500;
 `;
 
-const DemoScreenshot = styled('img')`
-  max-width: 960px;
+const DemoScreenshotHeader = styled('img')`
+  background: #f7f6f3;
+  width: 960px;
   display: block;
   box-shadow: rgba(0, 0, 0, 0.15) 0px 10px 20px, rgb(245, 245, 245) 0px -1px 0px;
-  border-radius: 4px;
-  z-index: 2;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  z-index: 3;
+`;
+const DemoScreenshot = styled(DemoScreenshotHeader)`
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+`;
+
+const IPhoneScreenshotContainer = styled('img')`
+  position: absolute;
+  bottom: -32px;
+  right: -32px;
+  width: 214px;
+  display: block;
+  background: none;
+  z-index: 5;
+`;
+const IPhoneScreenshot = styled(IPhoneScreenshotContainer)`
+  z-index: 4;
+  transform: scale(0.88);
+  bottom: -48px;
 `;
 
 const SmallText = styled('p')`
@@ -786,7 +879,7 @@ const SmallText = styled('p')`
 const SmallLink = styled('a')`
   margin: 0;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   display: inline-block;
   color: #37352f;
   z-index: 2;
@@ -903,13 +996,13 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
       </FixedContainer>
 
       <Container css={css`
-        margin: 36px auto;
+        margin: 32px auto;
         padding: 8px;
         flex-direction: column;
       `}>
         <div css={css`
           position: relative;
-          margin: 0 auto 36px;
+          margin: 0 auto 18px;
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -1016,7 +1109,114 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
             </div>
           </div>
         </div>
-        <DemoScreenshot src={demoPng} />
+        <div css={css`
+          position: relative;
+        `}>
+          <DemoScreenshotHeader src={headerPng} />
+          <DemoScreenshot src={regularScreenshotPng} />
+          <IPhoneScreenshotContainer src={IPhoneXMockupPng} />
+          <IPhoneScreenshot src={IPhoneScreenshotPng} />
+        </div>
+      </Container>
+
+      <Container css={css`
+        position: relative;
+        margin: 88px auto 32px;
+        padding: 48px 16px;
+        align-items: center;
+        flex-direction: column;
+        border-top: 1px solid rgb(221, 221, 221);
+        border-bottom: 1px solid rgb(221, 221, 221);
+      `}>
+        <div css={css`
+          position: relative;
+          margin: 0 0 18px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 12px 0;
+          flex-direction: column;
+        `}>
+          <ItemHeader css={css`
+            margin-top: 32px;
+            font-size: 48px;
+            line-height: 50px;
+            text-align: center;
+          `}>
+            {'Hear what folks have to say'}
+          </ItemHeader>
+          <SubHeader css={css`
+            text-align: center;
+            margin-bottom: 32px;
+          `}>
+            {'People have been using this app for a while now and have been kind enough to share their thoughts.'}
+          </SubHeader>
+          <div css={css`
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 32px;
+          `}>
+            <HorizontalListItem>
+              <Quote>{`Nick is absolutely KILLING THE GAME with this app. I LOVE it!`}</Quote>
+              <CompanyPerson>
+                <img src={RemoteHQLogo} />
+                <span>
+                  {'— Trevor Suarez'}<br />
+                  {'RemoteHQ, Software Engineer'}
+                </span>
+              </CompanyPerson>
+            </HorizontalListItem>
+            <HorizontalListItem>
+              <Quote>{`So good! I love the importance sorting!`}</Quote>
+              <CompanyPerson>
+                <img css={css`filter: hue-rotate(222deg);`} src={ReactNativeLogo} />
+                <span>
+                  {'— Mike Grabowski'}<br />
+                  {'Software Architect and Core Contributor to React Native'}
+                </span>
+              </CompanyPerson>
+            </HorizontalListItem>
+            <HorizontalListItem last>
+              <Quote>{`I actually use this all the time.`}</Quote>
+              <CompanyPerson>
+                <img src={RobinLogo} />
+                <span>
+                  {'— Henry Lee'}<br />
+                  {'Robin, Frontend Software Engineer'}
+                </span>
+              </CompanyPerson>
+            </HorizontalListItem>
+          </div>
+        </div>
+      </Container>
+
+      <Container css={css`
+        margin: 88px auto 32px;
+        padding: 8px;
+        align-items: flex-start;
+        flex-direction: column;
+      `}>
+        <div css={css`
+          position: relative;
+          margin: 0 0 18px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 12px 0;
+          flex-direction: column;
+        `}>
+          <ItemHeader>
+            {'Surface the things that matter most'}
+          </ItemHeader>
+          <div css={css`margin: 0 32px;`}>
+            <SubHeader>
+              {'Prioritize the tasks that keep you and your team most productive by organizing your notifications'}
+            </SubHeader>
+          </div>
+        </div>
+        <DemoScreenshotHeader src={headerPng} />
+        <DemoScreenshot src={regularScreenshotPng} />
       </Container>
     </PageContainer>
   );

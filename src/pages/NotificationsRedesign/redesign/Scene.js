@@ -24,6 +24,9 @@ const FOOTER_HEIGHT = '96px';
 const COLLAPSED_WIDTH = '72px';
 const EXPANDED_WIDTH = '286px';
 
+const WIDTH_FOR_MEDIUM_SCREENS = '1100px';
+const WIDTH_FOR_SMALL_SCREENS = '750px';
+
 // ========================================================================
 // START OF 'MOVE TO A UTILS FILE'
 // ========================================================================
@@ -205,6 +208,9 @@ const MenuHeaderItem = styled(Item)`
   border-right: 1px solid #292d35;
   background: #2f343e;
   z-index: 1;
+  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+    display: none;
+  }
 `;
 
 const ContentHeaderItem = styled(Item)`
@@ -212,6 +218,9 @@ const ContentHeaderItem = styled(Item)`
   width: calc(100% - ${COLLAPSED_WIDTH});
   border-bottom: 1px solid #E5E6EB;
   z-index: 1;
+  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+    width: 100%;
+  }
 `;
 
 const MenuContainerItem = styled(Item)`
@@ -219,6 +228,9 @@ const MenuContainerItem = styled(Item)`
   flex: ${({expand}) => expand ? `${EXPANDED_WIDTH} 0 0` : 1};
   height: 100%;
   transition: all 150ms ease;
+  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+    display: none;
+  }
 `;
 
 // Faded blue: #F5F6FA
@@ -229,6 +241,11 @@ const ContentItem = styled(Item)`
   width: calc(100% - ${COLLAPSED_WIDTH});
   background: #f7f6f3;
   border-left: 1px solid #292d35;
+  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+    width: 100%;
+    border-left: 1px solid #f7f6f3;
+    border-right: 1px solid #f7f6f3;
+  }
 `;
 
 const CardSection = styled('div')`
@@ -236,6 +253,9 @@ const CardSection = styled('div')`
   display: inline-block;
   width: 330px;
   padding: 0 16px;
+  @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+    display: none;
+  }
 `;
 
 const Card = styled('div')`
@@ -308,6 +328,11 @@ const NotificationsSection = styled('div')`
   padding-left: 0;
   padding-bottom: 0;
   height: auto;
+  @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+    width: calc(100% - (2 * 16px));
+    padding-right: 16px;
+    padding-left: 16px;
+  }
 `;
 
 const TitleSection = styled('div')`
@@ -346,6 +371,9 @@ const UnorderedList = styled('ul')`
 
 const PageSelection = styled(UnorderedList)`
   border-bottom: 2px solid #e5e6eb;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
 `;
 
 const SearchField = styled('div')`
@@ -461,6 +489,9 @@ const InteractionSection = styled('ul')`
     outline: none;
     user-select: none;
   }
+  @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+    width: 50px;
+  }
 `;
 
 const InteractionMenu = styled('div')`
@@ -497,6 +528,9 @@ const InteractionMenu = styled('div')`
         opacity: 0.7;
       }
     }
+  }
+  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+    left: -240px;
   }
 `;
 
@@ -563,6 +597,9 @@ const NotificationRow = styled(NotificationRowHeader)`
   &:active {
     background: rgb(252, 250, 248);
   };
+  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+    padding: 6px 2px;
+  }
 `;
 
 const LoadingNotificationRow = styled(NotificationRowHeader)`
@@ -617,6 +654,9 @@ const NotificationByline = styled('span')`
   margin-top: 4px;
   font-size: 12px;
   color: #8893a7cc;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
   i {
     margin-right: 4px;
     font-size: 10px;
@@ -661,6 +701,9 @@ const ProfileContainer = styled('div')`
       color: #bfc5d1
     }
   }
+  @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+    width: 48px;
+  }
 `;
 
 const ProfileName = styled('span')`
@@ -671,6 +714,9 @@ const ProfileName = styled('span')`
   overflow: hidden;
   text-overflow: ellipsis;
   margin-right: auto;
+  @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+    display: none;
+  }
 `;
 
 const ProfilePicture = styled('img')`
@@ -1130,8 +1176,8 @@ export default function Scene ({
   });
 
   readStatistics = readStatistics.map(n => parseInt(n, 10));
-  const lastWeekStats = readStatistics.slice(0, 7).map(n => n || null);
-  const thisWeekStats = readStatistics.slice(7).map(n => n || null);
+  const lastWeekStats = readStatistics.slice(0, 7);
+  const thisWeekStats = readStatistics.slice(7);
 
   const percentageDeltaToday = getPercentageDelta(counts.cur, counts.prev);
   const highestRepoReadCount = Object.values(reposReadCounts).reduce((h, c) => Math.max(h, c), 0);
@@ -1170,6 +1216,7 @@ export default function Scene ({
 
   return (
     <Container>
+      {/* Top search & profile bar */}
       <Row css={css`
         position: fixed;
         top: 0;
@@ -1221,6 +1268,9 @@ export default function Scene ({
               &:hover {
                 opacity: 0.5;
               }
+              @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+                display: none;
+              }
             `}
             onClick={() => window.scrollTo(0, 0)}
             size={32}
@@ -1228,10 +1278,14 @@ export default function Scene ({
           <ProfileSection user={user} onLogout={onLogout} />
         </ContentHeaderItem>
       </Row>
+      {/* Sidebar options & notifications content */}
       <Row css={css`
         height: calc(100% - ${COLLAPSED_WIDTH});
         margin-top: ${COLLAPSED_WIDTH};
         background: #2f343e;
+        @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+          background: ${WHITE};
+        }
       `}>
         <MenuContainerItem expand={menuOpen}>
           <MenuIconItem
@@ -1320,20 +1374,27 @@ export default function Scene ({
             <TitleSection>
               <Title>{titleOfMode(mode)}</Title>
               <InteractionSection>
-                <li onClick={event => {
-                  event.stopPropagation();
-                  switch(notificationsPermission) {
-                    case 'granted':
-                      return setNotificationsPermission('denied');
-                    case 'denied':
-                    case 'default':
-                    default:
-                      Notification.requestPermission().then(result => {
-                        return setNotificationsPermission(result);
-                      });
-                  }
-                  setDropdownOpen(false);
-                }}>
+                <li
+                  css={css`
+                    @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+                      display: none !important;
+                    }
+                  `}
+                  onClick={event => {
+                    event.stopPropagation();
+                    switch(notificationsPermission) {
+                      case 'granted':
+                        return setNotificationsPermission('denied');
+                      case 'denied':
+                      case 'default':
+                      default:
+                        Notification.requestPermission().then(result => {
+                          return setNotificationsPermission(result);
+                        });
+                    }
+                    setDropdownOpen(false);
+                  }}
+                >
                   <IconLink>
                     {hasNotificationsOn ? (
                         <i className="fas fa-bell"></i>
@@ -1510,12 +1571,14 @@ export default function Scene ({
                   </>
                 )}
                 <IconLink
+                  css={css`@media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) { display: none; }`}
                   disabled={loading || isFirstPage}
                   onClick={!loading && !isFirstPage ? (() => onChangePage(page - 1)) : undefined}
                 >
                   <i className="fas fa-chevron-left"></i>
                 </IconLink>
                 <IconLink
+                  css={css`@media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) { display: none; }`}
                   disabled={loading || isLastPage}
                   onClick={!loading && !isLastPage ? (() => onChangePage(page + 1)) : undefined}
                 >
@@ -1551,7 +1614,7 @@ export default function Scene ({
                     </SortingItem>
                   </NotificationCell>
                   {/* Repository */}
-                  <NotificationCell flex={2}>
+                  <NotificationCell flex={2} css={css`@media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) { display: none; }`}>
                     <SortingItem
                       sort={Sort.REPOSITORY}
                       descending={descending}
@@ -1575,7 +1638,7 @@ export default function Scene ({
                     </SortingItem>
                   </NotificationCell>
                   {/* Actions */}
-                  <NotificationCell width={70}>
+                  <NotificationCell width={70} css={css`@media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) { display: none; }`}>
                     <SortingItem
                       sort={Sort.DATE}
                       descending={descending}
@@ -1613,6 +1676,7 @@ export default function Scene ({
           </NotificationsSection>
         </ContentItem>
       </Row>
+      {/* Footer links */}
       <Row css={css`
         height: calc(100% - ${COLLAPSED_WIDTH});
         background: #2f343e;
@@ -1708,7 +1772,7 @@ function NotificationCollection ({
       {notifications.map((item, xid) => (
         <AnimatedNotificationRow key={notifications.id || xid}>
           {/* Type */}
-          <NotificationCell width={80}>
+          <NotificationCell width={60} css={css`@media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) { flex: 50px 0 0; }`}>
             {getPRIssueIcon(item.type, item.reasons)}
           </NotificationCell>
           {/* Title */}
@@ -1736,6 +1800,9 @@ function NotificationCollection ({
             css={css`
               font-weight: 500;
               color: #8994A6;
+              @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+                display: none;
+              }
           `}>
             {'@' + item.repository}
           </NotificationCell>
@@ -1753,6 +1820,9 @@ function NotificationCollection ({
               padding: 13px 0;
               text-align: center;
               width: 40px;
+            }
+            @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+              display: none;
             }
           `}>
             <ActionItems

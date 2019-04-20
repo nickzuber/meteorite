@@ -1,9 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import {Status} from '../constants/status';
-// import {createMockNotifications} from '../utils/mocks';
-
-// const mockNotifications = createMockNotifications(100);
+import {createMockNotifications} from '../utils/mocks';
 
 export const LOCAL_STORAGE_PREFIX = '__meteorite_noti_cache__';
 export const LOCAL_STORAGE_USER_PREFIX = '__meteorite_user_cache__';
@@ -49,19 +47,9 @@ class StorageProvider extends React.Component {
       return acc;
     }, []);
 
-    // @TODO fix this
-    // Document is out of focus, the we had notifications before this update,
-    // and there was a change in notifications in the most recent update.
-    // if (!document.hasFocus() &&
-    //     this.state.notifications.length > 0 &&
-    //     notifications.length !== this.state.notifications.length
-    // ) {
-    //   this.setTitle('(1) ' + this.originalTitle);
-    // } else {
-    //   this.setTitle(this.originalTitle);
-    // }
-
     this.setState({ notifications });
+
+    // const mockNotifications = createMockNotifications(20);
     // this.setState({ notifications: mockNotifications });
   }
 
@@ -81,13 +69,21 @@ class StorageProvider extends React.Component {
    * ```
    */
   getStat = (stat, startTime = moment(), endTime = moment().add(1, 'day')) => {
+    const currentTime = moment();
     const response = [];
 
     // Range reflects `[start, end)`
     for (let m = startTime.clone(); m.isBefore(endTime); m.add(1, 'day')) {
       const key = m.format('YYYY-MM-DD');
       const value = window.localStorage.getItem(`${LOCAL_STORAGE_STATISTIC_PREFIX}${key}-${stat}`);
-      response.push(value || 0);
+      if (value) {
+        response.push(value);
+      } else {
+        // If the date is in the past or present, give it a value of 0. Otherwise, null.
+        const fauxValue = m.clone().startOf('day').isSameOrBefore(
+          currentTime.clone().startOf('day')) ? 0 : null;
+        response.push(fauxValue);
+      }
     }
     return response;
   }

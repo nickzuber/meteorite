@@ -147,7 +147,7 @@ class NotificationsPage extends React.Component {
   }
 
   state = {
-    currentTime: moment().subtract(3, 'd'),
+    currentTime: moment(),
     error: null,
     notificationSent: false,
     isFirstTimeUser: false,
