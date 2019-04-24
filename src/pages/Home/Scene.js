@@ -1215,8 +1215,32 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
             </SubHeader>
           </div>
         </div>
-        <DemoScreenshotHeader src={headerPng} />
-        <DemoScreenshot src={regularScreenshotPng} />
+      </Container>
+
+      <Container css={css`
+        margin: 88px auto 32px;
+        padding: 8px;
+        align-items: flex-end;
+        flex-direction: column;
+      `}>
+        <div css={css`
+          position: relative;
+          margin: 0 0 18px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 12px 0;
+          flex-direction: column;
+        `}>
+          <ItemHeader css={css`text-align: right;`}>
+            {'Your time matters, so we keep things simple'}
+          </ItemHeader>
+          <div css={css`margin: 0 32px;`}>
+            <SubHeader css={css`text-align: right; width: 570px; margin-right: 0; margin-left: auto;`}>
+              {'Prioritize the tasks that keep you and your team most productive by organizing your notifications'}
+            </SubHeader>
+          </div>
+        </div>
       </Container>
     </PageContainer>
   );
