@@ -1122,7 +1122,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
       <Container css={css`
         position: relative;
         margin: 88px auto 32px;
-        padding: 48px 16px;
+        padding: 48px 16px 32px;
         align-items: center;
         flex-direction: column;
         border-top: 1px solid rgb(221, 221, 221);

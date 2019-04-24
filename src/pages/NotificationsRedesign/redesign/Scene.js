@@ -10,7 +10,7 @@ import {LineChart, Line, XAxis, Tooltip} from 'recharts';
 import Logo from '../../../components/Logo';
 import LoadingIcon from '../../../components/LoadingIcon'
 import {routes} from '../../../constants';
-import {Reasons} from '../../../constants/reasons';
+import {Badges, Reasons} from '../../../constants/reasons';
 import {withOnEnter} from '../../../enhance';
 import {getFact} from '../../../utils/facts';
 import {Mode, Sort, View} from '../index';
@@ -95,6 +95,21 @@ export function getMessageFromReasons (reasons, type) {
     default:
       return 'Something was updated';
   }
+}
+
+function iconsOfBadges (badges) {
+  return badges.map(badge => {
+    switch (badge) {
+      case Badges.HOT:
+        return <i className="fas fa-fire" css={css`color: #e91e63`}></i>;
+      case Badges.COMMENTS:
+        return <i className="fas fa-users" css={css`color: #4C84FF`}></i>;
+      case Badges.OLD:
+        return <i className="fas fa-hourglass-half" css={css`color: #fcc419`}></i>;
+      default:
+        return null;
+    }
+  }).filter(Boolean);
 }
 
 function createColorOfScore (min, max) {
@@ -1320,7 +1335,7 @@ export default function Scene ({
           </MenuIconItem>
           <MenuIconItem
             mode={Mode.OLD}
-            primary="#e6d435"
+            primary="#fcc419"
             selected={mode === Mode.OLD}
             onChange={setMode}
             open={menuOpen}
@@ -1785,7 +1800,15 @@ function NotificationCollection ({
             css={css`
               font-weight: 500;
           `}>
-            <NotificationTitle>
+            <NotificationTitle css={css`
+              display: flex;
+              align-items: center;
+              i {
+                font-size: 10px;
+                margin-right: 6px;
+              }
+            `}>
+              {iconsOfBadges(item.badges)}
               {item.name}
             </NotificationTitle>
             <NotificationByline>
