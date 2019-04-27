@@ -9,12 +9,16 @@ import Logo from '../../components/Logo';
 
 import headerPng from '../../images/safari-header.png';
 import regularScreenshotPng from '../../images/traditional-screenshot.png';
-import IPhoneXMockupPng from '../../images/screenshots/iphone-x-mockup.png';
-import IPhoneScreenshotPng from '../../images/screenshots/iphone-x.png';
+import iPhoneXMockupPng from '../../images/screenshots/iphone-x-mockup.png';
+import iPhoneScreenshotPng from '../../images/screenshots/iphone-x.png';
+import { ReactComponent as MentionSvg } from '../../images/svg/mention.svg';
+import { ReactComponent as GoodTeamSvg } from '../../images/svg/good-team.svg';
+import { ReactComponent as BloomingSvg } from '../../images/svg/blooming.svg'
+import { ReactComponent as ListSvg } from '../../images/svg/list.svg'
 
 import RobinLogo from '../../images/logos/robin-logo.png';
 import RemoteHQLogo from '../../images/logos/remote-hq-logo.png';
-import ReactNativeLogo from '../../images/logos/react-logo.png';
+import FacebookLogo from '../../images/logos/facebook-logo.png';
 
 import '../../styles/gradient.css';
 import '../../styles/font.css';
@@ -665,23 +669,55 @@ const Header = styled('h1')`
   font-weight: 500;
 `;
 
+const SubHeader = styled(Header)`
+  hyphens: auto;
+  font-size: 22px;
+  line-height: 26px;
+  font-weight: 600;
+  width: 680px;
+  margin: 0 auto;
+
+  font-family: Inter UI, system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+`;
+
+const ItemNumber = styled('span')`
+  font-size: 11rem;
+  font-weight: 500;
+`;
+
+const ItemContainer = styled('div')`
+  position: relative;
+  width: 540px;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  flex-direction: column;
+`;
+
 const ItemHeader = styled(Header)`
   position: relative;
   text-align: left;
-  width: 680px;
+  width: inherit;
   margin: 0;
   z-index: 2;
   font-size: 62px;
   line-height: 64px;
   margin: 0 0 12px;
-
   font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
   font-weight: 500;
 `;
 
+const ItemSubHeader = styled(SubHeader)`
+  width: inherit;
+`;
+
 const HorizontalListItem = styled('div')`
   flex: 1;
-  border-right: ${props => props.last ? '0px' : '1px'} solid rgb(206, 206, 206);
+  border-right: ${props => props.last ? '0px' : '1px'} solid rgba(214, 212, 209, 0.3);
   padding: 0 32px;
 `;
 
@@ -709,7 +745,7 @@ const CompanyPerson = styled('div')`
     border-radius: 2px;
   }
   span {
-    display: inline-block;
+    display: block;
     padding: 0 16px;
     font-size: 14px;
     line-height: 18px;
@@ -820,19 +856,6 @@ function ConfettiSection () {
     </div>
   );
 }
-
-const SubHeader = styled(Header)`
-  hyphens: auto;
-  font-size: 22px;
-  line-height: 26px;
-  font-weight: 600;
-  width: 680px;
-  margin: 0 auto;
-
-  font-family: Inter UI, system-ui, sans-serif;
-  font-size: 20px;
-  font-weight: 500;
-`;
 
 const DemoScreenshotHeader = styled('img')`
   background: #f7f6f3;
@@ -1109,34 +1132,34 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
             </div>
           </div>
         </div>
-        <div css={css`
-          position: relative;
-        `}>
+        <div css={css`position: relative;`}>
           <DemoScreenshotHeader src={headerPng} />
           <DemoScreenshot src={regularScreenshotPng} />
-          <IPhoneScreenshotContainer src={IPhoneXMockupPng} />
-          <IPhoneScreenshot src={IPhoneScreenshotPng} />
+          <IPhoneScreenshotContainer src={iPhoneXMockupPng} />
+          <IPhoneScreenshot src={iPhoneScreenshotPng} />
         </div>
       </Container>
 
       <Container css={css`
         position: relative;
-        margin: 88px auto 32px;
-        padding: 48px 16px 32px;
+        margin: 48px auto 0;
+        padding: 48px 16px 0;
         align-items: center;
         flex-direction: column;
-        border-top: 1px solid rgb(221, 221, 221);
-        border-bottom: 1px solid rgb(221, 221, 221);
+        // border-top: 1px solid rgba(214, 212, 209, 0.3);
+        // border-bottom: 1px solid rgba(214, 212, 209, 0.3);
       `}>
         <div css={css`
           position: relative;
           margin: 0 0 18px;
+          width: inherit;
           display: flex;
           justify-content: space-between;
           align-items: center;
           padding: 12px 0;
           flex-direction: column;
         `}>
+          <MentionSvg height={164} />
           <ItemHeader css={css`
             margin-top: 32px;
             font-size: 48px;
@@ -1170,10 +1193,10 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
             <HorizontalListItem>
               <Quote>{`So good! I love the importance sorting!`}</Quote>
               <CompanyPerson>
-                <img css={css`filter: hue-rotate(222deg);`} src={ReactNativeLogo} />
+                <img src={FacebookLogo} />
                 <span>
                   {'— Mike Grabowski'}<br />
-                  {'Software Architect and Core Contributor to React Native'}
+                  {'Software Architect, React Native'}
                 </span>
               </CompanyPerson>
             </HorizontalListItem>
@@ -1198,47 +1221,135 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
         flex-direction: column;
       `}>
         <div css={css`
-          position: relative;
-          margin: 0 0 18px;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 12px 0;
-          flex-direction: column;
+          flex-direction: row;
+          margin-bottom: 28px;
+          width: inherit;
         `}>
+        <ItemNumber>{1}</ItemNumber>
+        <ItemContainer>
           <ItemHeader>
             {'Surface the things that matter most'}
           </ItemHeader>
-          <div css={css`margin: 0 32px;`}>
-            <SubHeader>
-              {'Prioritize the tasks that keep you and your team most productive by organizing your notifications'}
-            </SubHeader>
-          </div>
+          <ItemSubHeader>
+            {'Prioritize the tasks that keep you and your team most productive by organizing your notifications'}
+          </ItemSubHeader>
+        </ItemContainer>
+        <BloomingSvg height={164} width={224} />
+        </div>
+
+        <div css={css`position: relative;`}>
+          <DemoScreenshotHeader src={headerPng} />
+          <DemoScreenshot src={regularScreenshotPng} />
+          <IPhoneScreenshotContainer src={iPhoneXMockupPng} />
+          <IPhoneScreenshot src={iPhoneScreenshotPng} />
         </div>
       </Container>
 
       <Container css={css`
         margin: 88px auto 32px;
         padding: 8px;
-        align-items: flex-end;
+        align-items: flex-start;
+        flex-direction: column;
+      `}>
+        <div css={css`
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-direction: row;
+          margin-bottom: 28px;
+          width: inherit;
+        `}>
+        <ItemNumber>{2}</ItemNumber>
+        <ItemContainer>
+          <ItemHeader>
+            {'Your time matters, so things stay simple'}
+          </ItemHeader>
+          <ItemSubHeader>
+            {'Prioritize the tasks that keep you and your team most productive by organizing your notifications'}
+          </ItemSubHeader>
+        </ItemContainer>
+        <GoodTeamSvg height={164} width={224} />
+        </div>
+
+        <div css={css`position: relative;`}>
+          <DemoScreenshotHeader src={headerPng} />
+          <DemoScreenshot src={regularScreenshotPng} />
+          <IPhoneScreenshotContainer src={iPhoneXMockupPng} />
+          <IPhoneScreenshot src={iPhoneScreenshotPng} />
+        </div>
+      </Container>
+
+      <Container css={css`
+        position: relative;
+        margin: 48px auto 0;
+        padding: 48px 16px 0;
+        align-items: center;
         flex-direction: column;
       `}>
         <div css={css`
           position: relative;
           margin: 0 0 18px;
+          width: inherit;
           display: flex;
           justify-content: space-between;
           align-items: center;
           padding: 12px 0;
           flex-direction: column;
         `}>
-          <ItemHeader css={css`text-align: right;`}>
-            {'Your time matters, so we keep things simple'}
+          <ListSvg height={164} />
+          <ItemHeader css={css`
+            margin-top: 32px;
+            font-size: 48px;
+            line-height: 50px;
+            text-align: center;
+          `}>
+            {'Meteorite is an assistant'}<br />{'for your GitHub notifications'}
           </ItemHeader>
-          <div css={css`margin: 0 32px;`}>
-            <SubHeader css={css`text-align: right; width: 570px; margin-right: 0; margin-left: auto;`}>
-              {'Prioritize the tasks that keep you and your team most productive by organizing your notifications'}
-            </SubHeader>
+          <SubHeader css={css`
+            text-align: center;
+            margin-bottom: 32px;
+          `}>
+            {'Do the same things, just a whole lot easier'}
+          </SubHeader>
+          <div css={css`
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 32px;
+          `}>
+            <HorizontalListItem>
+              <Quote>{`Nick is absolutely KILLING THE GAME with this app. I LOVE it!`}</Quote>
+              <CompanyPerson>
+                <img src={RemoteHQLogo} />
+                <span>
+                  {'— Trevor Suarez'}<br />
+                  {'RemoteHQ, Software Engineer'}
+                </span>
+              </CompanyPerson>
+            </HorizontalListItem>
+            <HorizontalListItem>
+              <Quote>{`So good! I love the importance sorting!`}</Quote>
+              <CompanyPerson>
+                <img src={FacebookLogo} />
+                <span>
+                  {'— Mike Grabowski'}<br />
+                  {'Software Architect, React Native'}
+                </span>
+              </CompanyPerson>
+            </HorizontalListItem>
+            <HorizontalListItem last>
+              <Quote>{`I actually use this all the time.`}</Quote>
+              <CompanyPerson>
+                <img src={RobinLogo} />
+                <span>
+                  {'— Henry Lee'}<br />
+                  {'Robin, Frontend Software Engineer'}
+                </span>
+              </CompanyPerson>
+            </HorizontalListItem>
           </div>
         </div>
       </Container>
