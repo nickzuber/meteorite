@@ -680,6 +680,8 @@ const SubHeader = styled(Header)`
   font-family: Inter UI, system-ui, sans-serif;
   font-size: 20px;
   font-weight: 500;
+
+  color: #b3b0a9;
 `;
 
 const ItemNumber = styled('span')`
@@ -1037,7 +1039,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
             {'Control your GitHub notifications'}
           </Header>
           <div css={css`margin: 0 32px;`}>
-            <SubHeader>
+            <SubHeader css={css`color: rgb(55, 53, 47);`}>
               {'Prioritize the tasks that keep you and your team most productive by organizing your notifications'}
             </SubHeader>
             <div css={css`
@@ -1172,7 +1174,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
             text-align: center;
             margin-bottom: 32px;
           `}>
-            {'People have been using this app for a while now and have been kind enough to share their thoughts.'}
+            {'Loved by other human beings, just like you (probably)'}
           </SubHeader>
           <div css={css`
             display: flex;
@@ -1353,6 +1355,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
           </div>
         </div>
       </Container>
+
     </PageContainer>
   );
 };

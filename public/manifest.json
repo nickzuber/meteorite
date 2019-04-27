@@ -3,13 +3,13 @@
   "name": "Meteorite – Smarter GitHub Notifications",
   "icons": [
     {
-      "src": "iconCircle.png",
+      "src": "app-icon.png",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/png"
     }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#457cff",
+  "background_color": "#fffefc"
 }
