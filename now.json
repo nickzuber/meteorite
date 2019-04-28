@@ -13,10 +13,10 @@
     {"src": "^/iconCircle.png", "dest": "/iconCircle.png"},
     {"src": "^/app-icon.png", "dest": "/app-icon.png"},
     {"src": "^/manifest.json", "dest": "/manifest.json"},
-    {"src": "^/(.*)", "dest": "/index.html"},
     {"src": "^/asset-manifest.json", "dest": "/asset-manifest.json"},
     {"src": "^/service-worker.js", "headers": {"cache-control": "s-maxage=0"}, "dest": "/service-worker.js"},
-    {"src": "^/precache-manifest.(.*)", "dest": "/precache-manifest.$1"}
+    {"src": "^/precache-manifest.(.*)", "dest": "/precache-manifest.$1"},
+    {"src": "^/(.*)", "dest": "/index.html"}
   ],
   "github": {
     "enabled": false

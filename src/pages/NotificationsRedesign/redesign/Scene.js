@@ -775,6 +775,9 @@ function ProfileSection ({user, onLogout}) {
         user-select: none;
         box-shadow: rgba(84,70,35,0) 0px 2px 8px, rgba(84,70,35,0.15) 0px 1px 3px;
         transition: all 200ms ease;
+        @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+          left: auto;
+        }
         div {
           margin: 0;
           padding: 12px 16px;

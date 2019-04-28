@@ -15,16 +15,18 @@ import { ReactComponent as MentionSvg } from '../../images/svg/mention.svg';
 import { ReactComponent as GoodTeamSvg } from '../../images/svg/good-team.svg';
 import { ReactComponent as BloomingSvg } from '../../images/svg/blooming.svg'
 import { ReactComponent as ListSvg } from '../../images/svg/list.svg'
+import { ReactComponent as ProcessgSvg } from '../../images/svg/process.svg'
+import { ReactComponent as MobileSvg } from '../../images/svg/mobile.svg'
 
 import RobinLogo from '../../images/logos/robin-logo.png';
-import RemoteHQLogo from '../../images/logos/remote-hq-logo.png';
+import ForwardLogo from '../../images/logos/forward-logo.png';
 import FacebookLogo from '../../images/logos/facebook-logo.png';
 
 import '../../styles/gradient.css';
 import '../../styles/font.css';
 
-// const hash = process.env.GIT_HASH ? `#${process.env.GIT_HASH}` : '';
-// const version = require('../../../package.json').version + hash;
+const hash = process.env.GIT_HASH ? `#${process.env.GIT_HASH}` : '';
+const version = require('../../../package.json').version + hash;
 
 function range (min, max, rand) {
   min = Math.ceil(min);
@@ -33,13 +35,14 @@ function range (min, max, rand) {
 }
 
 function color (rand) {
+  // const c = [
+  //   '#4caf50',
+  //   '#e91e63',
+  //   '#4C84FF',
+  //   '#e6d435',
+  //   '#B424E6',
+  // ];
   const c = [
-    '#4caf50',
-    '#e91e63',
-    '#4C84FF',
-    '#e6d435',
-  ];
-  const newer_c = [
     '#B424E6',
     '#1ACA6B',
     '#E62465',
@@ -671,14 +674,13 @@ const Header = styled('h1')`
 
 const SubHeader = styled(Header)`
   hyphens: auto;
-  font-size: 22px;
+  font-size: 24px;
   line-height: 26px;
   font-weight: 600;
   width: 680px;
   margin: 0 auto;
 
-  font-family: Inter UI, system-ui, sans-serif;
-  font-size: 20px;
+  font-family: medium-content-sans-serif-font, Inter UI, system-ui, sans-serif;
   font-weight: 500;
 
   color: #b3b0a9;
@@ -725,7 +727,8 @@ const HorizontalListItem = styled('div')`
 
 const Quote = styled('p')`
   margin: 0;
-  font-size: 15px;
+  font-family: medium-content-title-font, Inter UI, sans-serif;
+  font-size: 18px;
   font-weight: 400;
   &:before {
     content: open-quote;
@@ -1174,7 +1177,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
             text-align: center;
             margin-bottom: 32px;
           `}>
-            {'Loved by other human beings, just like you (probably)'}
+            {'Loved by other human beings, just like you'}
           </SubHeader>
           <div css={css`
             display: flex;
@@ -1182,16 +1185,6 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
             align-items: center;
             margin-top: 32px;
           `}>
-            <HorizontalListItem>
-              <Quote>{`Nick is absolutely KILLING THE GAME with this app. I LOVE it!`}</Quote>
-              <CompanyPerson>
-                <img src={RemoteHQLogo} />
-                <span>
-                  {'— Trevor Suarez'}<br />
-                  {'RemoteHQ, Software Engineer'}
-                </span>
-              </CompanyPerson>
-            </HorizontalListItem>
             <HorizontalListItem>
               <Quote>{`So good! I love the importance sorting!`}</Quote>
               <CompanyPerson>
@@ -1202,13 +1195,23 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
                 </span>
               </CompanyPerson>
             </HorizontalListItem>
-            <HorizontalListItem last>
-              <Quote>{`I actually use this all the time.`}</Quote>
+            <HorizontalListItem>
+              <Quote>{`I've been using it for a bit and it's so useful, especially if you use GitHub for work.`}</Quote>
               <CompanyPerson>
                 <img src={RobinLogo} />
                 <span>
-                  {'— Henry Lee'}<br />
-                  {'Robin, Frontend Software Engineer'}
+                  {'— Trevor Suarez'}<br />
+                  {'Robin, Backend Software Engineer'}
+                </span>
+              </CompanyPerson>
+            </HorizontalListItem>
+            <HorizontalListItem last>
+              <Quote>{`Awww sh*t, nice.`}</Quote>
+              <CompanyPerson>
+                <img src={ForwardLogo} />
+                <span>
+                  {'— Chris Walker'}<br />
+                  {'Forward, Software Engineer'}
                 </span>
               </CompanyPerson>
             </HorizontalListItem>
@@ -1233,20 +1236,17 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
         <ItemNumber>{1}</ItemNumber>
         <ItemContainer>
           <ItemHeader>
-            {'Surface the things that matter most'}
+            {'An assistant for your GitHub notifications'}
           </ItemHeader>
           <ItemSubHeader>
-            {'Prioritize the tasks that keep you and your team most productive by organizing your notifications'}
+            {'Do the same things you do everyday, just a whole lot easier'}
           </ItemSubHeader>
         </ItemContainer>
-        <BloomingSvg height={164} width={224} />
+        <ProcessgSvg height={164} width={224} />
         </div>
 
         <div css={css`position: relative;`}>
           <DemoScreenshotHeader src={headerPng} />
-          <DemoScreenshot src={regularScreenshotPng} />
-          <IPhoneScreenshotContainer src={iPhoneXMockupPng} />
-          <IPhoneScreenshot src={iPhoneScreenshotPng} />
         </div>
       </Container>
 
@@ -1270,7 +1270,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
             {'Your time matters, so things stay simple'}
           </ItemHeader>
           <ItemSubHeader>
-            {'Prioritize the tasks that keep you and your team most productive by organizing your notifications'}
+            {'Simply sign in and start working — no complicated or weirdly intrusive set up needed'}
           </ItemSubHeader>
         </ItemContainer>
         <GoodTeamSvg height={164} width={224} />
@@ -1278,81 +1278,79 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
 
         <div css={css`position: relative;`}>
           <DemoScreenshotHeader src={headerPng} />
-          <DemoScreenshot src={regularScreenshotPng} />
-          <IPhoneScreenshotContainer src={iPhoneXMockupPng} />
-          <IPhoneScreenshot src={iPhoneScreenshotPng} />
         </div>
       </Container>
 
       <Container css={css`
-        position: relative;
-        margin: 48px auto 0;
-        padding: 48px 16px 0;
-        align-items: center;
+        margin: 88px auto 32px;
+        padding: 8px;
+        align-items: flex-start;
         flex-direction: column;
       `}>
         <div css={css`
-          position: relative;
-          margin: 0 0 18px;
-          width: inherit;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 12px 0;
-          flex-direction: column;
+          flex-direction: row;
+          margin-bottom: 28px;
+          width: inherit;
         `}>
-          <ListSvg height={164} />
-          <ItemHeader css={css`
-            margin-top: 32px;
-            font-size: 48px;
-            line-height: 50px;
-            text-align: center;
-          `}>
-            {'Meteorite is an assistant'}<br />{'for your GitHub notifications'}
+        <ItemNumber>{3}</ItemNumber>
+        <ItemContainer>
+          <ItemHeader>
+            {'Work anywhere and everywhere'}
           </ItemHeader>
-          <SubHeader css={css`
-            text-align: center;
-            margin-bottom: 32px;
-          `}>
-            {'Do the same things, just a whole lot easier'}
-          </SubHeader>
-          <div css={css`
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 32px;
-          `}>
-            <HorizontalListItem>
-              <Quote>{`Nick is absolutely KILLING THE GAME with this app. I LOVE it!`}</Quote>
-              <CompanyPerson>
-                <img src={RemoteHQLogo} />
-                <span>
-                  {'— Trevor Suarez'}<br />
-                  {'RemoteHQ, Software Engineer'}
-                </span>
-              </CompanyPerson>
-            </HorizontalListItem>
-            <HorizontalListItem>
-              <Quote>{`So good! I love the importance sorting!`}</Quote>
-              <CompanyPerson>
-                <img src={FacebookLogo} />
-                <span>
-                  {'— Mike Grabowski'}<br />
-                  {'Software Architect, React Native'}
-                </span>
-              </CompanyPerson>
-            </HorizontalListItem>
-            <HorizontalListItem last>
-              <Quote>{`I actually use this all the time.`}</Quote>
-              <CompanyPerson>
-                <img src={RobinLogo} />
-                <span>
-                  {'— Henry Lee'}<br />
-                  {'Robin, Frontend Software Engineer'}
-                </span>
-              </CompanyPerson>
-            </HorizontalListItem>
-          </div>
+          <ItemSubHeader>
+            {'You love accessibility and so does Meteorite — available on iOS, Android, web, and desktop'}
+          </ItemSubHeader>
+        </ItemContainer>
+        <MobileSvg height={164} width={224} />
+        </div>
+
+        <div css={css`position: relative;`}>
+          <DemoScreenshotHeader src={headerPng} />
+        </div>
+      </Container>
+
+      <Container css={css`
+        margin: 88px auto 32px;
+        padding: 8px;
+        align-items: flex-start;
+        flex-direction: column;
+      `}>
+        <div css={css`
+          width: 100%;
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          span {
+            display: inline-block;
+            font-size: 11px;
+            color: #37352f52;
+            margin: 0 12px;
+            font-weight: 500;
+          }
+          a {
+            display: inline-block;
+            text-decoration: underline;
+            font-size: 11px;
+            color: #37352f52;
+            margin: 0 12px;
+            font-weight: 500;
+            cursor: pointer;
+            text-underline-position: under;
+            transition: all 200ms ease;
+            &:hover {
+              color: #37352faa;
+            }
+          }
+        `}>
+          <a target="_blank" href="https://github.com/nickzuber/meteorite/issues">Submit bugs</a>
+          <a target="_blank" href="https://github.com/nickzuber/meteorite/pulls">Make changes</a>
+          <a target="_blank" href="https://github.com/nickzuber/meteorite/issues">Leave feedback</a>
+          <a target="_blank" href="https://github.com/nickzuber/meteorite">See source code</a>
+          <a target="_blank" href="https://twitter.com/nick_zuber">Follow me on twitter</a>
+          <span css={css`margin-right: 76px !important;`}>v{version}</span>
         </div>
       </Container>
 
