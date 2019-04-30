@@ -406,7 +406,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
                   Redesign
                   <NewTag>new</NewTag>
                 </RouterLink>
-                <RouterLink to={routes.LOGIN}>Sign out</RouterLink>
+                <a href="#" onClick={onLogout}>Sign out</a>
               </>
             ) : (
               <>
