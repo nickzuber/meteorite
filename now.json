@@ -12,6 +12,8 @@
     {"src": "^/favicon.ico", "dest": "/iconCircle.png"},
     {"src": "^/iconCircle.png", "dest": "/iconCircle.png"},
     {"src": "^/app-icon.png", "dest": "/app-icon.png"},
+    {"src": "^/new-app-icon.png", "dest": "/new-app-icon.png"},
+    {"src": "^/new-app-icon-rounded.png", "dest": "/new-app-icon-rounded.png"},
     {"src": "^/manifest.json", "dest": "/manifest.json"},
     {"src": "^/asset-manifest.json", "dest": "/asset-manifest.json"},
     {"src": "^/service-worker.js", "headers": {"cache-control": "s-maxage=0"}, "dest": "/service-worker.js"},

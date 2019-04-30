@@ -1,58 +1,82 @@
-import React from 'react';
+/** @jsx jsx */
+
 import { Link } from "@reach/router";
 import styled from '@emotion/styled';
+import {css, jsx} from '@emotion/core';
+import React from 'react';
 import { routes } from '../../constants';
 import { AuthenticationButton } from '../../components/buttons';
 import LoadingIcon from '../../components/LoadingIcon';
 import ErrorMessage from '../../components/ErrorMessage';
+import ConfettiSection from '../../components/Confetti';
 import '../../styles/gradient.css';
 
-const Container = styled('div')({
-  position: 'relative',
-  background: '#fff',
-  borderRadius: 4,
-  margin: '0 auto',
-  padding: '24px 48px 76px',
-  width: 300,
-  boxShadow: '0 50px 100px rgba(50,50,93,.1), 0 15px 35px rgba(50,50,93,.15), 0 5px 15px rgba(0,0,0,.1)'
-});
+const WHITE = 'rgb(255, 254, 252)';
 
-const ButtonsContainer = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-between',
-  position: 'absolute',
-  bottom: 24,
-  left: 48,
-  right: 48,
-  'a': {
-    margin: 0
+const Card = styled('div')`
+  position: relative;
+  width: 280px;
+  min-height: 100px;
+  margin: 32px auto 0;
+  background: #ffffff;
+  border: 1px solid #E5E6EB;
+  box-shadow: rgba(84, 70, 35, 0) 0px 2px 8px, rgba(84,70,35,0.15) 0px 1px 3px;
+  border-radius: 6px;
+  padding: 24px 32px 52px;
+`;
+
+const ButtonsContainer = styled('div')`
+  display: flex;
+  justifyContent: space-between;
+  position: absolute;
+  bottom: 24;
+  left: 48;
+  right: 48;
+
+  a {
+    position: relative;
+    text-decoration: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    font-size: 15px;
+    margin-left: 2px;
+    margin-right: 2px;
+    font-weight: 500;
+    transition: all 200ms ease;
+    &:hover {
+      background: rgba(55, 53, 47, 0.08);
+    }
+    &:active {
+      background: rgba(55, 53, 47, 0.16);
+    }
   }
-});
+`;
 
 export default function Scene ({ loading, error, loggedOut, ...props }) {
   return (
-    <div className="container-gradient" style={{
-      width: '100%',
-      position: 'relative',
-      flexDirection: 'column',
-      height: '100vh',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center'
-    }}>
-      <Container>
+    <div css={css`
+      position: relative;
+      overflow: hidden;
+      background: ${WHITE};
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      max-width: 1420px;
+      width: 100%;
+      margin: 0 auto;
+    `}>
+      <ConfettiSection spacing={100} amount={20} />
+      <Card>
         <h3>Authenticate with GitHub</h3>
         {error ? (
           <React.Fragment>
             <p>Log in with GitHub and we'll start organizing and sorting all of your notifications.</p>
             <ErrorMessage>Oops, looks like something went wrong. Try again?</ErrorMessage>
             <ButtonsContainer>
-              <div className="button-container-alt">
-                <Link style={{boxShadow: '0 0 0'}} to={routes.HOME}>go back</Link>
-              </div>
-              <div className="button-container-alt">
-                <AuthenticationButton style={{boxShadow: '0 0 0'}} />
-              </div>
+              <Link style={{boxShadow: '0 0 0'}} to={routes.HOME}>Go back</Link>
+              <AuthenticationButton style={{boxShadow: '0 0 0'}} />
             </ButtonsContainer>
           </React.Fragment>
         ) : loading ? (
@@ -61,18 +85,14 @@ export default function Scene ({ loading, error, loggedOut, ...props }) {
           <React.Fragment>
             <p>Log in with GitHub and we'll start organizing and sorting all of your notifications.</p>
             <ButtonsContainer>
-              <div className="button-container-alt">
-                <Link style={{boxShadow: '0 0 0'}} to={routes.HOME}>go back</Link>
-              </div>
-              <div className="button-container-alt">
-                <AuthenticationButton style={{boxShadow: '0 0 0'}} />
-              </div>
+              <Link style={{boxShadow: '0 0 0'}} to={routes.HOME}>Go back</Link>
+              <AuthenticationButton style={{boxShadow: '0 0 0'}} />
             </ButtonsContainer>
           </React.Fragment>
         ) : (
           <span>logged in!</span>
         )}
-      </Container>
+      </Card>
     </div>
   );
 }

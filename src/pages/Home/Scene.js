@@ -3,9 +3,10 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import {css, jsx} from '@emotion/core';
-import {Link as RouterLink} from '@reach/router';
+import {navigate, Link as RouterLink} from '@reach/router';
 import {routes} from '../../constants';
 import Logo from '../../components/Logo';
+import ConfettiSection from '../../components/Confetti';
 
 import headerPng from '../../images/safari-header.png';
 import regularScreenshotPng from '../../images/traditional-screenshot.png';
@@ -28,580 +29,8 @@ import '../../styles/font.css';
 const hash = process.env.GIT_HASH ? `#${process.env.GIT_HASH}` : '';
 const version = require('../../../package.json').version + hash;
 
-function range (min, max, rand) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(rand * (max - min + 1)) + min;
-}
-
-function color (rand) {
-  // const c = [
-  //   '#4caf50',
-  //   '#e91e63',
-  //   '#4C84FF',
-  //   '#e6d435',
-  //   '#B424E6',
-  // ];
-  const c = [
-    '#B424E6',
-    '#1ACA6B',
-    '#E62465',
-    '#FFCD4C',
-    '#4C84FF',
-    '#E9519A',
-  ];
-  return c[~~(c.length * rand)];
-}
-
-function opacity (xid, max) {
-  // Max value (best possible score).
-  const cap = 1;
-  // Best value to base distribution on (the center value).
-  const best = Math.floor(max / 2);
-  // How spread out the distribution is from the best value.
-  const distribution = 8;
-  const result = Math.min(1, cap * Math.pow(
-    Math.E,
-    (-0.5) * (Math.pow(xid - best, 2) / (Math.pow(distribution, 2)))
-  ));
-  return Math.max(1 - result, 0.05) * 1.75;
-}
-
-// function createImagePlaceholder (highlight) {
-//   return (
-//     <ImagePlaceholder className="hover">
-//       {/* navigation backdrop */}
-//       <div style={{
-//         position: 'absolute',
-//         background: '#dee1e6',
-//         borderTopLeftRadius: 8,
-//         borderTopRightRadius: 8,
-//         top: 0,
-//         left: 0,
-//         right: 0,
-//         height: 35
-//       }} />
-//       {/* buttons */}
-//       <div style={{
-//         position: 'absolute',
-//         background: '#ff5e52',
-//         top: 13,
-//         left: 10,
-//         borderRadius: '100%',
-//         height: 10,
-//         width: 10,
-//       }} />
-//       <div style={{
-//         position: 'absolute',
-//         background: '#ffbe05',
-//         top: 13,
-//         left: 10 + 16,
-//         borderRadius: '100%',
-//         height: 10,
-//         width: 10,
-//       }} />
-//       <div style={{
-//         position: 'absolute',
-//         background: '#16cc38',
-//         top: 13,
-//         left: 10 + 32,
-//         borderRadius: '100%',
-//         height: 10,
-//         width: 10,
-//       }} />
-//       {/* url */}
-//       <div style={{
-//         position: 'absolute',
-//         background: '#f1f3f4',
-//         top: 40,
-//         left: 30,
-//         right: 30,
-//         height: 20,
-//         borderRadius: 100
-//       }} />
-//       {/* webpage header */}
-//       <div style={{
-//         position: 'absolute',
-//         background: '#24292e',
-//         top: 65,
-//         left: 0,
-//         right: 0,
-//         height: 30,
-//       }} />
-//       <div style={{
-//         position: 'absolute',
-//         background: '#3f4954',
-//         top: 71,
-//         left: 50,
-//         height: 18,
-//         width: 300,
-//         borderRadius: 5
-//       }} />
-//       {/* status headers */}
-//       <div style={{
-//         position: 'absolute',
-//         background: 'rgb(0, 209, 154)',
-//         top: 120,
-//         left: 100,
-//         width: 30,
-//         height: 10,
-//         borderRadius: 4
-//       }} />
-//       <div style={{
-//         position: 'absolute',
-//         background: 'rgb(0, 209, 154)',
-//         top: 140,
-//         left: 100,
-//         width: 100,
-//         height: 5,
-//         borderRadius: 4
-//       }} />
-//       <div style={{
-//         position: 'absolute',
-//         background: 'rgb(0, 158, 248)',
-//         top: 120,
-//         left: 210,
-//         width: 30,
-//         height: 10,
-//         borderRadius: 4
-//       }} />
-//       <div style={{
-//         position: 'absolute',
-//         background: 'rgb(0, 158, 248)',
-//         top: 140,
-//         left: 210,
-//         width: 100,
-//         height: 5,
-//         borderRadius: 4
-//       }} />
-//       <div style={{
-//         position: 'absolute',
-//         background: 'rgb(241, 44, 63)',
-//         top: 120,
-//         left: 320,
-//         width: 30,
-//         height: 10,
-//         borderRadius: 4
-//       }} />
-//       <div style={{
-//         position: 'absolute',
-//         background: 'rgb(241, 44, 63)',
-//         top: 140,
-//         left: 320,
-//         width: 100,
-//         height: 5,
-//         borderRadius: 4
-//       }} />
-//       {/* notificaton row */}
-//       <div style={{
-//         position: 'absolute',
-//         background: '#fff',
-//         top: highlight === 'badges' ? 190 : 170,
-//         left: highlight === 'badges' ? -20 : 0,
-//         right: highlight === 'badges' ? -20 : 0,
-//         height: 50,
-//         borderRadius: 4,
-//         boxShadow: highlight === 'badges'
-//           ? 'rgba(130, 126, 126, 0.27) 0px 3px 8px'
-//           : '0 0 0',
-//       }}>
-//         <div style={{
-//           position: 'absolute',
-//           background: '#dee1e6',
-//           top: 15,
-//           left: highlight === 'badges' ? 30 : 100,
-//           width: highlight === 'badges' ? 160 : 120,
-//           height: 10,
-//           borderRadius: 50
-//         }} />
-//         <div style={{
-//           position: 'absolute',
-//           background: '#dee1e6',
-//           top: 30,
-//           left: highlight === 'badges' ? 30 : 100,
-//           width: 50,
-//           height: 7,
-//           borderRadius: 50
-//         }} />
-//         <div style={{
-//           position: 'absolute',
-//           top: 12,
-//           left: 315,
-//           width: 30,
-//           height: 30
-//         }}>
-//           {highlight === 'badges' ? (
-//             <Icon.Hot shrink={1.1} />
-//           ) : (
-//             <div
-//               style={{
-//                 background: '#f42839',
-//                 height: 15,
-//                 width: 15,
-//                 marginTop: 5,
-//                 borderRadius: '100%'
-//               }}
-//             />
-//           )}
-//         </div>
-//         <div style={{
-//           position: 'absolute',
-//           top: 12,
-//           left: 345,
-//           width: 30,
-//           height: 30
-//         }}>
-//           {highlight === 'badges' ? (
-//             <Icon.Convo shrink={1.1} />
-//           ) : (
-//             <div
-//               style={{
-//                 background: '#009ef8',
-//                 height: 15,
-//                 width: 15,
-//                 marginTop: 5,
-//                 borderRadius: '100%'
-//               }}
-//             />
-//           )}
-//         </div>
-//         <div style={{
-//           position: 'absolute',
-//           background: '#dee1e6',
-//           top: 20,
-//           right: 120,
-//           width: 100,
-//           height: 10,
-//           borderRadius: 50
-//         }} />
-//         <div style={{
-//           position: 'absolute',
-//           background: '#dee1e6',
-//           top: 15,
-//           right: 20,
-//           width: 20,
-//           height: 20,
-//           borderRadius: '100%'
-//         }} />
-//         <div style={{
-//           position: 'absolute',
-//           background: '#dee1e6',
-//           top: 15,
-//           right: 50,
-//           width: 20,
-//           height: 20,
-//           borderRadius: '100%'
-//         }} />
-//       </div>
-//       {/* notificaton row */}
-//       <div style={{
-//         position: 'absolute',
-//         background: '#fff',
-//         top: highlight === 'badges' ? 280 : 220,
-//         left: highlight === 'badges' ? -20 : 0,
-//         right: highlight === 'badges' ? -20 : 0,
-//         height: 50,
-//         borderRadius: 4,
-//         boxShadow: highlight === 'badges'
-//           ? 'rgba(130, 126, 126, 0.27) 0px 3px 8px'
-//           : '0 0 0',
-//       }}>
-//         <div style={{
-//           position: 'absolute',
-//           background: '#dee1e6',
-//           top: 15,
-//           left: highlight === 'badges' ? 30 : 100,
-//           width: highlight === 'badges' ? 220 : 140,
-//           height: 10,
-//           borderRadius: 50
-//         }} />
-//         <div style={{
-//           position: 'absolute',
-//           background: '#dee1e6',
-//           top: 30,
-//           left: highlight === 'badges' ? 30 : 100,
-//           width: 30,
-//           height: 7,
-//           borderRadius: 50
-//         }} />
-//         <div style={{
-//           position: 'absolute',
-//           background: '#dee1e6',
-//           top: 30,
-//           left: highlight === 'badges' ? 64 : 134,
-//           width: 7,
-//           height: 7,
-//           borderRadius: '100%'
-//         }} />
-//         <div style={{
-//           position: 'absolute',
-//           top: 12,
-//           left: 330,
-//           width: 30,
-//           height: 30
-//         }}>
-//           {highlight === 'badges' ? (
-//             <Icon.Timer shrink={1.1} />
-//           ) : (
-//             <div
-//               style={{
-//                 background: '#00d299',
-//                 height: 15,
-//                 width: 15,
-//                 marginTop: 5,
-//                 borderRadius: '100%'
-//               }}
-//             />
-//           )}
-//         </div>
-//         <div style={{
-//           position: 'absolute',
-//           background: '#dee1e6',
-//           top: 20,
-//           right: 120,
-//           width: 100,
-//           height: 10,
-//           borderRadius: 50
-//         }} />
-//         <div style={{
-//           position: 'absolute',
-//           background: '#dee1e6',
-//           top: 15,
-//           right: 20,
-//           width: 20,
-//           height: 20,
-//           borderRadius: '100%'
-//         }} />
-//         <div style={{
-//           position: 'absolute',
-//           background: '#dee1e6',
-//           top: 15,
-//           right: 50,
-//           width: 20,
-//           height: 20,
-//           borderRadius: '100%'
-//         }} />
-//       </div>
-//     </ImagePlaceholder>
-//   );
-// }
-
-// const Arrow = ({style}) => {
-//   return (
-//     <svg style={style} xmlns="http://www.w3.org/2000/svg" width="55" height="223" viewBox="0 0 55 223">
-//       <g fill="none" fill-rule="evenodd" stroke="rgb(0, 158, 248)" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" transform="translate(1 -2)">
-//         <path stroke-dasharray="20 12 40" d="M51,8 C17,19.5689347 1.37247841e-11,46.42498 -5.70089572e-12,88.5681361 C-2.5121299e-11,130.711292 -2.32151849e-11,175.855247 1.74465369e-14,224"></path>
-//         <polyline points="41.584 12.035 48.584 4.035 55.584 12.035" transform="rotate(65 48.584 8.035)"></polyline>
-//       </g>
-//     </svg>
-//   );
-// }
-
-// const NotificationsRowExample = styled('div')({
-//   position: 'relative',
-//   height: 59,
-//   width: 745,
-//   borderRadius: 8,
-//   margin: '158px auto 124px',
-//   background: `url(${rowExample}) center center no-repeat`,
-//   backgroundSize: 'cover',
-//   backgroundColor: '#fff',
-//   boxShadow: '0 2px 8px rgba(0, 0, 0, 0.51)',
-// });
-
-// const ImageContainer = styled('div')({
-//   position: 'absolute',
-//   height: 390,
-//   width: 685,
-//   top: 155,
-//   left: '50%',
-//   background: `url(${screenshot}) center center no-repeat`,
-//   backgroundSize: 'cover',
-//   backgroundColor: '#fff',
-//   boxShadow: 'rgba(84,70,35,0) 0px 2px 8px, rgba(68, 58, 32, 0.16) 0px 1px 9px 4px',
-//   marginLeft: 100,
-//   borderRadius: 8,
-//   display: 'block',
-//   '@media (max-width: 1000px)': {
-//     display: 'none'
-//   }
-// });
-
-// const WidthContainer = styled('div')({
-//   margin: '0 auto',
-//   width: '100%',
-//   maxWidth: 1500,
-//   display: 'flex',
-//   alignItems: 'center',
-//   flexDirection: 'row',
-// }, ({override = false}) => ({
-//   '@media (max-width: 1400px)': {
-//     flexDirection: override ? 'row' : 'column'
-//   }
-// }));
-
-// const Section = styled('div')({
-//   position: 'relative',
-//   width: '100%',
-//   minHeight: 300,
-//   display: 'flex',
-//   alignItems: 'center',
-//   flexDirection: 'column',
-//   margin: '28px auto 0',
-//   padding: '60px 0'
-// }, ({alt}) => alt && ({
-//   background: 'rgb(255, 254, 252)',
-//   'h2': {
-//     marginTop: 0,
-//     marginLeft: 15,
-//     fontSize: 42,
-//     textAlign: 'left',
-//     fontWeight: 600
-//   }
-// }));
-
-// const Item = styled('div')({
-//   flex: 1,
-//   display: 'block',
-//   padding: '24px 72px',
-//   'h2': {
-//     marginTop: 0,
-//     marginLeft: 15,
-//     fontSize: 42,
-//     textAlign: 'left',
-//     fontWeight: 600
-//   },
-//   'p': {
-//     fontSize: 18
-//   }
-// }, ({flex}) => ({
-//   flex
-// }));
-// const ItemText = styled('div')({
-//   display: 'flex',
-//   minWidth: 200,
-//   flexDirection: 'row',
-//   margin: '20px 0',
-//   'p': {
-//     flex: .9,
-//     margin: 0
-//   },
-//   'div': {
-//     flex: .1,
-//     marginTop: 3
-//   },
-// });
-
-// const ImagePlaceholder = styled('div')({
-//   position: 'relative',
-//   display: 'block',
-//   height: 400,
-//   width: 600,
-//   background: '#fff',
-//   borderRadius: 8,
-//   boxShadow: '0 2px 8px rgba(179, 179, 179, 0.25)'
-//   // '-webkit-mask-image': 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC)'
-// });
-
-// const Header = styled('h1')({
-//   padding: '0 20px',
-//   margin: '0 0 24px',
-//   letterSpacing: '-1.0px',
-//   width: '50%',
-// });
-
-// const SubHeader = styled(Header)({
-//   fontWeight: 500,
-//   maxWidth: 460,
-//   fontSize: 24,
-//   marginBottom: 30,
-//   letterSpacing: '-0.25px'
-// });
-
-// const LandingHeader = styled('div')({
-//   position: 'relative',
-//   width: '90%',
-//   margin: '22px 20px 54px',
-//   maxWidth: 1500,
-//   display: 'flex',
-//   justifyContent: 'space-between',
-// });
-
-// const LandingMessage = styled(LandingHeader)({
-//   marginLeft: '5%',
-//   flexDirection: 'column',
-//   textAlign: 'left',
-//   maxWidth: 1500,
-//   'h1': {
-//     display: 'block'
-//   },
-//   '@media (max-width: 1000px)': {
-//     textAlign: 'center',
-//     'h1': {
-//       marginLeft: 'auto',
-//       marginRight: 'auto',
-//       width: 500
-//     },
-//     'div': {
-//       marginLeft: 'auto !important',
-//       marginRight: 'auto !important',
-//     },
-//   }
-// });
-
-// const SmallLink = styled('a')({
-//   cursor: 'pointer',
-//   fontSize: '12px',
-//   lineHeight: '18px',
-//   fontWeight: '700',
-//   textDecoration: 'none',
-//   ':hover': {
-//     textDecoration: 'underline'
-//   }
-// });
-
-// const SmallText = styled('span')({
-//   fontSize: '12px',
-//   fontWeight: '500',
-//   'a': {
-//     color: 'rgba(255, 255, 255, .9)',
-//     fontWeight: 600,
-//     margin: '0 3px',
-//     textDecoration: 'none'
-//   },
-//   'a:hover': {
-//     color: 'rgba(255, 255, 255, 1)',
-//     textDecoration: 'underline'
-//   }
-// });
-
-// const BottomLinkContainer = styled(LandingHeader)({
-//   maxWidth: 350,
-//   width: '100%',
-//   margin: '32px 20px 0',
-// });
-
-// const LinkButton = styled('a')({boxShadow: '0 0 0 transparent'});
-// const U = styled('span')({
-//   color: 'inherit'
-// });
-
-// const UnofficialReleaseTag = styled('span')({
-//   color: 'white',
-//   position: 'absolute',
-//   left: '44px',
-//   bottom: '9px',
-//   fontSize: '11px',
-//   background: '#f42839',
-//   fontWeight: '800',
-//   padding: '2px 4px',
-//   borderRadius: '4px',
-//   textTransform: 'uppercase',
-// });
-
-// ===========================================================================
-// ABOVE IS OLD CODE
-// ===========================================================================
+const WIDTH_FOR_MEDIUM_SCREENS = '1100px';
+const WIDTH_FOR_SMALL_SCREENS = '800px';
 
 const PageContainer = styled('div')`
   overflow: hidden;
@@ -630,7 +59,11 @@ const Container = styled('div')`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0;
+  box-sizing: border-box;
+  padding: 12px 24px;
+  @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+    width: 100%;
+  }
 `;
 
 const NewTag = styled('span')`
@@ -662,14 +95,19 @@ const Header = styled('h1')`
   position: relative;
   text-align: left;
   width: 680px;
+  max-width: 680px;
   margin: 0;
   z-index: 2;
   font-size: 72px;
   line-height: 78px;
   margin: 0 auto 12px;
-
   font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
   font-weight: 500;
+  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+    width: 100%;
+    font-size: 4rem;
+    line-height: 4.25rem;
+  }
 `;
 
 const SubHeader = styled(Header)`
@@ -678,12 +116,16 @@ const SubHeader = styled(Header)`
   line-height: 26px;
   font-weight: 600;
   width: 680px;
+  max-width: 680px;
   margin: 0 auto;
-
   font-family: medium-content-sans-serif-font, Inter UI, system-ui, sans-serif;
   font-weight: 500;
-
   color: #b3b0a9;
+  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+    width: 100%;
+    font-size: 24px;
+    line-height: 26px;
+  }
 `;
 
 const ItemNumber = styled('span')`
@@ -700,6 +142,9 @@ const ItemContainer = styled('div')`
   align-items: center;
   padding: 12px 24px;
   flex-direction: column;
+  @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+    width: 100%;
+  }
 `;
 
 const ItemHeader = styled(Header)`
@@ -758,113 +203,46 @@ const CompanyPerson = styled('div')`
   }
 `;
 
-function getConfetti (seed) {
-  const stroke = color(seed);
-  const rotation = ~~(seed * 180);
-
-  const svgs = [
-    (
-      <svg css={css`transform: rotate(${rotation}deg);`} width="12" height="9" viewBox="0 0 12 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M6 0L11.1962 9H0.803848L6 0Z" fill={stroke}/>
-      </svg>
-    ),
-    (
-      <svg css={css`transform: rotate(${rotation}deg);`} width="12" height="9" viewBox="0 0 12 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M6 0L11.1962 9H0.803848L6 0Z"
-          fill={stroke}
-        />
-      </svg>
-    ),
-    (
-      <svg css={css`transform: rotate(${rotation}deg);`} width="14" height="18" viewBox="0 0 14 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M12 2C0.517508 6.06139 6.6799 11.5502 2 16"
-          stroke={stroke}
-          stroke-width="4"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-      </svg>
-    ),
-    (
-      <svg css={css`transform: rotate(${rotation}deg);`} width="8" height="13" viewBox="0 0 8 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M4 0L8 6.5L4 13L0 6.5L4 0Z"
-          fill={stroke}
-        />
-      </svg>
-    ),
-    (
-      <svg css={css`transform: rotate(${rotation}deg);`} width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M8 6.6393C8 9.44331 2.33469 14 0.577298 14C-1.1801 14 1.63591 9.44331 1.63591 6.6393C1.63591 3.83529 -0.119245 0 1.63815 0C3.39555 0 8 3.83529 8 6.6393Z"
-          fill={stroke}
-        />
-      </svg>
-    ),
-    (
-      <svg css={css`transform: rotate(${rotation}deg);`} width="10" height="12" viewBox="0 0 10 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M9.15408 5.477C8.15168 8.67191 7 13.5 5.15408 11.5C3.30816 9.5 2.90284 9.34138 1.15517 5.47695C-2.00009 -1.49991 3.99732 1.50011 5.15408 3.977C6.15408 1.47707 11.5 -2 9.15408 5.477Z"
-          fill={stroke}/>
-      </svg>
-    ),
-    (
-      <svg css={css`transform: rotate(${rotation}deg);`} width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="5" cy="5" r="5" fill={stroke}/>
-      </svg>
-    )
-  ];
-  // css={css`transform: rotate(${rotation}deg);`}
-
-  return svgs[~~(seed * svgs.length)];
-}
-
-const Confetti = ({offset, row, seed, index, max}) => {
-  const start = row * 160;
-  const end = start + 160;
-  const topDelta = range(start, end, seed) - 120;
-  const fade = opacity(index, max);
-  offset -= 320;
-  return (
-    <div css={css`
-      z-index: 1;
-      opacity: ${fade};
-      transform: scale(1.2);
-      position: absolute;
-      left: ${offset}px;
-      top: ${topDelta}px;
-    `}
-    >
-      {getConfetti(seed)}
-    </div>
-  );
-}
-
-function ConfettiSection () {
-  const SPACING = 82;
-  const AMOUNT = 18;
-
-  const row = new Array(AMOUNT).fill(0).map((_, i) => i * SPACING);
-
-  return (
-    <div css={css`
-      z-index: 0;
-    `}>
-      {row.map((offset, i) => <Confetti index={i} row={0} offset={offset} seed={Math.random()} max={AMOUNT} />)}
-      {row.map((offset, i) => <Confetti index={i} row={1} offset={offset} seed={Math.random()} max={AMOUNT} />)}
-      {row.map((offset, i) => <Confetti index={i} row={2} offset={offset} seed={Math.random()} max={AMOUNT} />)}
-      {row.map((offset, i) => <Confetti index={i} row={3} offset={offset} seed={Math.random()} max={AMOUNT} />)}
-      {row.map((offset, i) => <Confetti index={i} row={4} offset={offset} seed={Math.random()} max={AMOUNT} />)}
-      {row.map((offset, i) => <Confetti index={i} row={5} offset={offset} seed={Math.random()} max={AMOUNT} />)}
-    </div>
-  );
-}
+const IconLink = styled('span')`
+  position: relative;
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  user-select: none;
+  height: 40px;
+  width: 40px;
+  transition: all 150ms ease;
+  i {
+    color: inherit;
+  }
+  &:before {
+    content: "";
+    transition: all 150ms ease;
+    background: #BFC5D122;
+    border-radius: 100%;
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: scale(0);
+  }
+  &:hover:before {
+    transform: scale(1);
+  }
+  &:active:before {
+    background: #BFC5D144;
+  }
+`;
 
 const DemoScreenshotHeader = styled('img')`
   background: #f7f6f3;
   width: 960px;
+  max-width: 960px;
+  min-width: 580px;
   display: block;
   box-shadow: rgba(0, 0, 0, 0.15) 0px 10px 20px, rgb(245, 245, 245) 0px -1px 0px;
   border-top-left-radius: 4px;
@@ -872,7 +250,12 @@ const DemoScreenshotHeader = styled('img')`
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   z-index: 3;
+  @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+    width: 100%;
+    margin-left: 50%;
+  }
 `;
+
 const DemoScreenshot = styled(DemoScreenshotHeader)`
   border-top-left-radius: 0;
   border-top-right-radius: 0;
@@ -885,14 +268,30 @@ const IPhoneScreenshotContainer = styled('img')`
   bottom: -32px;
   right: -32px;
   width: 214px;
+  max-width: 214px;
+  min-width: 107px;
   display: block;
   background: none;
   z-index: 5;
+  @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+    width: 25%;
+    left: 21%;
+    top: 0;
+    bottom: auto;
+    right: auto;
+  }
 `;
+
 const IPhoneScreenshot = styled(IPhoneScreenshotContainer)`
   z-index: 4;
   transform: scale(0.88);
-  bottom: -48px;
+  @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+    width: 25%;
+    left: 21%;
+    top: -12px;
+    bottom: auto;
+    right: auto;
+  }
 `;
 
 const SmallText = styled('p')`
@@ -902,6 +301,9 @@ const SmallText = styled('p')`
   display: inline-block;
   color: #37352f;
   z-index: 2;
+  @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+    display: none;
+  }
 `;
 
 const SmallLink = styled('a')`
@@ -917,24 +319,10 @@ const SmallLink = styled('a')`
   &:hover {
     text-decoration: underline;
   }
+  @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+    display: none;
+  }
 `;
-
-// const Confetti = styled('div')`
-//   position: absolute;
-//   left: ${props => props.offset}px;
-//   top: ${props => props.top
-//     ? (-1) * range(28, 42, props.seed) + 'px'
-//     : 'auto'
-//   };
-//   bottom: ${props => props.bottom
-//     ? (-1) * range(28, 42, props.seed) + 'px'
-//     : 'auto'
-//   };
-//   transform: rotate(${props => ~~(props.seed * 180)}deg);
-//   height: 16px;
-//   width: 7px;
-//   background: ${props => color(props.seed)};
-// `;
 
 export default function Scene ({loggedIn, onLogout, ...props}) {
   const [showBorder, setShowBorder] = React.useState(false);
@@ -993,6 +381,9 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
               &:active {
                 background: rgba(55, 53, 47, 0.16);
               }
+              @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+                display: none;
+              }
             }
           `}>
             <RouterLink to={routes.HOME}>Desktop</RouterLink>
@@ -1004,6 +395,9 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
               margin-left: 10px;
               margin-right: 10px;
               display: inline-block;
+              @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+                display: none;
+              }
             `} />
             {loggedIn ? (
               <>
@@ -1020,15 +414,26 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
               </>
             )}
           </div>
+          <div css={css`
+            display: none;
+            @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+              display: block;
+            }
+          `}>
+            {/* @TODO implement the menu */}
+            <IconLink>
+              <i className="fas fa-bars"></i>
+            </IconLink>
+          </div>
         </Container>
       </FixedContainer>
 
       <Container css={css`
         margin: 32px auto;
-        padding: 8px;
         flex-direction: column;
       `}>
         <div css={css`
+          width: inherit;
           position: relative;
           margin: 0 auto 18px;
           display: flex;
@@ -1038,10 +443,25 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
           flex-direction: column;
         `}>
           <ConfettiSection />
-          <Header>
+
+          {/* Header for larger devices */}
+          <Header css={css`
+            @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+              display: none;
+            }`}>
             {'Control your GitHub notifications'}
           </Header>
-          <div css={css`margin: 0 32px;`}>
+          {/* Header for small devices */}
+          <Header css={css`
+            display: none;
+            text-align: center;
+            @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+              display: block;
+            }`}>
+            {'Control'}<br />{'your GitHub notifications'}
+          </Header>
+
+          <div css={css`margin: 0 32px; width: inherit;`}>
             <SubHeader css={css`color: rgb(55, 53, 47);`}>
               {'Prioritize the tasks that keep you and your team most productive by organizing your notifications'}
             </SubHeader>
@@ -1049,6 +469,12 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
               display: flex;
               align-items: center;
               justify-content: space-between;
+              width: 680px;
+              max-width: 680px;
+              margin: 0 auto;
+              @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+                width: 100%;
+              }
             `}>
               <div css={css`
                 z-index: 2;
@@ -1088,7 +514,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
                   color: #457cff;
                 }
               `}>
-                <span>{'Let\'s get started'}</span>
+                <span onClick={() => navigate(routes.REDESIGN_NOTIFICATIONS)}>{'Let\'s get started'}</span>
                 <span css={css`
                   background: none !important;
                   box-shadow: none !important;
@@ -1221,7 +647,6 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
 
       <Container css={css`
         margin: 88px auto 32px;
-        padding: 8px;
         align-items: flex-start;
         flex-direction: column;
       `}>
@@ -1252,7 +677,6 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
 
       <Container css={css`
         margin: 88px auto 32px;
-        padding: 8px;
         align-items: flex-start;
         flex-direction: column;
       `}>
@@ -1283,7 +707,6 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
 
       <Container css={css`
         margin: 88px auto 32px;
-        padding: 8px;
         align-items: flex-start;
         flex-direction: column;
       `}>
@@ -1314,7 +737,6 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
 
       <Container css={css`
         margin: 88px auto 32px;
-        padding: 8px;
         align-items: flex-start;
         flex-direction: column;
       `}>
@@ -1357,291 +779,3 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
     </PageContainer>
   );
 };
-
-// export function OldScene ({loggedIn, onLogout, ...props}) {
-//   return (
-//     <div>
-//       <div style={{
-//         width: '100%',
-//         minHeight: 600,
-//         position: 'relative',
-//         display: 'flex',
-//         flexDirection: 'column',
-//         alignItems: 'center',
-//         overflow: 'hidden',
-//         paddingBottom: 50
-//       }}>
-//         <LandingHeader style={{paddingLeft: '5%'}}>
-//           <Logo white size={75}>
-//           </Logo>
-//           {loggedIn ? (
-//             <div className="button-container-alt">
-//               <RouterLink
-//                 style={{
-//                   marginRight: 15,
-//                   background: 'none'
-//                 }}
-//               <LinkButton
-//                 style={{
-//                   marginRight: 15,
-//                   background: 'none'
-//                 }} href="#" onClick={onLogout}>sign out</LinkButton>
-//             </div>
-//           ) : (
-//             <div className="button-container-alt">
-//               <RouterLink
-//                 style={{
-//                   marginRight: 15,
-//                   background: 'none'
-//                 }} to={routes.}>sign in</RouterLink>
-//             </div>
-//           )}
-//         </LandingHeader>
-//         <LandingMessage>
-//           <Header>Control your GitHub notifications</Header>
-//           <SubHeader>Prioritize the tasks that keep you and your team most productive</SubHeader>
-//           <div className="button-container-alt" style={{marginLeft: 20}}>
-//             <RouterLink to={routes.LOGIN}>let's get started</RouterLink>
-//             <LinkButton
-//               onClick={() => {
-//                 const section = document.querySelector('#learnMore');
-//                 const y = section.getBoundingClientRect().top + window.scrollY;
-//                 window.scroll({
-//                   top: y,
-//                   behavior: 'smooth'
-//                 });
-//               }}
-//               style={{
-//                 marginLeft: 20,
-//                 background: 'none'
-//             }}>
-//               learn more
-//               <Icon.LeftArrow shrink={0.6} style={{marginLeft: 5, filter: 'invert(1)', transform: 'rotateY(180deg)'}} />
-//             </LinkButton>
-//           </div>
-//           <BottomLinkContainer>
-//             <SmallLink target="_blank" href="https://github.com/nickzuber/meteorite">View and contribute on GitHub</SmallLink>
-//             <SmallText>
-//               <Icon.PeopleWhite
-//                 shrink={0.55}
-//                 style={{
-//                   filter: 'invert(1)',
-//                   display: 'inline-block',
-//                   top: -3,
-//                   right: -2
-//                 }}
-//               />
-//               Free and open sourced
-//             </SmallText>
-//           </BottomLinkContainer>
-//         </LandingMessage>
-//         <ImageContainer className="hover" />
-//         <Curve />
-//       </div>
-//       <Section className="section">
-//         <WidthContainer>
-//           <Item style={{flex: '0 0 2.5%', padding: 0}} />
-//           <Item>
-//             {createImagePlaceholder('badges')}
-//           </Item>
-//           <Item className="item-text">
-//             <h2>Surface the things that matter the most.</h2>
-//             <ItemText>
-//               <Icon.Ring />
-//               <p>The most important issues and pull requests that require your presence are called out and brought to your attention.</p>
-//             </ItemText>
-//             <ItemText>
-//               <Icon.Ear />
-//               <p>We listen for updates with your notifications and let you know <i>why</i> and <i>when</i> things change.</p>
-//             </ItemText>
-//             <ItemText>
-//               <Icon.Zap />
-//               <p>Super charge your day by focusing on getting things done, rather than sifting through notifications or emails.</p>
-//             </ItemText>
-//           </Item>
-//           <Item style={{flex: '0 0 2.5%', padding: 0}} />
-//         </WidthContainer>
-//       </Section>
-//       <Section className="section" alt={true} style={{paddingTop: 140, overflowX: 'hidden'}}>
-//         <Curve style={{
-//           bottom: 'auto',
-//           marginBottom: 0,
-//           marginTop: -1,
-//           top: 0,
-//           transform: 'translateX(-50%) rotate(180deg)'
-//         }} />
-//         <WidthContainer>
-//           <Item style={{flex: '0 0 2.5%', padding: 0}} />
-//           <Item className="item-text">
-//             <h2>Your time matters, so<br />we keep things simple.</h2>
-//             <ItemText>
-//               <Icon.CloudOffWhite />
-//               <p>All of the information we use to make your notifications more useful is kept offline and kept on your own computer.</p>
-//             </ItemText>
-//             <ItemText>
-//               <Icon.NoPhone />
-//               <p>Simply sign in and start working — no complicated or intrusive set up needed.</p>
-//             </ItemText>
-//             <ItemText>
-//               <Icon.NoMusic />
-//               <p>No distractions — we only show you updates on things that matter to you.</p>
-//             </ItemText>
-//           </Item>
-//           <Item>
-//             {createImagePlaceholder('reason')}
-//           </Item>
-//           <Item style={{flex: '0 0 2.5%', padding: 0}} />
-//         </WidthContainer>
-//       </Section>
-//       <Section id="learnMore" className="section" alt={true} style={{marginTop: 0, paddingBottom: 100}}>
-//         <h2 style={{textAlign: 'center', maxWidth: 900}}>
-//           Meteorite is an assistant for your <br />GitHub notifications.
-//         </h2>
-//         <WidthContainer>
-//           <Item style={{flex: '0 0 2.5%', padding: 0}} />
-//           <Item className="item-text">
-//             <ItemText>
-//               <Icon.Rank style={{filter: 'invert(1)'}} />
-//               <p>Scores your notifications based on their importance, so we can surface the most critical updates at the top of your queue.</p>
-//             </ItemText>
-//             <ItemText>
-//               <Icon.Sync style={{filter: 'invert(1)'}} />
-//               <p>Provides you with quick context for why you're receiving each notification.</p>
-//             </ItemText>
-//             <ItemText>
-//               <Icon.NotificationsOn style={{filter: 'invert(1)'}} />
-//               <p>Allows you to opt in for desktop notifications whenever you recieve important update to help notify you right away.</p>
-//             </ItemText>
-//           </Item>
-//           <Item className="item-text">
-//             <ItemText>
-//               <Icon.Shield style={{filter: 'invert(1)'}} />
-//               <p>Protects you from useless spammy notifications that you don't care about.</p>
-//             </ItemText>
-//             <ItemText>
-//               <Icon.Headphones style={{filter: 'invert(1)'}} />
-//               <p>Let's you focus in on specific types of notifications that matter to you, like when your review is requested for a pull request or you were assigned an issue.</p>
-//             </ItemText>
-//             <ItemText>
-//               <Icon.Bubbles style={{filter: 'invert(1)'}} />
-//               <p>Unlocks dope statistics that help you understand how you interact with notifications on a daily basis.</p>
-//             </ItemText>
-//           </Item>
-//           <Item style={{flex: '0 0 2.5%', padding: 0}} />
-//         </WidthContainer>
-//         <NotificationsRowExample>
-//           <div style={{
-//             position: 'absolute',
-//             left: 0,
-//             top: 0,
-//             marginTop: -85,
-//             marginLeft: 20,
-//             display: 'block',
-//           }}>
-//             <Arrow style={{
-//               position: 'absolute',
-//               transform: 'rotate(90deg)',
-//               marginTop: '-65px',
-//               marginLeft: '480px',
-//               left: 0,
-//               top: 0,
-//             }} />
-//             <SmallText className="hover" style={{
-//               fontWeight: 600,
-//               borderRadius: 4,
-//               padding: '12px 24px',
-//               background: 'rgb(0, 158, 248)',
-//               boxShadow: '0 2px 8px rgba(0, 0, 0, 0.51)',
-//             }}>Calculated score based on this issue's importance to you</SmallText>
-//           </div>
-//           <div style={{
-//             position: 'absolute',
-//             right: 0,
-//             bottom: 0,
-//             marginBottom: -80,
-//             marginRight: 20,
-//             display: 'block',
-//           }}>
-//             <Arrow style={{
-//               position: 'absolute',
-//               transform: 'rotate(270deg)',
-//               marginBottom: '-70px',
-//               marginLeft: '-160px',
-//               left: 0,
-//               bottom: 0,
-//             }} />
-//             <SmallText className="hover" style={{
-//               fontWeight: 600,
-//               borderRadius: 4,
-//               padding: '12px 24px',
-//               background: 'rgb(0, 158, 248)',
-//               boxShadow: '0 2px 8px rgba(0, 0, 0, 0.51)',
-//             }}>The reason you just got this notification</SmallText>
-//           </div>
-//         </NotificationsRowExample>
-//         <div className="button-container" style={{marginTop: 100 - 24}}>
-//           <RouterLink to={routes.LOGIN}>sign in and try it out</RouterLink>
-//           <LinkButton
-//             style={{
-//               marginLeft: 15,
-//               background: 'none',
-//               boxShadow: '0 0 0 transparent'
-//             }} href="https://github.com/nickzuber/meteorite/">check out the github</LinkButton>
-//         </div>
-//       </Section>
-//       <Section alt={true} style={{
-//         marginTop: 0,
-//         minHeight: 100,
-//         justifyContent: 'center',
-//         paddingBottom: 28,
-//         paddingTop: 28,
-//         background: '#212629',
-//       }}>
-//         <WidthContainer override={true} style={{alignItems: 'flex-end'}}>
-//           <Item style={{flex: '0 0 2.5%', padding: 0}} />
-//           <Item style={{
-//             flexDirection: 'column',
-//             alignItems: 'flex-start',
-//             marginLeft: 20
-//           }}>
-//             <Logo size={50} style={{marginBottom: 18}} />
-//             <SmallText style={{color: 'rgba(255, 255, 255, .75)'}}>
-//               Created by
-//               <a target="_blank" href="https://nickzuber.com/">
-//                 Nick Zuber
-//               </a>
-//               and
-//               <a target="_blank" href="https://github.com/nickzuber/meteorite/graphs/contributors/">
-//                 contributors
-//               </a>
-//               <br />
-//               Home page inspiration from
-//               <a target="_blank" href="https://robinpowered.com/">
-//                 Robin
-//               </a>
-//               and
-//               <a target="_blank" href="https://getkap.co/">
-//                 Kap
-//               </a>
-//               <br />
-//               <a target="_blank" href="https://github.com/nickzuber/meteorite/" style={{marginLeft: 0}}>
-//                 Source
-//               </a>
-//               available under
-//               <a target="_blank" href="https://github.com/nickzuber/meteorite/blob/master/LICENSE/">
-//                 MIT
-//               </a>
-//             </SmallText>
-//           </Item>
-//           <Item style={{textAlign: 'right'}} className="footer-links">
-//             <SmallLink target="_blank" href="https://github.com/nickzuber/meteorite/" style={{marginLeft: 28}}>Source code</SmallLink>
-//             <SmallLink target="_blank" href="https://github.com/nickzuber/meteorite/issues" style={{marginLeft: 28}}>Submit feedback</SmallLink>
-//             <SmallLink target="_blank" href="https://github.com/nickzuber/meteorite/issues" style={{marginLeft: 28}}>Bug reports</SmallLink>
-//             <SmallText style={{marginLeft: 28, opacity: .25}}>v{version}</SmallText>
-//           </Item>
-//           <Item style={{flex: '0 0 2.5%', padding: 0}} />
-//         </WidthContainer>
-//       </Section>
-//     </div>
-//   );
-// };
