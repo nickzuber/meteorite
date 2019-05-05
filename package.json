@@ -51,6 +51,7 @@
     "react": "^16.8.5",
     "react-app-polyfill": "^0.1.3",
     "react-dev-utils": "^6.0.5",
+    "react-device-detect": "^1.6.2",
     "react-dom": "^16.8.5",
     "react-emotion": "^9.2.12",
     "react-spring": "^8.0.18",
