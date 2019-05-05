@@ -454,7 +454,6 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
           {/* Header for small devices */}
           <Header css={css`
             display: none;
-            text-align: center;
             @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
               display: block;
             }`}>

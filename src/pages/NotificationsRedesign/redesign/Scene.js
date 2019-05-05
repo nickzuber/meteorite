@@ -103,9 +103,9 @@ function iconsOfBadges (badges) {
       case Badges.HOT:
         return <i className="fas fa-fire" css={css`color: #e91e63`}></i>;
       case Badges.COMMENTS:
-        return <i className="fas fa-users" css={css`color: #4C84FF`}></i>;
+        return <i className="fas fa-user-friends" css={css`color: #4C84FF`}></i>;
       case Badges.OLD:
-        return <i className="fas fa-hourglass-half" css={css`color: #fcc419`}></i>;
+        return <i className="fas fa-stopwatch" css={css`color: #fcc419`}></i>;
       default:
         return null;
     }
@@ -188,10 +188,13 @@ const loadingKeyframe = keyframes`
 
 const Title = styled('h1')`
   margin: 0;
-  font-size: 2rem;
-  line-height: 3rem;
+  font-size: 32px;
+  line-height: 46px;
   font-weight: 500;
   letter-spacing: -1.05px;
+  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+    font-size: 28px;
+  }
 `;
 
 const Container = styled('div')`
@@ -199,6 +202,7 @@ const Container = styled('div')`
   display: block;
   background: ${WHITE};
   height: calc(100% - ${COLLAPSED_WIDTH});
+  overflow-x: hidden;
 `;
 
 const Row = styled('div')`
@@ -347,6 +351,7 @@ const NotificationsSection = styled('div')`
     width: calc(100% - (2 * 16px));
     padding-right: 16px;
     padding-left: 16px;
+    padding-top: 16px;
   }
 `;
 
@@ -365,9 +370,9 @@ const SubTitleSection = styled('div')`
   margin: 0;
   height: auto;
   h4 {
-    margin: 8px 0;
+    margin: 4px 0 8px;
     font-weight: 500;
-    font-size: 1rem;
+    font-size: 16px;
     color: #9d9b97;
   }
 `;
@@ -387,8 +392,6 @@ const UnorderedList = styled('ul')`
 const PageSelection = styled(UnorderedList)`
   border-bottom: 2px solid #e5e6eb;
   flex-wrap: nowrap;
-  overflow-x: auto;
-  overflow-y: hidden;
 `;
 
 const SearchField = styled('div')`
@@ -448,14 +451,17 @@ const SearchInput = styled('input')`
     opacity: 1;
     color: rgb(55, 53, 47);
     width: 300px;
+    @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+      width: 184px;
+    }
   }
 `;
 const EnhancedSearchInput = withOnEnter(SearchInput);
 
 const PageItemComponent = styled('li')`
   font-size: 14px;
-  padding: 0 32px 0 16px;
-  width: 112px;
+  padding: 0 32px 0 8px;
+  width: 98px;
   position: relative;
   height: 100%;
   line-height: 52px;
@@ -754,8 +760,12 @@ function ProfileSection ({user, onLogout}) {
   return (
     <>
       <ProfileContainer onClick={() => setMenuShow(true)}>
-        <ProfilePicture src={user ? user.avatar_url : null} />
-        <ProfileName>{user ? user.name : 'Settings'}</ProfileName>
+        {user && user.avatar_url ? (
+          <ProfilePicture src={user.avatar_url} />
+        ) : (
+          <i css={css`font-size: 20px;`} className="fas fa-cog"></i>
+        )}
+        <ProfileName>{user && user.name ? user.name : 'Settings'}</ProfileName>
         <i className="fas fa-caret-down" css={css`
           transform: ${menuShow ? 'rotate(180deg)' : 'rotate(0deg)'};
         `}></i>
@@ -880,6 +890,9 @@ const Divider = styled('div')`
   height: 28px;
   width: 2px;
   margin: 0 8px;
+  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+    display: none;
+  }
 `;
 
 const RepoBarContainer = styled('div')`
@@ -1154,6 +1167,7 @@ export default function Scene ({
   readCount,
   archivedCount,
   loading,
+  error,
   isLastPage,
   isFirstPage,
   page,
@@ -1216,6 +1230,7 @@ export default function Scene ({
     window.scrollTo(0, 0);
     const body = window.document.querySelector('body');
     const hideDropdownMenu = () => setDropdownOpen(false);
+    // For mobile `touchstart`
     body.addEventListener('click', hideDropdownMenu);
     return () => body.removeEventListener('click', hideDropdownMenu);
   }, []);
@@ -1334,7 +1349,7 @@ export default function Scene ({
             open={menuOpen}
           >
             <span>{titleOfMode(Mode.COMMENTS)}</span>
-            <i className="fas fa-users"></i>
+            <i className="fas fa-user-friends"></i>
           </MenuIconItem>
           <MenuIconItem
             mode={Mode.OLD}
@@ -1344,7 +1359,7 @@ export default function Scene ({
             open={menuOpen}
           >
             <span>{titleOfMode(Mode.OLD)}</span>
-            <i className="fas fa-hourglass-half"></i>
+            <i className="fas fa-stopwatch"></i>
           </MenuIconItem>
         </MenuContainerItem>
         <ContentItem>
@@ -1561,6 +1576,14 @@ export default function Scene ({
                 right: 0;
                 justify-content: center;
                 align-items: center;
+                @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+                  padding: ${query ? '4px 16px' : 0};
+                  position: absolute;
+                  background: #f0f0ee;
+                  left: 0;
+                  border-top-left-radius: 4px;
+                  border-top-right-radius: 4px;
+                }
               `}>
                 {query && (
                   <>
@@ -1678,6 +1701,8 @@ export default function Scene ({
                   <LoadingNotificationRow />
                   <LoadingNotificationRow />
                 </NotificationBlock>
+              ) : error ? (
+                <p>error</p>
               ) : (
                 <NotificationCollection
                   page={page}

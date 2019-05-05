@@ -6,6 +6,7 @@ import {default as RedesignScene} from './redesign/Scene';
 
 export default function Scene ({
   onMarkAsRead,
+  fetchingNotificationsError,
   ...props
 }) {
   const loading = props.isSearching || props.isFetchingNotifications;
@@ -18,6 +19,7 @@ export default function Scene ({
       isFirstPage={isFirstPage}
       isLastPage={isLastPage}
       onArchiveThread={onMarkAsRead}
+      error={fetchingNotificationsError}
       {...props}
     />
   );

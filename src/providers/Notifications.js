@@ -7,7 +7,7 @@ import {Status} from '../constants/status';
 const BASE_GITHUB_API_URL = 'https://api.github.com';
 const PER_PAGE = 50;
 
-function cleanResponseUrl (url) {
+function transformUrlFromResponse (url) {
   return url
     .replace('api.github.com', 'github.com')
     .replace('/repos/', '/')
@@ -109,7 +109,7 @@ class NotificationsProvider extends React.Component {
 
     // @TODO probably add timestamp
     const cachedUser = this.props.getUserItem('user-model');
-    if (cachedUser) {
+    if (cachedUser && cachedUser.name) {
       return Promise.resolve(cachedUser);
     }
 
@@ -395,8 +395,8 @@ class NotificationsProvider extends React.Component {
       : null;
 
     const url = commentNumber
-      ? cleanResponseUrl(n.subject.url) + '#issuecomment-' + commentNumber
-      : cleanResponseUrl(n.subject.url);
+      ? transformUrlFromResponse(n.subject.url) + '#issuecomment-' + commentNumber
+      : transformUrlFromResponse(n.subject.url);
 
     // Notification model
     const value = {
@@ -410,7 +410,7 @@ class NotificationsProvider extends React.Component {
       url: url,
       repository: n.repository.full_name,
       number: n.subject.url.split('/').pop(),
-      repositoryUrl: cleanResponseUrl(n.repository.url)
+      repositoryUrl: transformUrlFromResponse(n.repository.url)
     };
     this.props.setItemInStorage(n.id, value);
     return value;

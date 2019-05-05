@@ -1,6 +1,6 @@
 import React from 'react';
 import moment from 'moment';
-import { Redirect } from "@reach/router";
+import { Redirect, navigate } from "@reach/router";
 import { compose } from 'recompose';
 import { withNotificationsProvider } from '../../providers/Notifications';
 import { withAuthProvider } from '../../providers/Auth';
@@ -138,6 +138,12 @@ class NotificationsPage extends React.Component {
 
   componentDidMount () {
     const isFirstTimeUser = !this.props.storageApi.getUserItem('hasOnboarded');
+
+    // Harsh but fair.
+    if (window.outerWidth < 1100) {
+      navigate(routes.REDESIGN_NOTIFICATIONS);
+      return;
+    }
 
     if (isFirstTimeUser) {
       this.setState({isFirstTimeUser: true});
