@@ -7,6 +7,7 @@ import {css, jsx, keyframes} from '@emotion/core';
 import {navigate} from "@reach/router"
 import {useSpring, useTransition, animated} from 'react-spring'
 import {LineChart, Line, XAxis, Tooltip} from 'recharts';
+import { ReactComponent as BlankCanvasSvg } from '../../../images/svg/blank.svg'
 import Logo from '../../../components/Logo';
 import LoadingIcon from '../../../components/LoadingIcon'
 import {routes} from '../../../constants';
@@ -30,6 +31,15 @@ const WIDTH_FOR_SMALL_SCREENS = '750px';
 // ========================================================================
 // START OF 'MOVE TO A UTILS FILE'
 // ========================================================================
+
+function stringOfError (errorText) {
+  switch (errorText) {
+    case 'Unauthorized':
+      return 'Your credentials have expired.';
+    default:
+      return errorText;
+  }
+}
 
 function getPRIssueIcon (type, _reasons) {
   switch (type) {
@@ -652,6 +662,20 @@ const LoadingNotificationRow = styled(NotificationRowHeader)`
 `;
 
 const NotificationBlock = styled('tbody')``;
+
+const ErrorContainer = styled('div')`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 48px;
+  h3 {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 0;
+    text-align: center;
+  }
+`;
 
 const AnimatedNotificationRow = animated(NotificationRow);
 const AnimatedNotificationsBlock = animated(NotificationBlock);
@@ -1702,7 +1726,11 @@ export default function Scene ({
                   <LoadingNotificationRow />
                 </NotificationBlock>
               ) : error ? (
-                <p>error</p>
+                <ErrorContainer>
+                  <BlankCanvasSvg height={136} width={224} />
+                  <h3>{'Something went wrong'}</h3>
+                  <p>{stringOfError(error.text)}</p>
+                </ErrorContainer>
               ) : (
                 <NotificationCollection
                   page={page}

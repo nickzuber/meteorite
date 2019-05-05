@@ -47,6 +47,13 @@ function processHeadersAndBodyJson (response) {
     });
   }
 
+  if (response.status >= 400) {
+    return Promise.reject({
+      text: response.statusText,
+      status: response.status
+    });
+  }
+
   return response.json().then(json => ({
     headers,
     json
@@ -197,6 +204,7 @@ class NotificationsProvider extends React.Component {
   }
 
   processNotificationsChunk = (nextPage, notificationsChunk) => {
+    console.warn('notificationsChunk', notificationsChunk)
     return new Promise((resolve, reject) => {
       let everythingUpdated = true;
 

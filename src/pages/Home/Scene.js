@@ -14,8 +14,6 @@ import iPhoneXMockupPng from '../../images/screenshots/iphone-x-mockup.png';
 import iPhoneScreenshotPng from '../../images/screenshots/iphone-x.png';
 import { ReactComponent as MentionSvg } from '../../images/svg/mention.svg';
 import { ReactComponent as GoodTeamSvg } from '../../images/svg/good-team.svg';
-import { ReactComponent as BloomingSvg } from '../../images/svg/blooming.svg'
-import { ReactComponent as ListSvg } from '../../images/svg/list.svg'
 import { ReactComponent as ProcessgSvg } from '../../images/svg/process.svg'
 import { ReactComponent as MobileSvg } from '../../images/svg/mobile.svg'
 
