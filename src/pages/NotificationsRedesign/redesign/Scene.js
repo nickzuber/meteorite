@@ -827,7 +827,7 @@ export default function Scene ({
                   <BlankCanvasSvg height={136} width={224} />
                   <h3>{'Something went wrong'}</h3>
                   <p>{stringOfError(error.text)}</p>
-                  <span onClick={() => onFetchNotifications()}>{'Try again'}</span>
+                  <span onClick={() => onFetchNotifications()}>{'Try loading again'}</span>
                 </ErrorContainer>
               ) : (
                 <NotificationCollection

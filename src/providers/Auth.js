@@ -6,7 +6,7 @@ const {Provider, Consumer} = React.createContext();
 
 class AuthProvider extends React.Component {
   state = {
-    token: this.props.cookiesApi.getCookie(OAUTH_TOKEN_COOKIE) || '3f46e58d019f461ce46705ecd465690b3d9a72a3'
+    token: this.props.cookiesApi.getCookie(OAUTH_TOKEN_COOKIE) || ''
   }
 
   setToken = token => {
