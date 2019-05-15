@@ -9,7 +9,9 @@ import Logo from '../../components/Logo';
 import ConfettiSection from '../../components/Confetti';
 
 import headerPng from '../../images/safari-header.png';
+import pwaHeaderPng from '../../images/screenshots/pwa-demo.png';
 import regularScreenshotPng from '../../images/traditional-screenshot.png';
+import scoreScreenshotPng from '../../images/screenshots/screenshot-score.png';
 import iPhoneXMockupPng from '../../images/screenshots/iphone-x-mockup.png';
 import iPhoneScreenshotPng from '../../images/screenshots/iphone-x.png';
 import { ReactComponent as MentionSvg } from '../../images/svg/mention.svg';
@@ -121,14 +123,39 @@ const SubHeader = styled(Header)`
   color: #b3b0a9;
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     width: 100%;
-    font-size: 24px;
+    font-size: 20px;
     line-height: 26px;
+  }
+`;
+
+const MainItemContainer = styled(Container)`
+  margin: 88px auto 32px;
+  align-items: flex-start;
+  flex-direction: column;
+  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+    margin-top: 0;
+  }
+`;
+
+const ItemWrapper = styled('div')`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  margin-bottom: 28px;
+  width: inherit;
+  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+    flex-direction: column;
+    flex-flow: column-reverse;
   }
 `;
 
 const ItemNumber = styled('span')`
   font-size: 11rem;
   font-weight: 500;
+  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+    display: none;
+  }
 `;
 
 const ItemContainer = styled('div')`
@@ -156,6 +183,11 @@ const ItemHeader = styled(Header)`
   margin: 0 0 12px;
   font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
   font-weight: 500;
+  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+    margin-top: 16px;
+    font-size: 42px;
+    line-height: 48px;
+  }
 `;
 
 const ItemSubHeader = styled(SubHeader)`
@@ -166,6 +198,12 @@ const HorizontalListItem = styled('div')`
   flex: 1;
   border-right: ${props => props.last ? '0px' : '1px'} solid rgba(214, 212, 209, 0.3);
   padding: 0 32px;
+  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+    border-right: none;
+    border-bottom: ${props => props.last ? '0px' : '1px'} solid rgba(214, 212, 209, 0.3);
+    padding-bottom: 32px;
+    margin-bottom: 32px;
+  }
 `;
 
 const Quote = styled('p')`
@@ -240,7 +278,6 @@ const DemoScreenshotHeader = styled('img')`
   background: #f7f6f3;
   width: 960px;
   max-width: 960px;
-  min-width: 580px;
   display: block;
   box-shadow: rgba(0, 0, 0, 0.15) 0px 10px 20px, rgb(245, 245, 245) 0px -1px 0px;
   border-top-left-radius: 4px;
@@ -250,7 +287,6 @@ const DemoScreenshotHeader = styled('img')`
   z-index: 3;
   @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
     width: 100%;
-    margin-left: 50%;
   }
 `;
 
@@ -272,24 +308,14 @@ const IPhoneScreenshotContainer = styled('img')`
   background: none;
   z-index: 5;
   @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
-    width: 25%;
-    left: 21%;
-    top: 0;
-    bottom: auto;
-    right: auto;
+    display: none;
   }
 `;
 
 const IPhoneScreenshot = styled(IPhoneScreenshotContainer)`
+  bottom: -48px;
   z-index: 4;
   transform: scale(0.88);
-  @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
-    width: 25%;
-    left: 21%;
-    top: -12px;
-    bottom: auto;
-    right: auto;
-  }
 `;
 
 const SmallText = styled('p')`
@@ -384,8 +410,8 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
               }
             }
           `}>
-            <RouterLink to={routes.HOME}>Desktop</RouterLink>
-            <RouterLink to={routes.HOME}>iOS & Android</RouterLink>
+            <a href="#learn-more">Desktop</a>
+            <a href="#apps">iOS & Android</a>
             <div css={css`
               border-right: 1px solid rgb(221, 221, 221);
               height: 14px;
@@ -453,6 +479,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
           <Header css={css`
             display: none;
             @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+              margin-top: -36px;
               display: block;
             }`}>
             {'Control'}<br />{'your GitHub notifications'}
@@ -479,9 +506,10 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
                 justify-content: flex-start;
                 align-items: center;
                 margin: 24px 0;
-                span {
+                a, span {
                   z-index: 2;
                   cursor: pointer;
+                  text-decoration: none;
                   user-select: none;
                   margin-right: 12px;
                   display: inline-flex;
@@ -512,7 +540,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
                 }
               `}>
                 <span onClick={() => navigate(routes.REDESIGN_NOTIFICATIONS)}>{'Let\'s get started'}</span>
-                <span css={css`
+                <a href="#learn-more" css={css`
                   background: none !important;
                   box-shadow: none !important;
                   color: #37352f !important;
@@ -529,7 +557,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
                 `}>
                   {'Learn more'}
                   <i className="fas fa-arrow-right"></i>
-                </span>
+                </a>
               </div>
               <div css={css`
               z-index: 2;
@@ -587,12 +615,24 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
           padding: 12px 0;
           flex-direction: column;
         `}>
-          <MentionSvg height={164} />
+          <MentionSvg height={164} css={css`
+            @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+              transform: scale(0.9);
+            }
+            @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+              transform: scale(0.7);
+            }
+          `} />
           <ItemHeader css={css`
             margin-top: 32px;
             font-size: 48px;
             line-height: 50px;
             text-align: center;
+            @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+              margin-top: 16px;
+              line-height: 46px;
+              font-size: 48px;
+            }
           `}>
             {'Hear what folks have to say'}
           </ItemHeader>
@@ -607,6 +647,9 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
             justify-content: space-between;
             align-items: center;
             margin-top: 32px;
+            @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+              flex-direction: column;
+            }
           `}>
             <HorizontalListItem>
               <Quote>{`So good! I love the importance sorting!`}</Quote>
@@ -642,22 +685,11 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
         </div>
       </Container>
 
-      <Container css={css`
-        margin: 88px auto 32px;
-        align-items: flex-start;
-        flex-direction: column;
-      `}>
-        <div css={css`
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          flex-direction: row;
-          margin-bottom: 28px;
-          width: inherit;
-        `}>
+      <MainItemContainer>
+        <ItemWrapper>
         <ItemNumber>{1}</ItemNumber>
         <ItemContainer>
-          <ItemHeader>
+          <ItemHeader id="learn-more">
             {'An assistant for your GitHub notifications'}
           </ItemHeader>
           <ItemSubHeader>
@@ -665,26 +697,16 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
           </ItemSubHeader>
         </ItemContainer>
         <ProcessgSvg height={164} width={224} />
-        </div>
+        </ItemWrapper>
 
         <div css={css`position: relative;`}>
           <DemoScreenshotHeader src={headerPng} />
+          <DemoScreenshot src={regularScreenshotPng} />
         </div>
-      </Container>
+      </MainItemContainer>
 
-      <Container css={css`
-        margin: 88px auto 32px;
-        align-items: flex-start;
-        flex-direction: column;
-      `}>
-        <div css={css`
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          flex-direction: row;
-          margin-bottom: 28px;
-          width: inherit;
-        `}>
+      <MainItemContainer>
+        <ItemWrapper>
         <ItemNumber>{2}</ItemNumber>
         <ItemContainer>
           <ItemHeader>
@@ -695,66 +717,67 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
           </ItemSubHeader>
         </ItemContainer>
         <GoodTeamSvg height={164} width={224} />
-        </div>
+        </ItemWrapper>
 
         <div css={css`position: relative;`}>
           <DemoScreenshotHeader src={headerPng} />
+          <DemoScreenshot src={scoreScreenshotPng} />
         </div>
-      </Container>
+      </MainItemContainer>
 
-      <Container css={css`
-        margin: 88px auto 32px;
-        align-items: flex-start;
-        flex-direction: column;
-      `}>
-        <div css={css`
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          flex-direction: row;
-          margin-bottom: 28px;
-          width: inherit;
-        `}>
+      <MainItemContainer>
+        <ItemWrapper>
         <ItemNumber>{3}</ItemNumber>
         <ItemContainer>
-          <ItemHeader>
+          <ItemHeader id="apps">
             {'Work anywhere and everywhere'}
           </ItemHeader>
           <ItemSubHeader>
-            {'You love accessibility and so does Meteorite — available on iOS, Android, web, and desktop'}
+            {'You love accessibility and so does Meteorite — available on iOS, Android, web, and desktop as an installable PWA'}
           </ItemSubHeader>
         </ItemContainer>
         <MobileSvg height={164} width={224} />
-        </div>
+        </ItemWrapper>
 
         <div css={css`position: relative;`}>
-          <DemoScreenshotHeader src={headerPng} />
+          <DemoScreenshotHeader src={pwaHeaderPng} />
+          <DemoScreenshot src={regularScreenshotPng} />
         </div>
-      </Container>
+      </MainItemContainer>
 
       <Container css={css`
-        margin: 88px auto 32px;
+        margin: 88px auto 0;
+        width: 100%;
+        max-width: 100%;
+        background: #f0ebe4;
+      `}>
+      <Container css={css`
         align-items: flex-start;
         flex-direction: column;
+        background: none;
       `}>
         <div css={css`
           width: 100%;
           display: flex;
           justify-content: flex-end;
+          flex-wrap: wrap;
           align-items: center;
           span {
             display: inline-block;
             font-size: 11px;
             color: #37352f52;
-            margin: 0 12px;
+            margin: 4px 12px;
             font-weight: 500;
+            @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+              margin-right: 12px !important;
+            }
           }
           a {
             display: inline-block;
             text-decoration: underline;
             font-size: 11px;
             color: #37352f52;
-            margin: 0 12px;
+            margin: 4px 12px;
             font-weight: 500;
             cursor: pointer;
             text-underline-position: under;
@@ -771,6 +794,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
           <a target="_blank" href="https://twitter.com/nick_zuber">Follow me on twitter</a>
           <span css={css`margin-right: 76px !important;`}>v{version}</span>
         </div>
+      </Container>
       </Container>
 
     </PageContainer>

@@ -392,7 +392,9 @@ export const InteractionMenu = withOptimizedTouchEvents(styled('div')`
     }
   }
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
-    left: -240px;
+    transform: scale(1.3);
+    left: -210px;
+    top: 110px;
   }
 `);
 
