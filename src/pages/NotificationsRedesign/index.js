@@ -12,7 +12,7 @@ import { Filters } from '../../constants/filters';
 import { Status } from '../../constants/status';
 import { Reasons, Badges } from '../../constants/reasons';
 import Scene from './Scene';
-import { getMessageFromReasons } from './redesign/Scene';
+import { getMessageFromReasons } from './redesign/utils';
 import issueIcon from '../../images/issue-bg.png';
 import prIcon from '../../images/pr-bg.png';
 import tabIcon from '../../images/iconCircle.png';

@@ -1,981 +1,78 @@
 /** @jsx jsx */
 
 import React from 'react';
-import moment from 'moment';
-import styled from '@emotion/styled';
-import {css, jsx, keyframes} from '@emotion/core';
-import {navigate} from "@reach/router"
-import {useSpring, useTransition, animated} from 'react-spring'
+import {animated} from 'react-spring'
+import {css, jsx} from '@emotion/core';
+import {useSpring} from 'react-spring'
 import {LineChart, Line, XAxis, Tooltip} from 'recharts';
-import { ReactComponent as BlankCanvasSvg } from '../../../images/svg/blank.svg'
+import {ReactComponent as BlankCanvasSvg} from '../../../images/svg/blank.svg'
 import Logo from '../../../components/Logo';
 import LoadingIcon from '../../../components/LoadingIcon'
-import {routes} from '../../../constants';
-import {Badges, Reasons} from '../../../constants/reasons';
-import {withOnEnter} from '../../../enhance';
 import {getFact} from '../../../utils/facts';
 import {Mode, Sort, View} from '../index';
+import {withOptimizedTouchEvents} from '../../../enhance';
+import {
+  stringOfError,
+  getPRIssueIcon,
+  getRelativeTime,
+  getMessageFromReasons,
+  iconsOfBadges,
+  createColorOfScore,
+  getPercentageDelta,
+  prettify,
+  titleOfMode,
+  subtitleOfMode
+} from './utils';
+import {
+  WHITE,
+  FOOTER_HEIGHT,
+  COLLAPSED_WIDTH,
+  WIDTH_FOR_MEDIUM_SCREENS,
+  WIDTH_FOR_SMALL_SCREENS,
+  Title,
+  Container,
+  Row,
+  MenuHeaderItem,
+  ContentHeaderItem,
+  MenuContainerItem,
+  ContentItem,
+  CardSection,
+  Card,
+  CardTitle,
+  CardSubTitle,
+  IconContainer,
+  ScoreDiff,
+  NotificationsSection,
+  TitleSection,
+  SubTitleSection,
+  PageSelection,
+  SearchField,
+  EnhancedSearchInput,
+  PageItemComponent,
+  InteractionSection,
+  InteractionMenu,
+  SortingItemComponent,
+  NotificationsTable,
+  NotificationRowHeader,
+  NotificationRow,
+  LoadingNotificationRow,
+  NotificationBlock,
+  ErrorContainer,
+  NotificationCell,
+  NotificationTitle,
+  NotificationByline,
+  IconLink,
+  Divider,
+  RepoBarContainer,
+  ProfileSection,
+  LinkText,
+  Bar,
+  optimized
+} from './ui';
+export const AnimatedNotificationRow = animated(NotificationRow);
 
 const hash = process.env.GIT_HASH ? `#${process.env.GIT_HASH}` : '';
 const version = require('../../../../package.json').version + hash;
-
-const BLUE = '#457cff';
-const WHITE = 'rgb(255, 254, 252)';
-const FOOTER_HEIGHT = '96px';
-const COLLAPSED_WIDTH = '72px';
-const EXPANDED_WIDTH = '286px';
-
-const WIDTH_FOR_MEDIUM_SCREENS = '1100px';
-const WIDTH_FOR_SMALL_SCREENS = '750px';
-
-// ========================================================================
-// START OF 'MOVE TO A UTILS FILE'
-// ========================================================================
-
-function stringOfError (errorText) {
-  switch (errorText) {
-    case 'Unauthorized':
-      return 'Your credentials have expired.';
-    default:
-      return errorText;
-  }
-}
-
-function getPRIssueIcon (type, _reasons) {
-  switch (type) {
-    case 'PullRequest':
-      return (
-        <NotificationIconWrapper css={css`background: #DBE7FF;`}>
-          <i className="fas fa-code-branch" css={css`
-            color: #4C84FF;
-            font-size: 18px;
-          `}></i>
-        </NotificationIconWrapper>
-      );
-    case 'Issue':
-      return (
-        <NotificationIconWrapper css={css`background: #47af4c24;`}>
-          <i className="fas fa-exclamation" css={css`
-            color: #47af4c;
-            font-size: 18px;
-          `}></i>
-        </NotificationIconWrapper>
-      );
-    default:
-      return null;
-  }
-}
-function getRelativeTime (time) {
-  const currentTime = moment();
-  const targetTime = moment(time);
-  const diffMinutes = currentTime.diff(targetTime, 'minutes');
-  if (diffMinutes < 1)
-    return 'Just now';
-  if (diffMinutes < 5)
-    return 'Few minutes ago';
-  if (diffMinutes < 60)
-    return diffMinutes + ' minutes ago';
-  if (diffMinutes < 60 * 24)
-    return Math.floor(diffMinutes / 60) + ' hours ago';
-
-  const diffDays = currentTime.diff(targetTime, 'days');
-  if (diffDays === 1)
-    return 'Yesterday';
-  if (diffDays <= 7)
-    return 'Last ' + targetTime.format('dddd');
-  // @TODO implement longer diffs
-  return 'Over a week ago';
-}
-
-export function getMessageFromReasons (reasons, type) {
-  switch (reasons[reasons.length - 1].reason) {
-    case Reasons.ASSIGN:
-      return 'You were assigned';
-    case Reasons.AUTHOR:
-      return 'There was activity on this thread you created';
-    case Reasons.COMMENT:
-      return 'Somebody left a comment';
-    case Reasons.MENTION:
-      return 'You were mentioned';
-    case Reasons.REVIEW_REQUESTED:
-      return 'Your review was requested';
-    case Reasons.SUBSCRIBED:
-      return 'There was an update and you\'re subscribed';
-    case Reasons.OTHER:
-    default:
-      return 'Something was updated';
-  }
-}
-
-function iconsOfBadges (badges) {
-  return badges.map(badge => {
-    switch (badge) {
-      case Badges.HOT:
-        return <i className="fas fa-fire" css={css`color: #e91e63`}></i>;
-      case Badges.COMMENTS:
-        return <i className="fas fa-user-friends" css={css`color: #4C84FF`}></i>;
-      case Badges.OLD:
-        return <i className="fas fa-stopwatch" css={css`color: #fcc419`}></i>;
-      default:
-        return null;
-    }
-  }).filter(Boolean);
-}
-
-function createColorOfScore (min, max) {
-  return function (score) {
-    const ratio = (score - min) / (max - min);
-    if (ratio > .9) return '#ec1461';
-    if (ratio > .8) return '#ec5314';
-    if (ratio > .7) return '#ec5314';
-    if (ratio > .6) return '#ec7b14';
-    if (ratio > .5) return '#ec7b14';
-    if (ratio > .4) return '#ec9914';
-    if (ratio > .3) return '#ec9914';
-    if (ratio > .2) return '#ecad14';
-    if (ratio > .1) return '#ecad14';
-    return '#ecc114';
-  }
-}
-
-function getPercentageDelta (n, o) {
-  if (n === o) {
-    return 0;
-  } else if (n > o) {
-    return (n - o) / o * 100;
-  } else {
-    return (o - n) / o * 100;
-  }
-}
-
-function prettify (n) {
-  if (Math.floor(n) === n) {
-    return n.toString();
-  } else {
-    return n.toFixed(1);
-  }
-}
-
-function titleOfMode (mode) {
-  switch (mode) {
-    case Mode.ALL:
-      return 'All Relevent Threads';
-    case Mode.HOT:
-      return 'Hot Threads';
-    case Mode.COMMENTS:
-      return 'Talkative Threads';
-    case Mode.OLD:
-      return 'Overdue Threads';
-    default:
-      return 'Updates';
-  }
-}
-
-function subtitleOfMode (mode) {
-  switch (mode) {
-    case Mode.ALL:
-      return 'See all of the notifications that matter to you';
-    case Mode.HOT:
-      return 'Some currently very active threads you care about';
-    case Mode.COMMENTS:
-      return 'Issues and pull requests that have a lot of comments';
-    case Mode.OLD:
-      return 'Older threads that need your review';
-    default:
-      return 'See all of the notifications that matter to you';
-  }
-}
-
-// ========================================================================
-// END OF 'MOVE TO A UTILS FILE'
-// ========================================================================
-
-const loadingKeyframe = keyframes`
-  100% {
-    transform: translateX(100%);
-  }
-`;
-
-const Title = styled('h1')`
-  margin: 0;
-  font-size: 32px;
-  line-height: 46px;
-  font-weight: 500;
-  letter-spacing: -1.05px;
-  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
-    font-size: 28px;
-  }
-`;
-
-const Container = styled('div')`
-  position: relative;
-  display: block;
-  background: ${WHITE};
-  height: calc(100% - ${COLLAPSED_WIDTH});
-  overflow-x: hidden;
-`;
-
-const Row = styled('div')`
-  position: relative;
-  display: block;
-  display: flex;
-  flex-direction: row;
-`;
-
-const Item = styled('div')`
-  position: relative;
-  display: inline-block;
-  transition: all 200ms ease;
-`;
-
-const MenuHeaderItem = styled(Item)`
-  height: ${COLLAPSED_WIDTH};
-  width: ${({expand}) => expand ? EXPANDED_WIDTH : COLLAPSED_WIDTH};
-  flex: ${({expand}) => expand ? `${EXPANDED_WIDTH} 0 0` : 1};
-  transition: all 150ms ease;
-  border-bottom: 1px solid #292d35;
-  border-right: 1px solid #292d35;
-  background: #2f343e;
-  z-index: 1;
-  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
-    display: none;
-  }
-`;
-
-const ContentHeaderItem = styled(Item)`
-  height: ${COLLAPSED_WIDTH};
-  width: calc(100% - ${COLLAPSED_WIDTH});
-  border-bottom: 1px solid #E5E6EB;
-  z-index: 1;
-  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
-    width: 100%;
-  }
-`;
-
-const MenuContainerItem = styled(Item)`
-  width: ${({expand}) => expand ? EXPANDED_WIDTH : COLLAPSED_WIDTH};
-  flex: ${({expand}) => expand ? `${EXPANDED_WIDTH} 0 0` : 1};
-  height: 100%;
-  transition: all 150ms ease;
-  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
-    display: none;
-  }
-`;
-
-// Faded blue: #F5F6FA
-// Faded gray: #fbfbfb
-const ContentItem = styled(Item)`
-  height: 100%;
-  min-height: calc(100vh - ${COLLAPSED_WIDTH} - ${FOOTER_HEIGHT});
-  width: calc(100% - ${COLLAPSED_WIDTH});
-  background: #f7f6f3;
-  border-left: 1px solid #292d35;
-  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
-    width: 100%;
-    border-left: 1px solid #f7f6f3;
-    border-right: 1px solid #f7f6f3;
-  }
-`;
-
-const CardSection = styled('div')`
-  float: left;
-  display: inline-block;
-  width: 330px;
-  padding: 0 16px;
-  @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
-    display: none;
-  }
-`;
-
-const Card = styled('div')`
-  position: relative;
-  width: 250px;
-  padding: 20px 24px;
-  min-height: 100px;
-  margin: 32px auto 0;
-  background: ${WHITE};
-  border: 1px solid #E5E6EB;
-  box-shadow: rgba(84, 70, 35, 0) 0px 2px 8px, rgba(84,70,35,0.15) 0px 1px 3px;
-  border-radius: 6px;
-`;
-
-const CardTitle = styled(Title)`
-  line-height: 1.5em;
-  font-size: 1.5em;
-`;
-
-const CardSubTitle = styled(CardTitle)`
-  font-size: 1.2em;
-  color: #9d9b97;
-`;
-
-const ScoreDiff = styled(CardTitle)`
-  position: absolute;
-  top: 30px;
-  right: 24px;
-  opacity: ${props => props.show ? '1' : '0'};
-  color: ${props => props.under ? '#bfc5d1' : BLUE};
-`;
-
-const IconContainer = styled('div')`
-  position: relative;
-  height: 72px;
-  display: flex;
-  align-items: center;
-  justify-content: ${props => props.open ? 'space-between' : 'center'};
-  padding: ${props => props.open ? '0 28px' : 'inherit'};
-  cursor: pointer;
-  outline: none;
-  user-select: none;
-  transition: all 200ms ease;
-  i {
-    transition: all 200ms ease;
-    color: ${props => props.selected ? props.primary : '#bfc5d15e'}
-  }
-  span {
-    transition: all 200ms ease;
-    display: ${props => props.open ? 'inline-block' : 'none'};
-    opacity: ${props => props.open ? 1 : 0};
-    color: ${props => props.selected ? WHITE : '#bfc5d15e'};
-    font-weight: 600;
-    margin: 12px;
-    font-size: 14px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
-  &:hover {
-    background: ${props => props.selected ? 'transparent' : 'rgba(233, 233, 233, .1)'};
-  }
-`;
-
-const NotificationsSection = styled('div')`
-  display: inline-block;
-  width: calc(100% - 362px - 68px);
-  padding-top: 36px;
-  padding-right: 68px;
-  padding-left: 0;
-  padding-bottom: 0;
-  height: auto;
-  @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
-    width: calc(100% - (2 * 16px));
-    padding-right: 16px;
-    padding-left: 16px;
-    padding-top: 16px;
-  }
-`;
-
-const TitleSection = styled('div')`
-  display: flex;
-  width: 100%;
-  padding: 0;
-  margin: 0;
-  height: auto;
-`;
-
-const SubTitleSection = styled('div')`
-  display: flex;
-  width: 100%;
-  padding: 0;
-  margin: 0;
-  height: auto;
-  h4 {
-    margin: 4px 0 8px;
-    font-weight: 500;
-    font-size: 16px;
-    color: #9d9b97;
-  }
-`;
-
-const UnorderedList = styled('ul')`
-  position: relative;
-  width: 100%;
-  margin-top: 0;
-  padding: 0;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  list-style: none;
-`;
-
-const PageSelection = styled(UnorderedList)`
-  border-bottom: 2px solid #e5e6eb;
-  flex-wrap: nowrap;
-`;
-
-const SearchField = styled('div')`
-  position: relative;
-  float: left;
-  text-align: left;
-  align-items: center;
-  height: 36px;
-  font-size: 13px;
-  display: inline-flex;
-  margin: 0 24px;
-  background: rgba(255, 255, 255, 0.125);
-  border-radius: 4px;
-  padding: 0px;
-  text-decoration: none;
-  transition: all 0.06s ease-in-out 0s;
-  border: 1px solid #bfc5d161;
-  &:hover {
-    border: 1px solid #bfc5d1aa;
-  }
-  &:focus-within {
-    border: 1px solid ${BLUE};
-    box-shadow: rgba(84,70,35,0.01) 0px 2px 19px 8px, rgba(84, 70, 35, 0.11) 0px 2px 12px;
-  }
-  i {
-    color: #bfc5d1;
-    height: 36px;
-    width: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-  }
-`;
-
-const SearchInput = styled('input')`
-  position: relative;
-  text-align: left;
-  transition: all 200ms ease;
-  height: 36px;
-  font-size: 13px;
-  display: inline-flex;
-  flex: 1 1 0%;
-  font-weight: 500;
-  margin: 0px auto;
-  background: none;
-  width: 184px;
-  padding: 0px;
-  text-decoration: none;
-  border-width: 0px;
-  border-style: initial;
-  border-color: initial;
-  border-image: initial;
-  outline: none;
-  opacity: 0.5;
-  &:focus {
-    opacity: 1;
-    color: rgb(55, 53, 47);
-    width: 300px;
-    @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
-      width: 184px;
-    }
-  }
-`;
-const EnhancedSearchInput = withOnEnter(SearchInput);
-
-const PageItemComponent = styled('li')`
-  font-size: 14px;
-  padding: 0 32px 0 8px;
-  width: 98px;
-  position: relative;
-  height: 100%;
-  line-height: 52px;
-  cursor: pointer;
-  outline: none;
-  user-select: none;
-  transition: all 200ms ease;
-  font-weight: ${props => props.selected ? 600 : 400};
-  &:hover {
-    background: rgba(233, 233, 233, .5);
-  }
-  &:active {
-    background: rgba(233, 233, 233, .75);
-  }
-  &:after {
-    transition: all 200ms ease;
-    content: "";
-    position: absolute;
-    width: 100%;
-    background: ${props => props.selected ? props.primary : 'none'};
-    right: 0;
-    bottom: -2px;
-    left: 0;
-    height: 3px;
-  }
-`;
-
-const InteractionSection = styled('ul')`
-  position: relative;
-  width: 100px;
-  height: 50px;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  list-style: none;
-  li {
-    width: 40px;
-    height: 40px;
-    align-items: center;
-    justify-content: center;
-    display: flex;
-    font-size: 16px;
-    cursor: pointer;
-    outline: none;
-    user-select: none;
-  }
-  @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
-    width: 50px;
-  }
-`;
-
-const InteractionMenu = styled('div')`
-  height: ${props => props.show ? 345 : 0}px;
-  opacity: ${props => props.show ? 1 : 0};
-  top: 32px;
-  left: 72px;
-  margin-left: 2px;
-  overflow: hidden;
-  cursor: initial;
-  position: absolute;
-  z-index: 2;
-  transition: all 200ms ease;
-  div {
-    margin: 0;
-    height: auto;
-    div {
-      margin: 0;
-      padding: 12px 16px;
-      cursor: pointer;
-      outline: none;
-      user-select: none;
-      transition: all 200ms ease;
-      &:hover {
-        background: rgba(233, 233, 233, .25);
-      }
-      h2 {
-        margin: 0 0 4px;
-        font-size: 15px;
-      }
-      p {
-        margin: 0;
-        font-size: 13px;
-        opacity: 0.7;
-      }
-    }
-  }
-  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
-    left: -240px;
-  }
-`;
-
-const SortingItemComponent = styled('div')`
-  display: flex;
-  height: auto;
-  margin-right: 12px;
-  cursor: pointer;
-  outline: none;
-  user-select: none;
-  span {
-    text-transform: uppercase;
-    font-size: 11px;
-    margin-right: 8px;
-    font-weight: 600;
-    color: ${props => props.selected ? '#8c93a5' : '#8c93a5a1'};
-  }
-  &:hover {
-    span {
-      color: #8c93a5dd;
-    }
-  }
-  span:active {
-    color: #8c93a5;
-  }
-  i {
-    font-size: 13px;
-    line-height: 15px;
-    color: ${props => props.selected ? '#8c93a5' : '#8c93a5a1'};
-  }
-`;
-
-const NotificationsTable = styled('table')`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-`;
-
-const NotificationRowHeader = styled('tr')`
-  position: relative;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  text-align: left;
-  margin: 0 auto;
-  padding: 8px 24px 8px;
-  box-sizing: border-box;
-`;
-
-const NotificationRow = styled(NotificationRowHeader)`
-  position: relative;
-  background: ${WHITE};
-  border-radius: 4px;
-  padding: 6px 18px;
-  font-size: 14px;
-  margin-bottom: 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  user-select: none;
-  transition: all 200ms ease;
-  &:hover {
-    box-shadow: rgba(84,70,35,0.01) 0px 2px 19px 8px, rgba(84, 70, 35, 0.11) 0px 2px 12px;
-  };
-  &:active {
-    background: rgb(252, 250, 248);
-  };
-  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
-    padding: 6px 2px;
-  }
-`;
-
-const LoadingNotificationRow = styled(NotificationRowHeader)`
-  position: relative;
-  background: ${WHITE};
-  height: 62px;
-  overflow: hidden;
-  border-radius: 4px;
-  padding: 6px 18px;
-  font-size: 14px;
-  margin-bottom: 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  user-select: none;
-  transition: all 200ms ease;
-  opacity: 0.75;
-  &:after {
-    background: linear-gradient(90deg, transparent, #f9f8f5, transparent);
-    display: block;
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    transform: translateX(-100%);
-    animation: ${loadingKeyframe} 1.25s infinite;
-  }
-`;
-
-const NotificationBlock = styled('tbody')``;
-
-const ErrorContainer = styled('div')`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding: 48px;
-  h3 {
-    font-size: 20px;
-    font-weight: 500;
-    margin-bottom: 0;
-    text-align: center;
-  }
-`;
-
-const AnimatedNotificationRow = animated(NotificationRow);
-const AnimatedNotificationsBlock = animated(NotificationBlock);
-
-const NotificationCell = styled('td')`
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex: ${props => {
-    if (props.width) {
-      return `0 0 ${props.width}px`;
-    } else {
-      return props.flex || 1;
-    }
-  }};
-`;
-
-const NotificationTitle = styled('span')``;
-const NotificationByline = styled('span')`
-  display: block;
-  margin-top: 4px;
-  font-size: 12px;
-  color: #8893a7cc;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-  i {
-    margin-right: 4px;
-    font-size: 10px;
-    color: #8893a7cc;
-  }
-  span {
-    margin-left: 12px;
-    font-size: 12px;
-    font-weight: 500;
-    color: #8893a7cc;
-    i {
-      margin-right: 4px;
-      font-size: 9px;
-      color: #8893a7cc;
-    }
-  }
-`;
-
-const ProfileContainer = styled('div')`
-  display: flex;
-  height: 100%;
-  width: 188px;
-  justify-content: space-between;
-  align-items: center;
-  border-left: 1px solid #edeef0;
-  padding: 0 22px;
-  position: absolute;
-  right: 0;
-  z-index: 3;
-  background: #fffefc;
-  transition: all 200ms ease;
-  user-select: none;
-  cursor: pointer;
-  i {
-    margin: 6px;
-    transition: all 200ms ease;
-    color: #bfc5d1a3
-  }
-  &:hover {
-    background: rgba(233, 233, 233, .25);
-    i {
-      color: #bfc5d1
-    }
-  }
-  @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
-    width: 48px;
-  }
-`;
-
-const ProfileName = styled('span')`
-  font-size: 14px;
-  font-weight: 500;
-  margin: 0 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-right: auto;
-  @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
-    display: none;
-  }
-`;
-
-const ProfilePicture = styled('img')`
-  height: 36px;
-  width: 36px;
-  border-radius: 4px;
-  background: silver;
-  opacity: ${props => props.src ? 1 : 0.25};
-`;
-
-function ProfileSection ({user, onLogout}) {
-  const [menuShow, setMenuShow] = React.useState(false);
-  React.useEffect(() => {
-    const body = window.document.querySelector('body');
-    const hideMenu = () => setMenuShow(false);
-    body.addEventListener('click', hideMenu);
-    return () => body.removeEventListener('click', hideMenu);
-  }, []);
-
-  return (
-    <>
-      <ProfileContainer onClick={() => setMenuShow(true)}>
-        {user && user.avatar_url ? (
-          <ProfilePicture src={user.avatar_url} />
-        ) : (
-          <i css={css`font-size: 20px;`} className="fas fa-cog"></i>
-        )}
-        <ProfileName>{user && user.name ? user.name : 'Settings'}</ProfileName>
-        <i className="fas fa-caret-down" css={css`
-          transform: ${menuShow ? 'rotate(180deg)' : 'rotate(0deg)'};
-        `}></i>
-      </ProfileContainer>
-      <InteractionMenu show={menuShow} css={css`
-        top: ${COLLAPSED_WIDTH};
-        height: ${menuShow ? 'auto' : '0px'};
-        border-bottom-right-radius: 4px;
-        border-bottom-left-radius: 4px;
-        right: 0;
-        left: auto;
-        background: ${WHITE};
-        border: 1px solid #edeef0;
-        width: ${22 + 187 + 22}px;
-        cursor: pointer;
-        outline: none;
-        user-select: none;
-        box-shadow: rgba(84,70,35,0) 0px 2px 8px, rgba(84,70,35,0.15) 0px 1px 3px;
-        transition: all 200ms ease;
-        @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
-          left: auto;
-        }
-        div {
-          margin: 0;
-          padding: 12px 16px;
-          cursor: pointer;
-          outline: none;
-          user-select: none;
-          transition: all 200ms ease;
-          &:hover {
-            background: rgba(233, 233, 233, .25);
-          }
-        }
-        h2 {
-          margin: 0 0 4px;
-          font-size: 15px;
-        }
-        p {
-          margin: 0;
-          font-size: 13px;
-          opacity: 0.7;
-        }
-      `}>
-        <div onClick={event => {
-          event.stopPropagation();
-          navigate(routes.HOME);
-          setMenuShow(false);
-        }}>
-          <h2>Go home</h2>
-          <p>Head over back to the home page</p>
-        </div>
-        <div onClick={event => {
-          event.stopPropagation();
-          navigate(routes.NOTIFICATIONS);
-          setMenuShow(false);
-        }}>
-          <h2>Use old design</h2>
-          <p>Switch back to the original Meteorite design</p>
-        </div>
-        <div onClick={event => {
-          event.stopPropagation();
-          onLogout();
-          setMenuShow(false);
-        }}>
-          <h2>Sign out</h2>
-          <p>Log off your account and return to home page</p>
-        </div>
-      </InteractionMenu>
-    </>
-  );
-}
-
-const NotificationIconWrapper = styled('div')`
-  width: 48px;
-  height: 48px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 100%;
-  transform: scale(.65);
-`;
-
-const IconLink = styled('span')`
-  position: relative;
-  cursor: ${props => props.disabled ? 'default' : 'pointer'};
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1;
-  user-select: none;
-  height: 40px;
-  width: 40px;
-  transition: all 150ms ease;
-  i {
-    color: ${props => props.disabled ? '#bfc5d1' : 'inherit'};
-  }
-  &:before {
-    content: "";
-    transition: all 150ms ease;
-    background: #BFC5D122;
-    border-radius: 100%;
-    display: block;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    transform: scale(0);
-  }
-  &:hover:before {
-    transform: ${props => props.disabled ? 'scale(0)' : 'scale(1)'};
-  }
-  &:active:before {
-    background: ${props => props.disabled ? '#BFC5D122' : '#BFC5D144'};;
-  }
-`;
-
-const Divider = styled('div')`
-  position: relative;
-  display: inline-block;
-  background: #e5e6eb;
-  height: 28px;
-  width: 2px;
-  margin: 0 8px;
-  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
-    display: none;
-  }
-`;
-
-const RepoBarContainer = styled('div')`
-  position: relative;
-  width: 100%;
-  margin-bottom: 28px;
-  p {
-    font-size: 15px;
-    font-weight: 600;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    width: 100%;
-    display: block;
-    margin: 8px 0 0;
-  }
-  span {
-    margin: 2px 0 8px;
-    font-size: 13px;
-    font-weight: 500;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    width: 100%;
-    display: block;
-    color: #bfc5d1;
-  }
-`;
-
-const LinkText = styled('div')`
-  text-decoration: underline;
-  font-size: 12px;
-  color: #37352f59;
-  font-weight: 500;
-  text-underline-position: under;
-  cursor: pointer;
-  transition: all 200ms ease;
-  &:hover {
-    color: #37352faa;
-  }
-`;
-
-const Bar = styled('div')`
-  position: relative;
-  width: 100%;
-  height: 5px;
-  border-radius: 8px;
-  background: #e5e7ea;
-  &:after {
-    content: "";
-    position: absolute;
-    width: ${props => Math.max(Math.min((props.value * 100), 100), 0)}%;
-    border-radius: 8px;
-    background: ${props => props.color};
-    left: 0;
-    top: 0;
-    bottom: 0;
-  }
-`;
 
 function PageItem ({children, onChange, ...props}) {
   return (
@@ -1431,7 +528,7 @@ export default function Scene ({
             <TitleSection>
               <Title>{titleOfMode(mode)}</Title>
               <InteractionSection>
-                <li
+                <optimized.li
                   css={css`
                     @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
                       display: none !important;
@@ -1459,22 +556,22 @@ export default function Scene ({
                         <i className="fas fa-bell-slash"></i>
                     )}
                   </IconLink>
-                </li>
-                <li onClick={() => setDropdownOpen(true)}>
+                </optimized.li>
+                <optimized.li onClick={() => setDropdownOpen(true)}>
                   <IconLink>
                     <i className="fas fa-ellipsis-v"></i>
                   </IconLink>
                   <InteractionMenu show={dropdownOpen}>
                     <Card css={css`padding: 0;`}>
-                      <div onClick={event => {
+                      <optimized.div onClick={event => {
                         event.stopPropagation();
                         onFetchNotifications();
                         setDropdownOpen(false);
                       }}>
                         <h2>Reload notifications</h2>
                         <p>Manually fetch new notifications instead of waiting for the sync</p>
-                      </div>
-                      <div onClick={event => {
+                      </optimized.div>
+                      <optimized.div onClick={event => {
                         event.stopPropagation();
                         const response = window.confirm('Are you sure you want to mark all your notifications as read?');
                         void (response && onMarkAllAsStaged());
@@ -1482,8 +579,8 @@ export default function Scene ({
                       }}>
                         <h2>Mark all as read</h2>
                         <p>Move all your unread notifications to the read tab</p>
-                      </div>
-                      <div onClick={event => {
+                      </optimized.div>
+                      <optimized.div onClick={event => {
                         event.stopPropagation();
                         const response = window.confirm('Are you sure you want to clear the cache?');
                         void (response && onClearCache());
@@ -1491,8 +588,8 @@ export default function Scene ({
                       }}>
                         <h2>Empty cache</h2>
                         <p>Clear all the notifications that are being tracked in your local storage</p>
-                      </div>
-                      <div onClick={event => {
+                      </optimized.div>
+                      <optimized.div onClick={event => {
                         event.stopPropagation();
                         switch(notificationsPermission) {
                           case 'granted':
@@ -1513,10 +610,10 @@ export default function Scene ({
                             : 'Receive web notifications whenever you get a new update'
                           }
                         </p>
-                      </div>
+                      </optimized.div>
                     </Card>
                   </InteractionMenu>
-                </li>
+                </optimized.li>
               </InteractionSection>
             </TitleSection>
             <SubTitleSection>
@@ -1730,6 +827,7 @@ export default function Scene ({
                   <BlankCanvasSvg height={136} width={224} />
                   <h3>{'Something went wrong'}</h3>
                   <p>{stringOfError(error.text)}</p>
+                  <span onClick={() => onFetchNotifications()}>{'Try again'}</span>
                 </ErrorContainer>
               ) : (
                 <NotificationCollection
@@ -1805,11 +903,8 @@ function NotificationCollection ({
   markAsUnread
 }) {
   const props = useSpring({
-    from: {opacity: 0},
-    to: {opacity: 1},
-    config: {
-      duration: 200,
-    }
+    opacity: 1,
+    from: { opacity: 0 },
   });
 
   if (notifications.length === 0) {
@@ -1839,7 +934,7 @@ function NotificationCollection ({
   }
 
   return (
-    <AnimatedNotificationsBlock style={props} page={page}>
+    <animated.tbody style={props} page={page}>
       {notifications.map((item, xid) => (
         <AnimatedNotificationRow key={notifications.id || xid}>
           {/* Type */}
@@ -1914,7 +1009,7 @@ function NotificationCollection ({
           </NotificationCell>
         </AnimatedNotificationRow>
       ))}
-    </AnimatedNotificationsBlock>
+    </animated.tbody>
   );
 }
 
