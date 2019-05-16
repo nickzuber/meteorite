@@ -115,5 +115,5 @@ function transformEvents (props) {
 }
 
 export const withOptimizedTouchEvents = BaseComponent => props => (
-  <BaseComponent {...transformEvents(props)} />
+  <BaseComponent {...props} />
 );

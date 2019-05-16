@@ -352,7 +352,7 @@ export default function Scene ({
     const body = window.document.querySelector('body');
     const hideDropdownMenu = () => setDropdownOpen(false);
     // For mobile `touchend`
-    const eventType = isMobile ? 'touchend' : 'click';
+    const eventType = 'click'; // isMobile ? 'touchend' : 'click';
     body.addEventListener(eventType, hideDropdownMenu);
     return () => body.removeEventListener(eventType, hideDropdownMenu);
   }, []);
@@ -558,8 +558,8 @@ export default function Scene ({
                     )}
                   </IconLink>
                 </optimized.li>
-                <optimized.li onClick={() => setDropdownOpen(true)}>
-                  <IconLink>
+                <optimized.li>
+                  <IconLink onClick={() => setDropdownOpen(true)}>
                     <i className="fas fa-ellipsis-v"></i>
                   </IconLink>
                   <InteractionMenu show={dropdownOpen}>
@@ -953,8 +953,7 @@ function NotificationCollection ({
               font-weight: 500;
           `}>
             <NotificationTitle css={css`
-              display: flex;
-              align-items: center;
+              display: block;
               i {
                 font-size: 10px;
                 margin-right: 6px;

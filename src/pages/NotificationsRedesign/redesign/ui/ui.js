@@ -393,9 +393,9 @@ export const InteractionMenu = withOptimizedTouchEvents(styled('div')`
     }
   }
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
-    transform: scale(1.3);
-    left: -210px;
-    top: 110px;
+    transform: scale(1.15);
+    left: -178px;
+    top: 24px;
   }
 `);
 
@@ -534,7 +534,12 @@ export const NotificationCell = withOptimizedTouchEvents(styled('td')`
   }};
 `);
 
-export const NotificationTitle = withOptimizedTouchEvents(styled('span')``);
+export const NotificationTitle = withOptimizedTouchEvents(styled('span')`
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`);
 export const NotificationByline = withOptimizedTouchEvents(styled('span')`
   display: block;
   margin-top: 4px;
@@ -618,7 +623,7 @@ export function ProfileSection ({user, onLogout}) {
   React.useEffect(() => {
     const body = window.document.querySelector('body');
     const hideMenu = () => setMenuShow(false);
-    const eventType = isMobile ? 'touchend' : 'click';
+    const eventType = 'click'; // isMobile ? 'touchend' : 'click';
     body.addEventListener(eventType, hideMenu);
     return () => body.removeEventListener(eventType, hideMenu);
   }, []);
@@ -644,13 +649,13 @@ export function ProfileSection ({user, onLogout}) {
         right: 0;
         left: auto;
         background: ${WHITE};
-        border: 1px solid #edeef0;
+        border: ${menuShow ? '1px' : '0px'} solid #edeef0;
         width: ${22 + 187 + 22}px;
         cursor: pointer;
         outline: none;
         user-select: none;
         box-shadow: rgba(84,70,35,0) 0px 2px 8px, rgba(84,70,35,0.15) 0px 1px 3px;
-        transition: all 200ms ease;
+        transition: height 200ms ease, opacity 200ms ease;
         @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
           left: auto;
         }
@@ -673,6 +678,12 @@ export function ProfileSection ({user, onLogout}) {
           margin: 0;
           font-size: 13px;
           opacity: 0.7;
+        }
+        @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+          transform: scale(1);
+          right: 0;
+          left: auto;
+          top: ${COLLAPSED_WIDTH};
         }
       `}>
         <optimized.div onClick={event => {
