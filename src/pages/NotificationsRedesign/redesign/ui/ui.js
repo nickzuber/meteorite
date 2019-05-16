@@ -3,6 +3,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import {css, jsx, keyframes} from '@emotion/core';
+import {isMobile} from 'react-device-detect';
 import {navigate} from "@reach/router"
 import {routes} from '../../../../constants';
 import {withOnEnter, withOptimizedTouchEvents} from '../../../../enhance';
@@ -176,7 +177,7 @@ export const IconContainer = withOptimizedTouchEvents(styled('div')`
     overflow: hidden;
   }
   &:hover {
-    background: ${props => props.selected ? 'transparent' : 'rgba(233, 233, 233, .1)'};
+    background: ${props => props.selected ? 'rgba(255, 255, 255, 0)' : 'rgba(233, 233, 233, .1)'};
   }
 `);
 
@@ -481,7 +482,7 @@ export const LoadingNotificationRow = withOptimizedTouchEvents(styled(Notificati
   transition: all 200ms ease;
   opacity: 0.75;
   &:after {
-    background: linear-gradient(90deg, transparent, #f9f8f5, transparent);
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0), #f9f8f5, rgba(255, 255, 255, 0));
     display: block;
     content: "";
     position: absolute;
@@ -617,8 +618,9 @@ export function ProfileSection ({user, onLogout}) {
   React.useEffect(() => {
     const body = window.document.querySelector('body');
     const hideMenu = () => setMenuShow(false);
-    body.addEventListener('click', hideMenu);
-    return () => body.removeEventListener('click', hideMenu);
+    const eventType = isMobile ? 'touchend' : 'click';
+    body.addEventListener(eventType, hideMenu);
+    return () => body.removeEventListener(eventType, hideMenu);
   }, []);
 
   return (
@@ -673,30 +675,30 @@ export function ProfileSection ({user, onLogout}) {
           opacity: 0.7;
         }
       `}>
-        <div onClick={event => {
+        <optimized.div onClick={event => {
           event.stopPropagation();
           navigate(routes.HOME);
           setMenuShow(false);
         }}>
           <h2>Go home</h2>
           <p>Head over back to the home page</p>
-        </div>
-        <div onClick={event => {
+        </optimized.div>
+        <optimized.div onClick={event => {
           event.stopPropagation();
           navigate(routes.NOTIFICATIONS);
           setMenuShow(false);
         }}>
           <h2>Use old design</h2>
           <p>Switch back to the original Meteorite design</p>
-        </div>
-        <div onClick={event => {
+        </optimized.div>
+        <optimized.div onClick={event => {
           event.stopPropagation();
           onLogout();
           setMenuShow(false);
         }}>
           <h2>Sign out</h2>
           <p>Log off your account and return to home page</p>
-        </div>
+        </optimized.div>
       </InteractionMenu>
     </>
   );

@@ -100,7 +100,7 @@ function transformEventsForMobile (props) {
   return Object.keys(props).reduce((aux, prop) => {
     let propT = prop;
     switch (prop) {
-      case 'onClick': propT = 'onTouchStart'; break;
+      case 'onClick': propT = 'onTouchEnd'; break;
       // ...
     }
     aux[propT] = props[prop];
@@ -110,7 +110,7 @@ function transformEventsForMobile (props) {
 
 function transformEvents (props) {
   return isMobile
-    ? transformEventsForMobile
+    ? transformEventsForMobile(props)
     : props;
 }
 

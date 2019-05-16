@@ -16,8 +16,10 @@ import iPhoneXMockupPng from '../../images/screenshots/iphone-x-mockup.png';
 import iPhoneScreenshotPng from '../../images/screenshots/iphone-x.png';
 import { ReactComponent as MentionSvg } from '../../images/svg/mention.svg';
 import { ReactComponent as GoodTeamSvg } from '../../images/svg/good-team.svg';
-import { ReactComponent as ProcessgSvg } from '../../images/svg/process.svg'
-import { ReactComponent as MobileSvg } from '../../images/svg/mobile.svg'
+import { ReactComponent as ProcessgSvg } from '../../images/svg/process.svg';
+import { ReactComponent as MobileSvg } from '../../images/svg/mobile.svg';
+
+import {InteractionMenu, Card} from '../NotificationsRedesign/redesign/ui';
 
 import RobinLogo from '../../images/logos/robin-logo.png';
 import ForwardLogo from '../../images/logos/forward-logo.png';
@@ -31,6 +33,12 @@ const version = require('../../../package.json').version + hash;
 
 const WIDTH_FOR_MEDIUM_SCREENS = '1100px';
 const WIDTH_FOR_SMALL_SCREENS = '800px';
+
+const HomeInteractionMenu = styled(InteractionMenu)`
+  position: fixed;
+  z-index: 10;
+  left: 58px !important;
+`;
 
 const PageContainer = styled('div')`
   overflow: hidden;
@@ -251,6 +259,7 @@ const IconLink = styled('span')`
   width: 40px;
   transition: all 150ms ease;
   i {
+    font-size: 16px;
     color: inherit;
   }
   &:before {
@@ -350,6 +359,15 @@ const SmallLink = styled('a')`
 
 export default function Scene ({loggedIn, onLogout, ...props}) {
   const [showBorder, setShowBorder] = React.useState(false);
+  const [menu, openMenu] = React.useState(false);
+
+  React.useEffect(() => {
+    const body = window.document.querySelector('body');
+    const hideMenu = () => openMenu(false);
+    // For mobile `touchend`
+    body.addEventListener('click', hideMenu);
+    return () => body.removeEventListener('click', hideMenu);
+  }, []);
 
   // React.useEffect(() => {
   //   const PAGE_OFFSET = 100;
@@ -445,12 +463,18 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
             }
           `}>
             {/* @TODO implement the menu */}
-            <IconLink>
+            <IconLink onClick={() => openMenu(true)}>
               <i className="fas fa-bars"></i>
             </IconLink>
           </div>
         </Container>
       </FixedContainer>
+
+      <HomeInteractionMenu show={menu}>
+        <Card css={css`padding: 0;`}>
+          njskdjnk
+        </Card>
+      </HomeInteractionMenu>
 
       <Container css={css`
         margin: 32px auto;

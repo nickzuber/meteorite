@@ -10,7 +10,7 @@ import Logo from '../../../components/Logo';
 import LoadingIcon from '../../../components/LoadingIcon'
 import {getFact} from '../../../utils/facts';
 import {Mode, Sort, View} from '../index';
-import {withOptimizedTouchEvents} from '../../../enhance';
+import {isMobile} from 'react-device-detect';
 import {
   stringOfError,
   getPRIssueIcon,
@@ -351,9 +351,10 @@ export default function Scene ({
     window.scrollTo(0, 0);
     const body = window.document.querySelector('body');
     const hideDropdownMenu = () => setDropdownOpen(false);
-    // For mobile `touchstart`
-    body.addEventListener('click', hideDropdownMenu);
-    return () => body.removeEventListener('click', hideDropdownMenu);
+    // For mobile `touchend`
+    const eventType = isMobile ? 'touchend' : 'click';
+    body.addEventListener(eventType, hideDropdownMenu);
+    return () => body.removeEventListener(eventType, hideDropdownMenu);
   }, []);
 
   // Updating the counts when new stats come in.
