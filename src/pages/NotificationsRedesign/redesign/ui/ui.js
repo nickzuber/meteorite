@@ -381,7 +381,8 @@ export const InteractionMenu = withOptimizedTouchEvents(styled('div')`
       &:hover {
         background: rgba(233, 233, 233, .25);
       }
-      h2 {
+      a, h2 {
+        text-decoration: none;
         margin: 0 0 4px;
         font-size: 15px;
       }

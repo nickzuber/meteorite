@@ -37,7 +37,8 @@ const WIDTH_FOR_SMALL_SCREENS = '800px';
 const HomeInteractionMenu = styled(InteractionMenu)`
   position: fixed;
   z-index: 10;
-  left: 58px !important;
+  left: 86px !important;
+  top: 86px !important;
 `;
 
 const PageContainer = styled('div')`
@@ -472,7 +473,32 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
 
       <HomeInteractionMenu show={menu}>
         <Card css={css`padding: 0;`}>
-          njskdjnk
+          <div>
+            <a href="#learn-more">Desktop</a>
+          </div>
+          <div>
+            <a href="#apps">iOS & Android</a>
+          </div>
+          {loggedIn ? (
+            <>
+              <div>
+                <RouterLink to={routes.NOTIFICATIONS}>Notifications</RouterLink>
+              </div>
+              <div>
+                <RouterLink to={routes.REDESIGN_NOTIFICATIONS}>
+                  Redesign
+                  <NewTag>new</NewTag>
+                </RouterLink>
+              </div>
+              <div>
+                <a href="#" onClick={onLogout}>Sign out</a>
+              </div>
+            </>
+          ) : (
+            <div>
+              <RouterLink to={routes.LOGIN}>Sign in</RouterLink>
+            </div>
+          )}
         </Card>
       </HomeInteractionMenu>
 
