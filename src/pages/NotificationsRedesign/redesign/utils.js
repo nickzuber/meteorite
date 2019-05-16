@@ -10,7 +10,7 @@ import {NotificationIconWrapper} from './ui/ui';
 export function stringOfError (errorText) {
   switch (errorText) {
     case 'Unauthorized':
-      return 'Your credentials have expired.';
+      return 'Your credentials have expired. You probably need to log out and back in to fix this.';
     default:
       return errorText || 'Check your internet connection';
   }
