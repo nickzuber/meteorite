@@ -7,7 +7,7 @@ import {Status} from '../constants/status';
 const BASE_GITHUB_API_URL = 'https://api.github.com';
 const PER_PAGE = 50;
 
-function cleanResponseUrl (url) {
+function transformUrlFromResponse (url) {
   return url
     .replace('api.github.com', 'github.com')
     .replace('/repos/', '/')
@@ -44,6 +44,13 @@ function processHeadersAndBodyJson (response) {
     return Promise.resolve({
       headers,
       json: null
+    });
+  }
+
+  if (response.status >= 400) {
+    return Promise.reject({
+      text: response.statusText,
+      status: response.status
     });
   }
 
@@ -86,7 +93,9 @@ class NotificationsProvider extends React.Component {
     }
     // Only update if our notifications prop changes.
     // All other props "changing" should NOT trigger a rerender.
-    return this.props.notifications !== nextProps.notifications;
+    return (
+      this.props.notifications !== nextProps.notifications
+    );
   }
 
   // The web notificaitons API doesn't let users revoke notifications permission
@@ -97,6 +106,28 @@ class NotificationsProvider extends React.Component {
     this.setState({notificationsPermission: permission});
     this.props.setUserItem('notificationsPermission', permission);
     this.forceUpdate();
+  }
+
+  requestUser = () => {
+    const headers = {
+      'Authorization': `token ${this.props.token}`,
+      'Content-Type': 'application/json',
+    };
+
+    // @TODO probably add timestamp
+    const cachedUser = this.props.getUserItem('user-model');
+    if (cachedUser && cachedUser.name) {
+      return Promise.resolve(cachedUser);
+    }
+
+    return fetch(`${BASE_GITHUB_API_URL}/user`, {
+      method: 'GET',
+      headers: headers
+    }).then(processHeadersAndBodyJson)
+      .then(({json}) => {
+        this.props.setUserItem('user-model', json);
+        return json;
+      });
   }
 
   requestPage = (page = 1, optimizePolling = true) => {
@@ -174,7 +205,6 @@ class NotificationsProvider extends React.Component {
 
   processNotificationsChunk = (nextPage, notificationsChunk) => {
     return new Promise((resolve, reject) => {
-      console.log('chunk', notificationsChunk);
       let everythingUpdated = true;
 
       if (notificationsChunk.length === 0) {
@@ -207,8 +237,6 @@ class NotificationsProvider extends React.Component {
         // We don't want to send notifications for the first time the page loads.
         this.setState({newChanges: processedNotifications});
       }
-
-      console.log('everythingUpdated', everythingUpdated);
 
       if (nextPage && everythingUpdated) {
         // Still need to fetch more updates.
@@ -374,8 +402,8 @@ class NotificationsProvider extends React.Component {
       : null;
 
     const url = commentNumber
-      ? cleanResponseUrl(n.subject.url) + '#issuecomment-' + commentNumber
-      : cleanResponseUrl(n.subject.url);
+      ? transformUrlFromResponse(n.subject.url) + '#issuecomment-' + commentNumber
+      : transformUrlFromResponse(n.subject.url);
 
     // Notification model
     const value = {
@@ -389,7 +417,7 @@ class NotificationsProvider extends React.Component {
       url: url,
       repository: n.repository.full_name,
       number: n.subject.url.split('/').pop(),
-      repositoryUrl: cleanResponseUrl(n.repository.url)
+      repositoryUrl: transformUrlFromResponse(n.repository.url)
     };
     this.props.setItemInStorage(n.id, value);
     return value;
@@ -398,6 +426,7 @@ class NotificationsProvider extends React.Component {
   render () {
     return this.props.children({
       ...this.state,
+      requestUser: this.requestUser,
       notifications: this.props.notifications,
       fetchNotifications: this.fetchNotifications,
       fetchNotificationsSync: this.requestFetchNotifications,

@@ -1,4 +1,8 @@
+/** @jsx jsx */
+
 import React from 'react';
+import {css, jsx} from '@emotion/core';
+import {isMobile} from 'react-device-detect';
 
 export const withOnEnter = WrappedComponent => ({onEnter, ...props}) => (
   <WrappedComponent
@@ -90,4 +94,26 @@ export const withTooltip = WrappedComponent => ({
         <WrappedComponent {...props} />
       )}
     </Tooltip>
+);
+
+function transformEventsForMobile (props) {
+  return Object.keys(props).reduce((aux, prop) => {
+    let propT = prop;
+    switch (prop) {
+      case 'onClick': propT = 'onTouchEnd'; break;
+      // ...
+    }
+    aux[propT] = props[prop];
+    return aux;
+  }, {});
+}
+
+function transformEvents (props) {
+  return isMobile
+    ? transformEventsForMobile(props)
+    : props;
+}
+
+export const withOptimizedTouchEvents = BaseComponent => props => (
+  <BaseComponent {...props} />
 );

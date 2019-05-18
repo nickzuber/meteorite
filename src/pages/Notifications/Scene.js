@@ -733,7 +733,7 @@ export default function Scene ({
 
   return (
     <div style={{marginTop: 60}}>
-      <NavigationContainer className="container-gradient">
+      <NavigationContainer className="container-gradient" style={{background: '#24292e'}}>
         <div style={{
           position: 'relative',
           textAlign: 'right',
@@ -772,6 +772,15 @@ export default function Scene ({
               height: 36,
               padding: '0 12px'
             }} to={routes.HOME}>home</Link>
+          <div style={{display: 'inline-block'}} className="button-container-alt">
+            <Link style={{
+              marginRight: 15,
+              background: 'none',
+              color: '#fff',
+              height: 36,
+              padding: '0 12px'
+            }} to={routes.REDESIGN_NOTIFICATIONS}>use new redesign</Link>
+          </div>
           </div>
           <div style={{display: 'inline-block'}}  className="button-container-alt">
             <a style={{

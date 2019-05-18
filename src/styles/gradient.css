@@ -2,7 +2,7 @@
 .container-gradient {
   /* background: radial-gradient(farthest-corner at -0% 100%, #7247ff 30%, #00ffbe 95%); */
   /* background: radial-gradient(farthest-corner at -0% 100%, #6772e5 30%, #00cfff 95%); */
-  background: radial-gradient(farthest-corner at -0% 100%, #24292e 30%, #213a54 95%);
+  background: radial-gradient(farthest-corner at -0% 100%, #457cff 30%, #3e71e7 95%);
   background-size: 400% 400%;
 
   -webkit-animation: gradientTransition 20s ease infinite;
@@ -18,7 +18,7 @@
   user-select: none;
   cursor: pointer;
   /* color: #6772e5; */
-  color: #24292e;
+  color: #457cff;
   background: #fff;
   border-radius: 4px;
   -webkit-align-items: center;
@@ -64,11 +64,11 @@
   position: relative;
   text-align: center;
   user-select: none;
-  box-shadow: 0 4px 6px rgba(50,50,93,.11), 0 1px 3px rgba(0,0,0,.08);
+  /* box-shadow: 0 4px 6px rgba(50,50,93,.11), 0 1px 3px rgba(0,0,0,.08); */
   margin: 0 auto;
   cursor: pointer;
   /* color: #6772e5; */
-  color: #24292e;
+  color: #457cff;
   background: #fff;
   border-radius: 4px;
   -webkit-align-items: center;
