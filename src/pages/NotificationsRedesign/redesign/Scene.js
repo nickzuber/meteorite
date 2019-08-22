@@ -6,6 +6,7 @@ import {css, jsx} from '@emotion/core';
 import {useSpring} from 'react-spring'
 import {LineChart, Line, XAxis, Tooltip} from 'recharts';
 import {ReactComponent as BlankCanvasSvg} from '../../../images/svg/blank.svg'
+import {ReactComponent as ReadingSvg} from '../../../images/svg/reading.svg'
 import Logo from '../../../components/Logo';
 import LoadingIcon from '../../../components/LoadingIcon'
 import {getFact} from '../../../utils/facts';
@@ -912,13 +913,17 @@ function NotificationCollection ({
     return (
       <div css={css`
         text-align: center;
-        margin: 128px auto 0;
-        font-size: 15px;
-        font-weight: 500;
-        color: #bfc5d1;
-        user-select: none;
         width: 60%;
+        margin: 128px auto 0;
+        p {
+          margin: 8px 0;
+          font-size: 15px;
+          font-weight: 500;
+          color: #99a1b1;
+          user-select: none;
+        }
         span {
+          width: 75%;
           text-align: center;
           margin: 8px auto 0;
           font-size: 12px;
@@ -928,7 +933,8 @@ function NotificationCollection ({
           user-select: none;
         }
       `}>
-        {'No new updates to show'}
+        <ReadingSvg height={136} width={224} />
+        <p>{'No new updates to show'}</p>
         <span>{`Fun fact: ${fact}`}</span>
       </div>
     );
