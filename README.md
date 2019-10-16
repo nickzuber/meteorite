@@ -1,7 +1,7 @@
 <div align="center">
   <img width="100" src=".github/logo.png" />
   <h1>meteorite</h1>
-  <h3>https://meteorite.surge.sh/</h3>
+  <h3>https://meteorite.dev</h3>
   <p>✨ Smarter GitHub notifications 🌱</p>
 </div>
 
