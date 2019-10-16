@@ -7,7 +7,7 @@
 
 ## Getting started
 
-Just visit https://meteorite.surge.sh, log in, and let the notifications roll in as they happen!
+Just visit https://meteorite.dev, log in, and let the notifications roll in as they happen!
 
 ## How it works
 
@@ -38,7 +38,7 @@ We're also able to categorize some types of notifications and put a badge on the
 
 ## About this project
 
- - This project is currently hosted on [Surge](https://surge.sh/)
+ - This project is currently hosted on [Zeit](https://zeit.co/)
  - Built from an ejected [CRA](https://github.com/facebook/create-react-app) app
  - Authenticates with the help of [Gatekeeper](https://github.com/prose/gatekeeper)
 
