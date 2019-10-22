@@ -1,6 +1,12 @@
 {
   "short_name": "Meteorite",
   "name": "Meteorite – Smarter GitHub Notifications",
+  "description": "Smarter GitHub notifications. Organize and score notifications based on importance and relevance.",
+  "start_url": "/login",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#2f343e",
+  "background_color": "#fffefc",
   "icons": [
     {
       "src": "new-app-icon-rounded.png",
@@ -42,9 +48,5 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ],
-  "start_url": "/login",
-  "display": "standalone",
-  "theme_color": "#2f343e",
-  "background_color": "#fffefc"
+  ]
 }
