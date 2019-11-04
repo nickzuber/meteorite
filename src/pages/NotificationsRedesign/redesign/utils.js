@@ -7,6 +7,8 @@ import {Badges, Reasons} from '../../../constants/reasons';
 import {Mode} from '../index';
 import {NotificationIconWrapper} from './ui/ui';
 
+const themeColor = '#27B768';
+
 export function stringOfError (errorText) {
   switch (errorText) {
     case 'Unauthorized':
@@ -20,18 +22,18 @@ export function getPRIssueIcon (type, _reasons) {
   switch (type) {
     case 'PullRequest':
       return (
-        <NotificationIconWrapper css={css`background: #DBE7FF;`}>
+        <NotificationIconWrapper css={css`background: ${themeColor}29;`}>
           <i className="fas fa-code-branch" css={css`
-            color: #4C84FF;
+            color: ${themeColor};
             font-size: 18px;
           `}></i>
         </NotificationIconWrapper>
       );
     case 'Issue':
       return (
-        <NotificationIconWrapper css={css`background: #47af4c24;`}>
+        <NotificationIconWrapper css={css`background: #DBE7FF;`}>
           <i className="fas fa-exclamation" css={css`
-            color: #47af4c;
+            color: #4C84FF;
             font-size: 18px;
           `}></i>
         </NotificationIconWrapper>
@@ -84,6 +86,7 @@ export function getMessageFromReasons (reasons, type) {
 
 export function iconsOfBadges (badges) {
   return badges.map(badge => {
+    return null;
     switch (badge) {
       case Badges.HOT:
         return <i className="fas fa-fire" css={css`color: #e91e63`}></i>;

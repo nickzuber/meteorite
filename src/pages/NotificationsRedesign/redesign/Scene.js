@@ -4,7 +4,7 @@ import React from 'react';
 import {animated} from 'react-spring'
 import {css, jsx} from '@emotion/core';
 import {useSpring} from 'react-spring'
-import {LineChart, Line, XAxis, Tooltip} from 'recharts';
+import {AreaChart, Area, XAxis, Tooltip} from 'recharts';
 import {ReactComponent as BlankCanvasSvg} from '../../../images/svg/blank.svg'
 import Logo from '../../../components/Logo';
 import LoadingIcon from '../../../components/LoadingIcon'
@@ -63,6 +63,7 @@ import {
   NotificationByline,
   IconLink,
   Divider,
+  Connector,
   RepoBarContainer,
   ProfileSection,
   LinkText,
@@ -70,6 +71,8 @@ import {
   optimized
 } from './ui';
 export const AnimatedNotificationRow = animated(NotificationRow);
+
+const themeColor = '#27B768'; // #4880ff
 
 const hash = process.env.GIT_HASH ? `#${process.env.GIT_HASH}` : '';
 const version = require('../../../../package.json').version + hash;
@@ -155,6 +158,7 @@ function RepoBarGroup ({reposReadCounts, highestRepoReadCount, colorOfRepoCount}
     <>
       {shownRepos.map(repo => (
         <RepoBar
+          key={repo}
           name={repo}
           value={reposReadCounts[repo]}
           max={highestRepoReadCount}
@@ -166,6 +170,7 @@ function RepoBarGroup ({reposReadCounts, highestRepoReadCount, colorOfRepoCount}
           <>
             {hiddenRepos.map(repo => (
               <RepoBar
+                key={repo}
                 name={repo}
                 value={reposReadCounts[repo]}
                 max={highestRepoReadCount}
@@ -189,7 +194,7 @@ function RepoBar ({name, value, max, colorOfValue}) {
       <span>{name.split('/')[0]}</span>
       <Bar
         title={value}
-        color={'#4880ffd1'}
+        color={themeColor + 'd1'}
         value={value / max}
       />
     </RepoBarContainer>
@@ -198,7 +203,7 @@ function RepoBar ({name, value, max, colorOfValue}) {
 
 function ReadCountGraph ({data, onHover, onExit}) {
   return (
-    <LineChart
+    <AreaChart
       width={250}
       height={200}
       data={data}
@@ -206,6 +211,16 @@ function ReadCountGraph ({data, onHover, onExit}) {
       onMouseMove={({activePayload}) => onHover(activePayload)}
       onMouseLeave={onExit}
     >
+      <defs>
+        <linearGradient id="curGradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="10%" stopColor={themeColor} stopOpacity={0.2}/>
+          <stop offset="90%" stopColor={themeColor} stopOpacity={0} />
+        </linearGradient>
+        <linearGradient id="prevGradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="5%" stopColor="BFC5D166" stopOpacity={0}/>
+          <stop offset="95%" stopColor="BFC5D166" stopOpacity={0}/>
+        </linearGradient>
+      </defs>
       <XAxis
         dataKey="name"
         interval={0}
@@ -255,25 +270,27 @@ function ReadCountGraph ({data, onHover, onExit}) {
           }
         }}
       />
-      <Line
+      <Area
         type="monotone"
         dataKey="prev"
         stroke="#BFC5D166"
+        fill="url(#prevGradient)"
         strokeWidth="2"
         animationDuration={0}
         dot={{ stroke: '#00000000', fill: '#00000000', r: 0 }}
         activeDot={{ stroke: '#BFC5D166', fill: '#BFC5D166', r: 2 }}
       />
-      <Line
+      <Area
         type="monotone"
         dataKey="cur"
-        stroke="#4880ff"
+        stroke={themeColor}
+        fill="url(#curGradient)"
         strokeWidth="2"
         animationDuration={0}
         dot={{ stroke: '#00000000', fill: '#00000000', r: 0 }}
-        activeDot={{ stroke: '#4880ff', fill: '#4880ff', r: 2 }}
+        activeDot={{ stroke: themeColor, fill: themeColor, r: 2 }}
       />
-    </LineChart>
+    </AreaChart>
   );
 }
 
@@ -328,9 +345,12 @@ export default function Scene ({
     prev: readTodayLastWeekCount
   });
 
-  readStatistics = readStatistics.map(n => parseInt(n, 10));
-  const lastWeekStats = readStatistics.slice(0, 7);
-  const thisWeekStats = readStatistics.slice(7);
+  readStatistics = readStatistics.map(n => parseInt(n, 10) || 0);
+  // const lastWeekStats = readStatistics.slice(0, 7);
+  // const thisWeekStats = readStatistics.slice(7);
+
+  const lastWeekStats = [0, 3, 7, 2, 4, 5, 0];
+  const thisWeekStats = [0, 2, 8, 4, 5, null, null];
 
   const percentageDeltaToday = getPercentageDelta(counts.cur, counts.prev);
   const highestRepoReadCount = Object.values(reposReadCounts).reduce((h, c) => Math.max(h, c), 0);
@@ -465,7 +485,7 @@ export default function Scene ({
           </MenuIconItem>
           <MenuIconItem
             mode={Mode.COMMENTS}
-            primary="#4C84FF"
+            primary={themeColor}
             selected={mode === Mode.COMMENTS}
             onChange={setMode}
             open={menuOpen}
@@ -624,7 +644,7 @@ export default function Scene ({
               <PageItem
                 view={View.UNREAD}
                 selected={view === View.UNREAD}
-                primary="#4C84FF"
+                primary={themeColor}
                 onChange={setView}
                 mark={hasUnread}
               >
@@ -632,7 +652,7 @@ export default function Scene ({
                 {unreadCount > 0 && (
                   <span css={css`
                     transition: all 200ms ease;
-                    background: ${view === View.UNREAD ? '#4880ff' : '#bfc5d1'};
+                    background: ${view === View.UNREAD ? themeColor : '#bfc5d1'};
                     color: ${WHITE};
                     font-size: 9px;
                     margin: 0 6px;
@@ -648,14 +668,14 @@ export default function Scene ({
               <PageItem
                 view={View.READ}
                 selected={view === View.READ}
-                primary="#4C84FF"
+                primary={themeColor}
                 onChange={setView}
               >
                 {'Read'}
                 {readCount > 0 && (
                   <span css={css`
                     transition: all 200ms ease;
-                    background: ${view === View.READ ? '#4880ff' : '#bfc5d1'};
+                    background: ${view === View.READ ? themeColor : '#bfc5d1'};
                     color: ${WHITE};
                     font-size: 9px;
                     margin: 0 6px;
@@ -671,14 +691,14 @@ export default function Scene ({
               <PageItem
                 view={View.ARCHIVED}
                 selected={view === View.ARCHIVED}
-                primary="#4C84FF"
+                primary={themeColor}
                 onChange={setView}
               >
                 {'Archived'}
                 {archivedCount > 0 && (
                   <span css={css`
                     transition: all 200ms ease;
-                    background: ${view === View.ARCHIVED ? '#4880ff' : '#bfc5d1'};
+                    background: ${view === View.ARCHIVED ? themeColor : '#bfc5d1'};
                     color: ${WHITE};
                     font-size: 9px;
                     margin: 0 6px;
@@ -832,6 +852,7 @@ export default function Scene ({
                 </ErrorContainer>
               ) : (
                 <NotificationCollection
+                  isLastPage={isLastPage}
                   page={page}
                   view={view}
                   fact={fact}
@@ -894,6 +915,7 @@ export default function Scene ({
 }
 
 function NotificationCollection ({
+  isLastPage,
   page,
   fact,
   view,
@@ -937,77 +959,89 @@ function NotificationCollection ({
   return (
     <animated.tbody style={props} page={page}>
       {notifications.map((item, xid) => (
-        <AnimatedNotificationRow key={notifications.id || xid}>
-          {/* Type */}
-          <NotificationCell width={60} css={css`@media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) { flex: 50px 0 0; }`}>
-            {getPRIssueIcon(item.type, item.reasons)}
-          </NotificationCell>
-          {/* Title */}
-          <NotificationCell
-            flex={4}
-            onClick={() => {
-              window.open(item.url);
-              markAsRead(item.id, item.repository);
-            }}
-            css={css`
-              font-weight: 500;
-          `}>
-            <NotificationTitle css={css`
-              display: block;
-              i {
-                font-size: 10px;
-                margin-right: 6px;
-              }
+        <div css={css`position: relative;`}>
+          <AnimatedNotificationRow key={notifications.id || xid}>
+            {/* Type */}
+            <NotificationCell width={60} css={css`@media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) { flex: 50px 0 0; }`}>
+              {getPRIssueIcon(item.type, item.reasons)}
+            </NotificationCell>
+            {/* Title */}
+            <NotificationCell
+              flex={4}
+              onClick={() => {
+                window.open(item.url);
+                markAsRead(item.id, item.repository);
+              }}
+              css={css`
+                font-weight: 500;
             `}>
-              {iconsOfBadges(item.badges)}
-              {item.name}
-            </NotificationTitle>
-            <NotificationByline>
-              {getMessageFromReasons(item.reasons, item.type)}
-              {` ${getRelativeTime(item.updated_at).toLowerCase()}`}
-            </NotificationByline>
-          </NotificationCell>
-          {/* Repository */}
-          <NotificationCell
-            flex={2}
-            onClick={() => window.open(item.repositoryUrl)}
-            css={css`
-              font-weight: 500;
-              color: #8994A6;
+              <NotificationTitle css={css`
+                display: block;
+                i {
+                  font-size: 10px;
+                  margin-right: 6px;
+                }
+              `}>
+                {iconsOfBadges(item.badges)}
+                {item.name}
+              </NotificationTitle>
+              <NotificationByline>
+                {getMessageFromReasons(item.reasons, item.type)}
+                {` ${getRelativeTime(item.updated_at).toLowerCase()}`}
+              </NotificationByline>
+            </NotificationCell>
+            {/* Repository */}
+            <NotificationCell
+              flex={2}
+              onClick={() => window.open(item.repositoryUrl)}
+              css={css`
+                font-weight: 500;
+                color: #8994A6;
+                @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+                  display: none;
+                }
+            `}>
+              {'@' + item.repository}
+            </NotificationCell>
+            {/* Score */}
+            <NotificationCell width={60} css={css`
+              font-weight: 600;
+              color: ${colorOfScore(item.score)};
+              font-size: 12px;
+              text-align: center;
+            `}>
+              {'+' + item.score}
+            </NotificationCell>
+            <NotificationCell width={80} css={css`
+              i {
+                padding: 13px 0;
+                text-align: center;
+                width: 40px;
+              }
               @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
                 display: none;
               }
-          `}>
-            {'@' + item.repository}
-          </NotificationCell>
-          {/* Score */}
-          <NotificationCell width={60} css={css`
-            font-weight: 600;
-            color: ${colorOfScore(item.score)};
-            font-size: 12px;
-            text-align: center;
-          `}>
-            {'+' + item.score}
-          </NotificationCell>
-          <NotificationCell width={80} css={css`
-            i {
-              padding: 13px 0;
-              text-align: center;
-              width: 40px;
-            }
-            @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
-              display: none;
-            }
-          `}>
-            <ActionItems
-              item={item}
-              view={view}
-              markAsUnread={markAsUnread}
-              markAsRead={markAsRead}
-              markAsArchived={markAsArchived}
-            />
-          </NotificationCell>
-        </AnimatedNotificationRow>
+            `}>
+              <ActionItems
+                item={item}
+                view={view}
+                markAsUnread={markAsUnread}
+                markAsRead={markAsRead}
+                markAsArchived={markAsArchived}
+              />
+            </NotificationCell>
+          </AnimatedNotificationRow>
+          {(xid === notifications.length - 1) ?
+            (!isLastPage ? (
+              <>
+                <Connector dot />
+                <Connector dot offsetX={8} opacity={0.8} />
+                <Connector dot offsetX={16} opacity={0.6} />
+              </>
+            ) : null
+            ) : <Connector />
+          }
+        </div>
       ))}
     </animated.tbody>
   );

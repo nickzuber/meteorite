@@ -5,7 +5,7 @@ import { withAuthProvider } from '../../providers/Auth';
 import { withNotificationsProvider } from '../../providers/Notifications';
 import { withCookiesProvider } from '../../providers/Cookies';
 import TokenHandler from './TokenHandler';
-import Scene from './Scene';
+import Scene from './Scene.new';
 import { routes } from '../../constants';
 
 class LoginPage extends React.Component {

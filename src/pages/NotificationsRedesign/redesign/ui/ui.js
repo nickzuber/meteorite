@@ -8,7 +8,7 @@ import {navigate} from "@reach/router"
 import {routes} from '../../../../constants';
 import {withOnEnter, withOptimizedTouchEvents} from '../../../../enhance';
 
-export const BLUE = '#457cff';
+export const BLUE = '#27B768';
 export const WHITE = 'rgb(255, 254, 252)';
 export const FOOTER_HEIGHT = '96px';
 export const COLLAPSED_WIDTH = '72px';
@@ -100,12 +100,13 @@ export const ContentItem = withOptimizedTouchEvents(styled(Item)`
   height: 100%;
   min-height: calc(100vh - ${COLLAPSED_WIDTH} - ${FOOTER_HEIGHT});
   width: calc(100% - ${COLLAPSED_WIDTH});
-  background: #f7f6f3;
+  background: ${WHITE};
   border-left: 1px solid #292d35;
+  padding-bottom: 12px;
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     width: 100%;
-    border-left: 1px solid #f7f6f3;
-    border-right: 1px solid #f7f6f3;
+    border-left: 1px solid ${WHITE};
+    border-right: 1px solid ${WHITE};
   }
 `);
 
@@ -232,7 +233,7 @@ export const UnorderedList = withOptimizedTouchEvents(styled('ul')`
 `);
 
 export const PageSelection = withOptimizedTouchEvents(styled(UnorderedList)`
-  border-bottom: 2px solid #e5e6eb;
+  border-bottom: 2px solid #bfc5d150;
   flex-wrap: nowrap;
 `);
 
@@ -448,7 +449,8 @@ export const NotificationRowHeader = withOptimizedTouchEvents(styled('tr')`
 
 export const NotificationRow = withOptimizedTouchEvents(styled(NotificationRowHeader)`
   position: relative;
-  background: ${WHITE};
+  background: none;
+  z-index: 1;
   border-radius: 4px;
   padding: 6px 18px;
   font-size: 14px;
@@ -458,10 +460,11 @@ export const NotificationRow = withOptimizedTouchEvents(styled(NotificationRowHe
   user-select: none;
   transition: all 200ms ease;
   &:hover {
-    box-shadow: rgba(84,70,35,0.01) 0px 2px 19px 8px, rgba(84, 70, 35, 0.11) 0px 2px 12px;
+    background: ${WHITE};
+    box-shadow: rgba(20, 20, 20, 0.01) 0px 2px 12px 6px, rgba(20, 20, 20, 0.11) 0px 2px 6px;
   };
   &:active {
-    background: rgb(252, 250, 248);
+    background: #f8f8f8;
   };
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     padding: 6px 2px;
@@ -470,7 +473,7 @@ export const NotificationRow = withOptimizedTouchEvents(styled(NotificationRowHe
 
 export const LoadingNotificationRow = withOptimizedTouchEvents(styled(NotificationRowHeader)`
   position: relative;
-  background: ${WHITE};
+  background: #bfc5d118;
   height: 62px;
   overflow: hidden;
   border-radius: 4px;
@@ -483,7 +486,7 @@ export const LoadingNotificationRow = withOptimizedTouchEvents(styled(Notificati
   transition: all 200ms ease;
   opacity: 0.75;
   &:after {
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0), #f9f8f5, rgba(255, 255, 255, 0));
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0), #bfc5d133, rgba(255, 255, 255, 0));
     display: block;
     content: "";
     position: absolute;
@@ -770,6 +773,23 @@ export const Divider = withOptimizedTouchEvents(styled('div')`
   margin: 0 8px;
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     display: none;
+  }
+`);
+
+export const Connector = withOptimizedTouchEvents(styled('div')`
+  position: absolute;
+  display: block;
+  background: #e5e6eb;
+  border-radius: 4px;
+  left: 34px;
+  top: ${p => (p.offsetX || 0) + 55}px;
+  height: ${p => p.dot ? 4 : 26}px;
+  opacity: ${p => p.opacity || 1};
+  z-index: 0;
+  width: 2px;
+  margin: 0 8px;
+  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+    left: 18px;
   }
 `);
 

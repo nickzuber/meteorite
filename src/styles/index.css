@@ -1,9 +1,9 @@
 @import url('https://rsms.me/inter/inter-ui.css');
 
-::selection {
+/* ::selection {
   color: rgb(255, 254, 252);
   background: #4880ff;
-}
+} */
 
 * {
   -webkit-tap-highlight-color:  rgba(255, 255, 255, 0);
@@ -21,13 +21,13 @@ html, body, * {
   font-size: 14px;
   /* color: #202124; */
   /* color: #19233C; */
-  color: rgb(55, 53, 47);
+  color: rgb(20, 19, 19);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: rgb(255, 254, 252);
+  background: rgb(255, 254, 253);
   margin: 0;
   padding: 0;
 }

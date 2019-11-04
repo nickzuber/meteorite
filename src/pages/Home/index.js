@@ -3,7 +3,7 @@ import { compose } from 'recompose';
 import { withAuthProvider } from '../../providers/Auth';
 import { withCookiesProvider } from '../../providers/Cookies';
 import { OAUTH_TOKEN_COOKIE } from '../../constants/cookies';
-import Scene from './Scene';
+import Scene from './Scene.new';
 
 class HomePage extends React.Component {
   onLogout = () => {
