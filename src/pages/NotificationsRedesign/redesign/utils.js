@@ -86,7 +86,6 @@ export function getMessageFromReasons (reasons, type) {
 
 export function iconsOfBadges (badges) {
   return badges.map(badge => {
-    return null;
     switch (badge) {
       case Badges.HOT:
         return <i className="fas fa-fire" css={css`color: #e91e63`}></i>;

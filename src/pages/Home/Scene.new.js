@@ -3,14 +3,24 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import {css, jsx} from '@emotion/core';
-import { useTransition, animated, config } from 'react-spring'
-import {navigate, Link as RouterLink} from '@reach/router';
+import {Link as RouterLink} from '@reach/router';
 import {routes} from '../../constants';
 import Logo from '../../components/Logo';
 
+import {ReactComponent as CloudOffSvg} from '../../images/svg/icons/cloud_off.svg'
+import {ReactComponent as NotificationsActiveSvg} from '../../images/svg/icons/notifications_active.svg'
+import {ReactComponent as PriorityHighSvg} from '../../images/svg/icons/priority_high.svg'
+import {ReactComponent as TuneSvg} from '../../images/svg/icons/tune.svg'
+import {ReactComponent as SpeedSvg} from '../../images/svg/icons/speed.svg'
+import {ReactComponent as GpsFixedSvg} from '../../images/svg/icons/gps_fixed.svg'
+import {ReactComponent as WbIridescentSvg} from '../../images/svg/icons/wb_iridescent.svg'
+import {ReactComponent as TimelineSvg} from '../../images/svg/icons/timeline.svg'
+
 import ItemPng from '../../images/screenshots/item.png';
-import ScreenshotPng from '../../images/screenshots/screenshot-bigger.png';
-import HighlightPng from '../../images/screenshots/highlight.png';
+import ItemTwoPng from '../../images/screenshots/item-2.png';
+import ScreenshotPng from '../../images/screenshots/new/dashboard.png';
+import ScoresPng from '../../images/screenshots/new/scores.png';
+import ReasonsPng from '../../images/screenshots/new/reasons.png';
 
 import RobinLogo from '../../images/logos/robin-logo.png';
 import ForwardLogo from '../../images/logos/forward-logo.png';
@@ -20,6 +30,7 @@ import '../../styles/gradient.css';
 import '../../styles/font.css';
 
 const themeColor = '#27B768';
+const ALT_BACKGROUND_COLOR = '#f6f2ed';
 
 const hash = process.env.GIT_HASH ? `#${process.env.GIT_HASH}` : '';
 const version = require('../../../package.json').version + hash;
@@ -44,7 +55,7 @@ const DefaultContainer = styled('div')`
 `;
 
 const Outer = styled('div')`
-  background: ${p => p.alt ? '#f6f2ed' : 'none'};
+  background: ${p => p.alt ? ALT_BACKGROUND_COLOR : 'none'};
 `;
 
 const Container = styled('div')`
@@ -84,8 +95,7 @@ const ButtonLink = styled('a')`
   font-size: 18px;
   line-height: 1.75;
   border-radius: 5px;
-  -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: all 0.15s ease-in-out;
 
   &:hover {
     background-color: #f4f4f4;
@@ -100,6 +110,7 @@ const ButtonLink = styled('a')`
 
 const Button = styled(RouterLink)`
   cursor: pointer;
+  position: relative;
   display: inline-block;
   text-decoration: none;
   font-weight: 400;
@@ -112,7 +123,9 @@ const Button = styled(RouterLink)`
   user-select: none;
   background-color: transparent;
   border: 0px solid transparent;
-  padding: 0.125rem 0.75rem;
+  margin: 0rem 0.25rem;
+  width: max-content;
+  padding: 0.125rem 1rem;
   font-size: 18px;
   line-height: 1.75;
   border-radius: 5px;
@@ -200,6 +213,8 @@ const HeroSubtitle = styled('h1')`
   font-size: 24px;
   line-height: 28px;
   margin: 0 auto 16px;
+  width: 80%;
+  margin-left: 0;
   font-family: medium-content-sans-serif-font, Inter UI, system-ui, sans-serif;
   font-weight: 500;
 `;
@@ -247,9 +262,19 @@ const HeroRight = styled(FlexItem)`
 const DotsBackground = styled('div')`
   position: absolute;
   height: 400px;
-  width: 70%;
+  width: 100%;
   margin-left: -60px;
-  background: radial-gradient(transparent 50%, #fffefd), url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQoU2NkIBIwEqmOgQ4KX715/x/mHDERQbiNGFZTXyGuUKC+rwHAcQwLu0IifQAAAABJRU5ErkJggg==) repeat;
+  background: radial-gradient(transparent 50%, #fffefd), \
+    url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQoU2NkIBIwEqmOgQ4KX715/x/mHDERQbiNGFZTXyGuUKC+rwHAcQwLu0IifQAAAABJRU5ErkJggg==) repeat;
+`;
+
+const FooterImageContainer = styled('div')`
+  position: relative;
+  height: 250px;
+  width: 100%;
+  text-align: center;
+  background: radial-gradient(transparent 50%, ${ALT_BACKGROUND_COLOR}), \
+    url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQoU2NkIBIwEqmOgQ4KX715/x/mHDERQbiNGFZTXyGuUKC+rwHAcQwLu0IifQAAAABJRU5ErkJggg==) repeat;
 `;
 
 const CompanyQuotesContainer = styled('div')`
@@ -258,6 +283,49 @@ const CompanyQuotesContainer = styled('div')`
   align-items: center;
   margin-top: 4rem;
 `;
+
+const HorizontalFlexContainer = styled('div')`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4rem;
+`;
+
+const FeatureItem = styled('div')(({color}) => `
+  flex: 1;
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4rem;
+  padding: 0 12px;
+
+  svg {
+    background: ${color}28;
+    fill: ${color};
+    border-radius: 100%;
+    padding: 12px;
+    height: 24px;
+    width: 24px;
+  }
+
+  h3 {
+    font-size: 24px;
+    line-height: 25px;
+    text-align: center;
+    margin: 18px auto 8px;
+    font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
+    font-weight: 500;
+  }
+
+  p {
+    font-size: 17px;
+    line-height: 22px;
+    margin: 0;
+    text-align: center;
+  }
+`);
 
 const HorizontalListItem = styled('div')`
   flex: 1;
@@ -298,8 +366,49 @@ const CompanyPerson = styled('div')`
   }
 `;
 
-const WorkflowToggle = (props) => {
+const GroupedLinks = styled(`div`)`
+  margin: 8px auto 0;
+
+  a {
+    text-decoration: none;
+    font-size: 17px;
+    position: relative;
+    display: inline-block;
+    padding: 0.75rem 2.25rem;
+    border: 1px solid #EAEDF3;
+    margin-left: -1px;
+    transition: all 75ms ease-in-out;
+  }
+
+  a:hover {
+    background-color: #EAEDF366;
+  }
+
+  a:active {
+    background-color: #EAEDF3;
+  }
+
+  a:first-of-type {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+  }
+
+  a:last-of-type {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
+`;
+
+const FooterSubtleText = styled('p')`
+  margin: 24px auto;
+  color: #6c757d;
+`;
+
+const WorkflowToggle = () => {
   const [state, setState] = React.useState(0);
+  const [imageOpacity, setImageOpacity] = React.useState(1);
+  const timer = React.useRef();
+  const easeTimingMs = 200;
 
   const items = [
     {
@@ -312,24 +421,17 @@ const WorkflowToggle = (props) => {
       id: 1,
       title: 'Highlight The Callouts',
       description: 'When things stand out, you shouldn\'t miss it. We mark notifications when there\'s something interesting going down.',
-      image: HighlightPng
+      image: ReasonsPng
     },
     {
       id: 2,
       title: 'Sort By Importance',
       description: 'Don\'t get lost at sea – the most important notifications stay at the top of the list.',
-      image: ScreenshotPng
+      image: ScoresPng
     },
   ];
 
   const activeItem = items[state];
-  const transitions = useTransition(items[state], item => item.id, {
-    from: { opacity: 0 },
-    enter: { opacity: 1 },
-    leave: { opacity: 0 },
-    config: { duration: 1000 }
-    // config: config.gentle
-  });
 
   return (
     <div css={css`
@@ -343,7 +445,15 @@ const WorkflowToggle = (props) => {
         {items.map((item, xid) => (
           <div
             key={xid}
-            onClick={() => setState(xid)}
+            onClick={() => {
+              if (xid === state) return;
+              clearTimeout(timer.current);
+              setImageOpacity(0);
+              timer.current = setTimeout(() => {
+                setState(xid);
+                setImageOpacity(1);
+              }, easeTimingMs);
+            }}
             css={css`
               border-radius: 8px;
               padding: 18px 20px;
@@ -374,31 +484,13 @@ const WorkflowToggle = (props) => {
         <img
           src={activeItem.image}
           css={css`
-            opacity: 0;
             max-width: 100%;
+            opacity: ${imageOpacity};
+            will-change: opacity;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.175);
+            transition: opacity ${easeTimingMs}ms linear;
+            border-radius: 4px;
           `} />
-        {transitions.map(({ _item, props, key }) => (
-          <animated.div
-            key={key}
-            css={css`
-              position: absolute;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%;
-              background-color: #fffefc;
-              background-size: contain;
-              background-repeat: no-repeat;
-              background-position: center;
-              background-position-x: 0;
-              background-position-y: 0;
-              will-change: opacity;
-              box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.175);
-              border-radius: 4px;
-            `}
-            style={{ ...props, backgroundImage: `url(${activeItem.image})` }}
-          />
-        ))}
       </div>
     </div>
   );
@@ -423,7 +515,17 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
           <LogoSection />
           {loggedIn ? (
             <LoginContainer>
-              <Button to={routes.REDESIGN_NOTIFICATIONS}>{'Notifications'}</Button>
+              <Button to={routes.REDESIGN_NOTIFICATIONS} css={css`
+                &::after {
+                  content: "";
+                  position: absolute;
+                  background: #E91E63;
+                  top: 6px;
+                  right: 6px;
+                  height: 8px;
+                  width: 8px;
+                  border-radius: 100%;
+                }`}>{'Notifications'}</Button>
               <ButtonLink href="#" onClick={onLogout}>{'Logout'}</ButtonLink>
             </LoginContainer>
           ) : (
@@ -438,8 +540,10 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
       <Container>
         <HeroLeft>
           <HeroTitle>{'Manage your notifications.'}</HeroTitle>
-          <HeroSubtitle>{'Prioritize the tasks that keep you and your team most\
-                          productive by organizing your notifications'}</HeroSubtitle>
+          {/* <HeroSubtitle>{'Prioritize the tasks that keep you and your team most\
+                          productive by organizing your notifications'}</HeroSubtitle> */}
+          <HeroSubtitle>{'Meteorite helps organize, filter, and prioritize your\
+                          GitHub notifications to make your life easier'}</HeroSubtitle>
           <FlexBreak />
           <HeroButton to={routes.LOGIN}>{'Login / Sign up'}</HeroButton>
           <ProductHuntButton />
@@ -450,7 +554,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
             scale={baseItemOffset.scale + 0.8}
             left={baseItemOffset.left + 8}
             top={25}
-            src={ItemPng} />
+            src={ItemTwoPng} />
           <ItemImage
             deg={0}
             scale={baseItemOffset.scale + 0.95}
@@ -499,7 +603,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
         </CompanyQuotesContainer>
       </Container>
 
-      {/* Explainer */}
+      {/* Lifecycle */}
       <Outer alt>
         <Container column>
           <FlexBreak height={60} />
@@ -507,9 +611,106 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
           <Subtitle>{'GitHub notifications can actually be your friend – with a little bit of discipline.\
                       All we need to do is filter out the noise & organize things in a way that makes sense.'}</Subtitle>
           <WorkflowToggle />
-          <FlexBreak height={60} />
+          <FlexBreak height={100} />
+          <Title css={css`font-size: 32px; line-height: 38px; margin-bottom: 24px;`}>{'Start using Meteorite absolutely free'}</Title>
+          <HeroButton to={routes.LOGIN} css={css`margin: 0 auto;`}>{'Login / Sign up'}</HeroButton>
+          <FlexBreak height={80} />
         </Container>
       </Outer>
+
+      {/* Features */}
+      <Container column>
+        <FlexBreak height={20} />
+        <Title>{'Features built for getting things done.'}</Title>
+        <Subtitle>{'All of the features of Meteorite are specifically designed'}<br />
+                  {'for optimizing your workday'}</Subtitle>
+        <HorizontalFlexContainer>
+          <FeatureItem color={'#9C27B0'}>
+            <CloudOffSvg />
+            <h3>{'Serverless'}</h3>
+            <p>{'Any notification scoring and storing is done completely offline.'}</p>
+          </FeatureItem>
+          <FeatureItem color={'#ffc915'}>
+            <NotificationsActiveSvg />
+            <h3>{'Desktop Notifications'}</h3>
+            <p>{'Get notified when we do – ability to turn on desktop notifications.'}</p>
+          </FeatureItem>
+          <FeatureItem color={'#27B768'}>
+            <PriorityHighSvg />
+            <h3>{'Auto Sorting'}</h3>
+            <p>{'Keep your most important notifications at the top of the list.'}</p>
+          </FeatureItem>
+          <FeatureItem color={'#00A0F5'}>
+            <TuneSvg />
+            <h3>{'Filter Noise'}</h3>
+            <p>{'Any notifications that don\'t directly involve you are hidden.'}</p>
+          </FeatureItem>
+          <FlexBreak />
+          <FeatureItem color={'#EE3F46'}>
+            <SpeedSvg />
+            <h3>{'Dead Simple'}</h3>
+            <p>{'No integrations – just log in and start working.'}</p>
+          </FeatureItem>
+          <FeatureItem color={'#10293c'}>
+            <GpsFixedSvg />
+            <h3>{'Live Updates'}</h3>
+            <p>{'All of your notifications are processed in real time.'}</p>
+          </FeatureItem>
+          <FeatureItem color={'#fd9446'}>
+            <WbIridescentSvg />
+            <h3>{'Reasoning'}</h3>
+            <p>{'We\ll also tell you why you\'re getting each notification.'}</p>
+          </FeatureItem>
+          <FeatureItem color={'#fc46fd'}>
+            <TimelineSvg />
+            <h3>{'Statistics'}</h3>
+            <p>{'Better understand how you work with data visualizations.'}</p>
+          </FeatureItem>
+        </HorizontalFlexContainer>
+      </Container>
+
+      {/* Closer */}
+      <Outer alt>
+        <Container column>
+          <FlexBreak height={80} />
+          <Title>{'Better notifications for everyone.'}</Title>
+          <FlexBreak height={20} />
+          <HeroButton to={routes.LOGIN} css={css`margin: 0 auto;`}>{'Login / Sign up'}</HeroButton>
+          <FlexBreak height={40} />
+          <FooterImageContainer>
+            <ItemImage
+              scale={baseItemOffset.scale + 0.8}
+              top={60}
+              src={ItemPng} />
+            <ItemImage
+              deg={0}
+              scale={baseItemOffset.scale + 0.95}
+              top={-30}
+              src={ItemTwoPng} />
+            </FooterImageContainer>
+            <FlexBreak height={40} />
+        </Container>
+      </Outer>
+
+      {/* Footer */}
+      <Container column>
+        <Logo white size={42} style={{filter: 'invert(0.8)', margin: '0 auto'}} />
+        <Title css={css`font-size: 26px; margin: 12px auto;`}>{'Manage your notifications.'}</Title>
+        <FlexBreak height={20} />
+        <GroupedLinks>
+          <a target="_blank" href="https://github.com/nickzuber/meteorite/issues">Donate</a>
+          <a target="_blank" href="https://github.com/nickzuber/meteorite/issues">Feedback</a>
+          <a target="_blank" href="https://github.com/nickzuber/meteorite/commits/master">Changelog</a>
+        </GroupedLinks>
+        <GroupedLinks>
+          <a target="_blank" href="https://github.com/nickzuber/meteorite">GitHub</a>
+          <a target="_blank" href="https://twitter.com/nick_zuber">Twitter</a>
+        </GroupedLinks>
+        <FlexBreak height={20} />
+        <FooterSubtleText>
+          {`© 2019 Nick Zuber – Meteorite v${version}`}
+        </FooterSubtleText>
+      </Container>
     </DefaultContainer>
   );
 };
