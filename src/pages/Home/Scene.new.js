@@ -46,6 +46,18 @@ const ProductHuntButton = () => (
   </a>
 );
 
+const forSmallScreens = rules => `
+  @media (max-width: 1100px) {
+    ${rules}
+  }
+`;
+
+const forMobile = rules => `
+  @media (max-width: 800px) {
+    ${rules}
+  }
+`;
+
 const DefaultContainer = styled('div')`
   overflow-x: hidden;
   * {
@@ -68,6 +80,13 @@ const Container = styled('div')`
   margin: 0 auto;
   padding: 1rem 0;
   margin-bottom: 5rem;
+  ${forSmallScreens(`
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  `)}
+  ${forMobile(`
+    margin-bottom: 2.5rem;
+  `)}
 `;
 
 const FlexItem = styled('div')`
@@ -174,6 +193,10 @@ const LogoTitle = styled('span')`
   font-weight: 800;
   cursor: pointer;
   user-select: none;
+
+  ${forMobile(`
+    display: none;
+  `)}
 `;
 
 const LogoSection = () => (
@@ -182,6 +205,9 @@ const LogoSection = () => (
     justify-content: space-between;
     align-items: center;
     width: 125px;
+    ${forMobile(`
+      width: 36px;
+    `)}
     div {
       display: inline-block;
       margin-right: 8px;
@@ -206,6 +232,11 @@ const HeroTitle = styled('h1')`
   margin: 0 auto 6px;
   font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
   font-weight: 500;
+
+  ${forMobile(`
+    font-size: 52px;
+    line-height: 58px;
+  `)}
 `;
 
 const HeroSubtitle = styled('h1')`
@@ -217,6 +248,12 @@ const HeroSubtitle = styled('h1')`
   margin-left: 0;
   font-family: medium-content-sans-serif-font, Inter UI, system-ui, sans-serif;
   font-weight: 500;
+
+  ${forMobile(`
+    margin: 0 auto 32px;
+    font-size: 20px;
+    line-height: 24px;
+  `)}
 `;
 
 const Title = styled('h1')`
@@ -252,11 +289,19 @@ const HeroLeft = styled(FlexItem)`
   z-index: 1;
   flex-grow: 1;
   width: 50%;
+  ${forMobile(`
+    margin: 0 auto;
+    width: 100%;
+    text-align: center;
+  `)}
 `;
 
 const HeroRight = styled(FlexItem)`
   flex-grow: 1;
   width: 50%;
+  ${forMobile(`
+    display: none;
+  `)}
 `;
 
 const DotsBackground = styled('div')`
@@ -266,6 +311,10 @@ const DotsBackground = styled('div')`
   margin-left: -60px;
   background: radial-gradient(transparent 50%, #fffefd), \
     url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQoU2NkIBIwEqmOgQ4KX715/x/mHDERQbiNGFZTXyGuUKC+rwHAcQwLu0IifQAAAABJRU5ErkJggg==) repeat;
+  ${forMobile(`
+    width: 90%;
+    margin: 0 auto;
+  `)}
 `;
 
 const FooterImageContainer = styled('div')`
@@ -275,6 +324,9 @@ const FooterImageContainer = styled('div')`
   text-align: center;
   background: radial-gradient(transparent 50%, ${ALT_BACKGROUND_COLOR}), \
     url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQoU2NkIBIwEqmOgQ4KX715/x/mHDERQbiNGFZTXyGuUKC+rwHAcQwLu0IifQAAAABJRU5ErkJggg==) repeat;
+  ${forMobile(`
+    display: none;
+  `)}
 `;
 
 const CompanyQuotesContainer = styled('div')`
@@ -282,6 +334,11 @@ const CompanyQuotesContainer = styled('div')`
   justify-content: space-between;
   align-items: center;
   margin-top: 4rem;
+  ${forMobile(`
+    flex-direction: column;
+    max-width: 300px;
+    margin: 0 auto;
+  `)}
 `;
 
 const HorizontalFlexContainer = styled('div')`
@@ -294,6 +351,9 @@ const HorizontalFlexContainer = styled('div')`
 
 const FeatureItem = styled('div')(({color}) => `
   flex: 1;
+  ${forMobile(`
+    flex: 1 0 34%;
+  `)}
   flex-direction: column;
   display: flex;
   align-items: center;
@@ -327,11 +387,16 @@ const FeatureItem = styled('div')(({color}) => `
   }
 `);
 
-const HorizontalListItem = styled('div')`
+const HorizontalListItem = styled('div')(({last}) => `
   flex: 1;
-  border-right: ${props => props.last ? '0px' : '1px'} solid rgba(214, 212, 209, 0.3);
+  border-right: ${last ? '0px' : '1px'} solid rgba(214, 212, 209, 0.3);
   padding: 0 32px;
-`;
+  ${forMobile(`
+    border-right: 0;
+    border-bottom: ${last ? '0px' : '1px'} solid rgba(214, 212, 209, 0.3);
+    padding: 32px 0;
+  `)}
+`);
 
 const Quote = styled('p')`
   margin: 0;
@@ -367,6 +432,7 @@ const CompanyPerson = styled('div')`
 `;
 
 const GroupedLinks = styled(`div`)`
+  text-align: center;
   margin: 8px auto 0;
 
   a {
@@ -377,6 +443,7 @@ const GroupedLinks = styled(`div`)`
     padding: 0.75rem 2.25rem;
     border: 1px solid #EAEDF3;
     margin-left: -1px;
+    margin-top: 8px;
     transition: all 75ms ease-in-out;
   }
 
@@ -438,9 +505,15 @@ const WorkflowToggle = () => {
       margin-top: 32px;
       display: flex;
       flex-direction: row;
+      ${forSmallScreens(`
+        flex-direction: column;
+      `)}
     `}>
       <div css={css`
         flex: 1;
+        ${forSmallScreens(`
+          margin-bottom: 24px;
+        `)}
       `}>
         {items.map((item, xid) => (
           <div
@@ -537,16 +610,28 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
       </Container>
 
       {/* Hero */}
-      <Container>
+      <Container css={css`
+        ${forMobile(`
+          flex-direction: column;
+        `)}
+      `}>
         <HeroLeft>
           <HeroTitle>{'Manage your notifications.'}</HeroTitle>
-          {/* <HeroSubtitle>{'Prioritize the tasks that keep you and your team most\
-                          productive by organizing your notifications'}</HeroSubtitle> */}
           <HeroSubtitle>{'Meteorite helps organize, filter, and prioritize your\
                           GitHub notifications to make your life easier'}</HeroSubtitle>
           <FlexBreak />
-          <HeroButton to={routes.LOGIN}>{'Login / Sign up'}</HeroButton>
-          <ProductHuntButton />
+          <div css={css`
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            ${forMobile(`
+              display: block;
+              margin: 0 auto;
+            `)}
+          `}>
+            <HeroButton css={css`${forMobile(`margin-bottom: 12px;`)}`} to={routes.LOGIN}>{'Login / Sign up'}</HeroButton>
+            <ProductHuntButton />
+          </div>
         </HeroLeft>
         <HeroRight>
           <DotsBackground />
