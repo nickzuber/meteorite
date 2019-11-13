@@ -5,7 +5,12 @@ import styled from '@emotion/styled';
 import {css, jsx} from '@emotion/core';
 import {Link as RouterLink} from '@reach/router';
 import {routes} from '../../constants';
-import Logo from '../../components/Logo';
+import {
+  BasicPageWrapper,
+  forSmallScreens,
+  forMobile
+} from '../common';
+import WorkflowToggle from './WorkflowToggle';
 
 import {ReactComponent as CloudOffSvg} from '../../images/svg/icons/cloud_off.svg'
 import {ReactComponent as NotificationsActiveSvg} from '../../images/svg/icons/notifications_active.svg'
@@ -32,9 +37,6 @@ import '../../styles/font.css';
 const themeColor = '#27B768';
 const ALT_BACKGROUND_COLOR = '#f6f2ed';
 
-const hash = process.env.GIT_HASH ? `#${process.env.GIT_HASH}` : '';
-const version = require('../../../package.json').version + hash;
-
 const ProductHuntButton = () => (
   <a href="https://www.producthunt.com/posts/meteorite?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-meteorite" target="_blank">
     <img
@@ -45,26 +47,6 @@ const ProductHuntButton = () => (
       height="43px" />
   </a>
 );
-
-const forSmallScreens = rules => `
-  @media (max-width: 1100px) {
-    ${rules}
-  }
-`;
-
-const forMobile = rules => `
-  @media (max-width: 800px) {
-    ${rules}
-  }
-`;
-
-const DefaultContainer = styled('div')`
-  overflow-x: hidden;
-  * {
-    font-family: medium-content-sans-serif-font, "Inter UI", system-ui, sans-serif;
-    font-size: 15px;
-  }
-`;
 
 const Outer = styled('div')`
   background: ${p => p.alt ? ALT_BACKGROUND_COLOR : 'none'};
@@ -94,37 +76,6 @@ const FlexItem = styled('div')`
   align-items: center;
   display: flex;
   flex-wrap: wrap;
-`;
-
-const ButtonLink = styled('a')`
-  cursor: pointer;
-  display: inline-block;
-  text-decoration: none;
-  font-weight: 400;
-  color: #333333;
-  text-align: center;
-  vertical-align: middle;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  background-color: transparent;
-  border: 0px solid transparent;
-  padding: 0.125rem 0.75rem;
-  font-size: 18px;
-  line-height: 1.75;
-  border-radius: 5px;
-  transition: all 0.15s ease-in-out;
-
-  &:hover {
-    background-color: #f4f4f4;
-    border-color: #f4f4f4;
-  }
-
-  &:active {
-    background-color: #eee;
-    border-color: #eee;
-  }
 `;
 
 const Button = styled(RouterLink)`
@@ -184,41 +135,6 @@ const HeroButton = styled(MainButton)`
   margin: -4px 8px 0;
   margin-left: 0;
 `;
-
-const LogoTitle = styled('span')`
-  display: inline-block;
-  font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
-  color: #333333;
-  font-size: 22px;
-  font-weight: 800;
-  cursor: pointer;
-  user-select: none;
-
-  ${forMobile(`
-    display: none;
-  `)}
-`;
-
-const LogoSection = () => (
-  <div css={css`
-    display: inline-flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 125px;
-    ${forMobile(`
-      width: 36px;
-    `)}
-    div {
-      display: inline-block;
-      margin-right: 8px;
-    }
-  `}>
-    <Logo white size={26} style={{filter: 'invert(0.8)'}} />
-    <LogoTitle>Meteorite</LogoTitle>
-  </div>
-);
-
-const LoginContainer = styled('div')``;
 
 const FlexBreak = styled('div')`
   flex-basis: 100%;
@@ -431,145 +347,7 @@ const CompanyPerson = styled('div')`
   }
 `;
 
-const GroupedLinks = styled(`div`)`
-  text-align: center;
-  margin: 8px auto 0;
-
-  a {
-    text-decoration: none;
-    font-size: 17px;
-    position: relative;
-    display: inline-block;
-    padding: 0.75rem 2.25rem;
-    border: 1px solid #EAEDF3;
-    margin-left: -1px;
-    margin-top: 8px;
-    transition: all 75ms ease-in-out;
-  }
-
-  a:hover {
-    background-color: #EAEDF366;
-  }
-
-  a:active {
-    background-color: #EAEDF3;
-  }
-
-  a:first-of-type {
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-  }
-
-  a:last-of-type {
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-  }
-`;
-
-const FooterSubtleText = styled('p')`
-  margin: 24px auto;
-  color: #6c757d;
-`;
-
-const WorkflowToggle = () => {
-  const [state, setState] = React.useState(0);
-  const [imageOpacity, setImageOpacity] = React.useState(1);
-  const timer = React.useRef();
-  const easeTimingMs = 200;
-
-  const items = [
-    {
-      id: 0,
-      title: 'Filter The Noise',
-      description: 'Stay focused on the important things. We\'ll only show the notifications that matter to you.',
-      image: ScreenshotPng
-    },
-    {
-      id: 1,
-      title: 'Highlight The Callouts',
-      description: 'When things stand out, you shouldn\'t miss it. We mark notifications when there\'s something interesting going down.',
-      image: ReasonsPng
-    },
-    {
-      id: 2,
-      title: 'Sort By Importance',
-      description: 'Don\'t get lost at sea – the most important notifications stay at the top of the list.',
-      image: ScoresPng
-    },
-  ];
-
-  const activeItem = items[state];
-
-  return (
-    <div css={css`
-      margin-top: 32px;
-      display: flex;
-      flex-direction: row;
-      ${forSmallScreens(`
-        flex-direction: column;
-      `)}
-    `}>
-      <div css={css`
-        flex: 1;
-        ${forSmallScreens(`
-          margin-bottom: 24px;
-        `)}
-      `}>
-        {items.map((item, xid) => (
-          <div
-            key={xid}
-            onClick={() => {
-              if (xid === state) return;
-              clearTimeout(timer.current);
-              setImageOpacity(0);
-              timer.current = setTimeout(() => {
-                setState(xid);
-                setImageOpacity(1);
-              }, easeTimingMs);
-            }}
-            css={css`
-              border-radius: 8px;
-              padding: 18px 20px;
-              margin: 0 32px 8px 0;
-              cursor: pointer;
-              background: ${state === xid ? '#ffffff' : 'none'};
-              transition: all 0.15s ease-in-out;
-          `}>
-            <h3 css={css`
-              font-size: 22px;
-              line-height: 26px;
-              margin: 0 auto 4px;
-              font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
-              font-weight: 500;
-            `}>{item.title}</h3>
-            <p css={css`
-              font-size: 16px;
-              line-height: 20px;
-              margin: 0;
-            `}>{item.description}</p>
-          </div>
-        ))}
-      </div>
-      <div css={css`
-        position: relative;
-        flex: 3;
-      `}>
-        <img
-          src={activeItem.image}
-          css={css`
-            max-width: 100%;
-            opacity: ${imageOpacity};
-            will-change: opacity;
-            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.175);
-            transition: opacity ${easeTimingMs}ms linear;
-            border-radius: 4px;
-          `} />
-      </div>
-    </div>
-  );
-};
-
-export default function Scene ({loggedIn, onLogout, ...props}) {
+export default function Scene (props) {
   const baseItemOffset = {
     scale: 0.1,
     top: -185,
@@ -577,37 +355,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
   };
 
   return (
-    <DefaultContainer>
-      {/* Header */}
-      <Container>
-        <FlexItem css={css`
-          align-items: center;
-          display: flex;
-          justify-content: space-between;
-        `}>
-          <LogoSection />
-          {loggedIn ? (
-            <LoginContainer>
-              <Button to={routes.REDESIGN_NOTIFICATIONS} css={css`
-                &::after {
-                  content: "";
-                  position: absolute;
-                  background: #E91E63;
-                  top: 6px;
-                  right: 6px;
-                  height: 8px;
-                  width: 8px;
-                  border-radius: 100%;
-                }`}>{'Notifications'}</Button>
-              <ButtonLink href="#" onClick={onLogout}>{'Logout'}</ButtonLink>
-            </LoginContainer>
-          ) : (
-            <LoginContainer>
-              <MainButton to={routes.LOGIN}>{'Login / Sign up'}</MainButton>
-            </LoginContainer>
-          )}
-        </FlexItem>
-      </Container>
+    <BasicPageWrapper {...props}>
 
       {/* Hero */}
       <Container css={css`
@@ -627,6 +375,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
             ${forMobile(`
               display: block;
               margin: 0 auto;
+              width: 300px;
             `)}
           `}>
             <HeroButton css={css`${forMobile(`margin-bottom: 12px;`)}`} to={routes.LOGIN}>{'Login / Sign up'}</HeroButton>
@@ -744,7 +493,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
           <FeatureItem color={'#fd9446'}>
             <WbIridescentSvg />
             <h3>{'Reasoning'}</h3>
-            <p>{'We\ll also tell you why you\'re getting each notification.'}</p>
+            <p>{'We\'ll also tell you why you\'re getting each notification.'}</p>
           </FeatureItem>
           <FeatureItem color={'#fc46fd'}>
             <TimelineSvg />
@@ -776,26 +525,6 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
             <FlexBreak height={40} />
         </Container>
       </Outer>
-
-      {/* Footer */}
-      <Container column>
-        <Logo white size={42} style={{filter: 'invert(0.8)', margin: '0 auto'}} />
-        <Title css={css`font-size: 26px; margin: 12px auto;`}>{'Manage your notifications.'}</Title>
-        <FlexBreak height={20} />
-        <GroupedLinks>
-          <a target="_blank" href="https://github.com/nickzuber/meteorite/issues">Donate</a>
-          <a target="_blank" href="https://github.com/nickzuber/meteorite/issues">Feedback</a>
-          <a target="_blank" href="https://github.com/nickzuber/meteorite/commits/master">Changelog</a>
-        </GroupedLinks>
-        <GroupedLinks>
-          <a target="_blank" href="https://github.com/nickzuber/meteorite">GitHub</a>
-          <a target="_blank" href="https://twitter.com/nick_zuber">Twitter</a>
-        </GroupedLinks>
-        <FlexBreak height={20} />
-        <FooterSubtleText>
-          {`© 2019 Nick Zuber – Meteorite v${version}`}
-        </FooterSubtleText>
-      </Container>
-    </DefaultContainer>
+    </BasicPageWrapper>
   );
 };

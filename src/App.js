@@ -5,6 +5,7 @@ import { AuthProvider } from './providers/Auth';
 import {
   Home,
   Login,
+  Pricing,
   Notifications,
   NotificationsRedesign,
 } from './pages';
@@ -16,6 +17,7 @@ class App extends Component {
         <Router>
           <Home path={routes.HOME} />
           <Login path={routes.LOGIN} />
+          <Pricing path={routes.PRICING} />
           <Notifications path={routes.NOTIFICATIONS} />
           <NotificationsRedesign path={routes.REDESIGN_NOTIFICATIONS} />
         </Router>

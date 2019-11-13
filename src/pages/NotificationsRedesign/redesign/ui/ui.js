@@ -711,7 +711,7 @@ export function ProfileSection ({user, onLogout}) {
           onLogout();
           setMenuShow(false);
         }}>
-          <h2>Sign out</h2>
+          <h2>Logout</h2>
           <p>Log off your account and return to home page</p>
         </optimized.div>
       </InteractionMenu>

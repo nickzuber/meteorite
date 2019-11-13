@@ -84,6 +84,7 @@ line[stroke="#666"] {
 
 a {
   text-underline-position: under;
+  transition: all 200ms ease;
 }
 
 .react-tooltip {

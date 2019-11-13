@@ -345,12 +345,9 @@ export default function Scene ({
     prev: readTodayLastWeekCount
   });
 
-  readStatistics = readStatistics.map(n => parseInt(n, 10) || 0);
-  // const lastWeekStats = readStatistics.slice(0, 7);
-  // const thisWeekStats = readStatistics.slice(7);
-
-  const lastWeekStats = [0, 3, 7, 2, 4, 5, 0];
-  const thisWeekStats = [0, 2, 8, 4, 5, null, null];
+  readStatistics = readStatistics.map(n => parseInt(n, 10));
+  const lastWeekStats = readStatistics.slice(0, 7);
+  const thisWeekStats = readStatistics.slice(7);
 
   const percentageDeltaToday = getPercentageDelta(counts.cur, counts.prev);
   const highestRepoReadCount = Object.values(reposReadCounts).reduce((h, c) => Math.max(h, c), 0);
