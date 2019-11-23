@@ -22,40 +22,15 @@ import {ReactComponent as TimelineSvg} from '../../images/svg/icons/timeline.svg
 
 import ItemPng from '../../images/screenshots/item.png';
 import ItemTwoPng from '../../images/screenshots/item-2.png';
-import ScreenshotPng from '../../images/screenshots/new/dashboard.png';
-import ScoresPng from '../../images/screenshots/new/scores.png';
-import ReasonsPng from '../../images/screenshots/new/reasons.png';
 
 import RobinLogo from '../../images/logos/robin-logo.png';
 import ForwardLogo from '../../images/logos/forward-logo.png';
 import FacebookLogo from '../../images/logos/facebook-logo.png';
 
-const WorkflowToggle = () => {
+const WorkflowToggle = ({easeTimingMs = 200, items}) => {
   const [state, setState] = React.useState(0);
   const [imageOpacity, setImageOpacity] = React.useState(1);
   const timer = React.useRef();
-  const easeTimingMs = 200;
-
-  const items = [
-    {
-      id: 0,
-      title: 'Filter The Noise',
-      description: 'Stay focused on the important things. We\'ll only show the notifications that matter to you.',
-      image: ScreenshotPng
-    },
-    {
-      id: 1,
-      title: 'Highlight The Callouts',
-      description: 'When things stand out, you shouldn\'t miss it. We mark notifications when there\'s something interesting going down.',
-      image: ReasonsPng
-    },
-    {
-      id: 2,
-      title: 'Sort By Importance',
-      description: 'Don\'t get lost at sea – the most important notifications stay at the top of the list.',
-      image: ScoresPng
-    },
-  ];
 
   const activeItem = items[state];
 

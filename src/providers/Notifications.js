@@ -108,6 +108,37 @@ class NotificationsProvider extends React.Component {
     this.forceUpdate();
   }
 
+  request = (url, method = 'GET') => {
+    const headers = {
+      'Authorization': `token ${this.props.token}`,
+      'Content-Type': 'application/json',
+    };
+
+    // @TODO probably add timestamp
+    const cachedResponse = this.props.getUserItem(url);
+    if (cachedResponse) {
+      return Promise.resolve(cachedResponse);
+    }
+
+    return fetch(url, {
+      method,
+      headers
+    }).then(processHeadersAndBodyJson)
+      .then(({json}) => {
+        console.info(`Response from %c${url}`, 'font-weight: bold;')
+        console.info(json)
+        console.info('')
+        this.props.setUserItem(url, json);
+        return json;
+      })
+      .catch(({status, text}) => {
+        console.info(`Response from %c${url}`, 'font-weight: bold;')
+        console.info(`${status}: ${text}`)
+        console.info('')
+        this.props.setUserItem(url, null);
+      });
+  }
+
   requestUser = () => {
     const headers = {
       'Authorization': `token ${this.props.token}`,
@@ -408,6 +439,7 @@ class NotificationsProvider extends React.Component {
     // Notification model
     const value = {
       id: n.id,
+      pullRequestURL: n.subject.url,
       isAuthor: reasons.some(r => r.reason === 'author'),
       updated_at: n.updated_at,
       status: n.unread ? Status.QUEUED : Status.STAGED,
@@ -426,6 +458,7 @@ class NotificationsProvider extends React.Component {
   render () {
     return this.props.children({
       ...this.state,
+      request: this.request,
       requestUser: this.requestUser,
       notifications: this.props.notifications,
       fetchNotifications: this.fetchNotifications,

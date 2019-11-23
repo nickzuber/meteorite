@@ -444,7 +444,29 @@ export default function Scene (props) {
           <Title>{'The Notification Lifecycle'}</Title>
           <Subtitle>{'GitHub notifications can actually be your friend – with a little bit of discipline.\
                       All we need to do is filter out the noise & organize things in a way that makes sense.'}</Subtitle>
-          <WorkflowToggle />
+          <WorkflowToggle
+            easeTimingMs={100}
+            items={[
+              {
+                id: 0,
+                title: 'Filter The Noise',
+                description: 'Stay focused on the important things. We\'ll only show the notifications that matter to you.',
+                image: ScreenshotPng
+              },
+              {
+                id: 1,
+                title: 'Highlight The Callouts',
+                description: 'When things stand out, you shouldn\'t miss it. We mark notifications when there\'s something interesting going down.',
+                image: ReasonsPng
+              },
+              {
+                id: 2,
+                title: 'Sort By Importance',
+                description: 'Don\'t get lost at sea – the most important notifications stay at the top of the list.',
+                image: ScoresPng
+              },
+            ]}
+          />
           <FlexBreak height={100} />
           <Title css={css`font-size: 32px; line-height: 38px; margin-bottom: 24px;`}>{'Start using Meteorite absolutely free'}</Title>
           <HeroButton to={routes.LOGIN} css={css`margin: 0 auto;`}>{'Login / Sign up'}</HeroButton>

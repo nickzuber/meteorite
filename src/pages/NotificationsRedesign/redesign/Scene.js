@@ -21,7 +21,9 @@ import {
   getPercentageDelta,
   prettify,
   titleOfMode,
-  subtitleOfMode
+  subtitleOfMode,
+  colorOfTag,
+  extractJiraTags
 } from './utils';
 import {
   WHITE,
@@ -68,6 +70,7 @@ import {
   ProfileSection,
   LinkText,
   Bar,
+  JiraTag,
   optimized
 } from './ui';
 export const AnimatedNotificationRow = animated(NotificationRow);
@@ -858,6 +861,7 @@ export default function Scene ({
                   markAsRead={onStageThread}
                   markAsArchived={onArchiveThread}
                   markAsUnread={onRestoreThread}
+                  user={user}
                 />
               )}
             </NotificationsTable>
@@ -920,7 +924,8 @@ function NotificationCollection ({
   colorOfScore,
   markAsRead,
   markAsArchived,
-  markAsUnread
+  markAsUnread,
+  user
 }) {
   const props = useSpring({
     opacity: 1,
@@ -955,91 +960,114 @@ function NotificationCollection ({
 
   return (
     <animated.tbody style={props} page={page}>
-      {notifications.map((item, xid) => (
-        <div css={css`position: relative;`}>
-          <AnimatedNotificationRow key={notifications.id || xid}>
-            {/* Type */}
-            <NotificationCell width={60} css={css`@media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) { flex: 50px 0 0; }`}>
-              {getPRIssueIcon(item.type, item.reasons)}
-            </NotificationCell>
-            {/* Title */}
-            <NotificationCell
-              flex={4}
-              onClick={() => {
-                window.open(item.url);
-                markAsRead(item.id, item.repository);
-              }}
-              css={css`
-                font-weight: 500;
-            `}>
-              <NotificationTitle css={css`
-                display: block;
-                i {
-                  font-size: 10px;
-                  margin-right: 6px;
-                }
+      {notifications.map((item, xid) => {
+        const name = item.name;
+        const {title, tags} = extractJiraTags(name);
+
+        return (
+          <div css={css`position: relative;`}>
+            <AnimatedNotificationRow key={notifications.id || xid}>
+              {/* Type */}
+              <NotificationCell width={60} css={css`@media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) { flex: 50px 0 0; }`}>
+                {getPRIssueIcon(item.type, item.reasons)}
+              </NotificationCell>
+              {/* Title */}
+              <NotificationCell
+                flex={4}
+                onClick={() => {
+                  window.open(item.url);
+                  markAsRead(item.id, item.repository);
+                }}
+                css={css`
+                  font-weight: 500;
               `}>
-                {iconsOfBadges(item.badges)}
-                {item.name}
-              </NotificationTitle>
-              <NotificationByline>
-                {getMessageFromReasons(item.reasons, item.type)}
-                {` ${getRelativeTime(item.updated_at).toLowerCase()}`}
-              </NotificationByline>
-            </NotificationCell>
-            {/* Repository */}
-            <NotificationCell
-              flex={2}
-              onClick={() => window.open(item.repositoryUrl)}
-              css={css`
-                font-weight: 500;
-                color: #8994A6;
+                <NotificationTitle css={css`
+                  display: flex;
+                  align-items: center;
+                  i {
+                    font-size: 10px;
+                    margin-right: 6px;
+                  }
+                `}>
+                  {iconsOfBadges(item.badges)}
+                  {tags.map(tag => (
+                    <JiraTag key={tag} color={colorOfTag(tag)}>
+                      {tag}
+                    </JiraTag>
+                  ))}
+                  {title}
+                </NotificationTitle>
+                {/* Byline */}
+                <NotificationByline>
+                  {/* {user && user.avatar_url && (
+                    <img
+                      css={css`
+                        border-radius: 100%;
+                        height: 12px;
+                        width: 12px;
+                        margin-right: 5px;
+                      `}
+                      src={user.avatar_url}
+                    />
+                  )} */}
+                  {getMessageFromReasons(item.reasons, item.type)}
+                  {` ${getRelativeTime(item.updated_at).toLowerCase()}`}
+                </NotificationByline>
+              </NotificationCell>
+              {/* Repository */}
+              <NotificationCell
+                flex={2}
+                onClick={() => window.open(item.repositoryUrl)}
+                css={css`
+                  font-weight: 500;
+                  color: #8994A6;
+                  @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+                    display: none;
+                  }
+              `}>
+                {'@' + item.repository}
+              </NotificationCell>
+              {/* Score */}
+              <NotificationCell width={60} css={css`
+                font-weight: 600;
+                color: ${colorOfScore(item.score)};
+                font-size: 12px;
+                text-align: center;
+              `}>
+                {'+' + item.score}
+              </NotificationCell>
+              <NotificationCell width={80} css={css`
+                i {
+                  padding: 13px 0;
+                  text-align: center;
+                  width: 40px;
+                }
                 @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
                   display: none;
                 }
-            `}>
-              {'@' + item.repository}
-            </NotificationCell>
-            {/* Score */}
-            <NotificationCell width={60} css={css`
-              font-weight: 600;
-              color: ${colorOfScore(item.score)};
-              font-size: 12px;
-              text-align: center;
-            `}>
-              {'+' + item.score}
-            </NotificationCell>
-            <NotificationCell width={80} css={css`
-              i {
-                padding: 13px 0;
-                text-align: center;
-                width: 40px;
-              }
-              @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
-                display: none;
-              }
-            `}>
-              <ActionItems
-                item={item}
-                view={view}
-                markAsUnread={markAsUnread}
-                markAsRead={markAsRead}
-                markAsArchived={markAsArchived}
-              />
-            </NotificationCell>
-          </AnimatedNotificationRow>
-          {(xid === notifications.length - 1) ?
-            (!isLastPage ? (
-              <>
-                <Connector dot />
-                <Connector dot offsetX={8} opacity={0.8} />
-                <Connector dot offsetX={16} opacity={0.6} />
-              </>
-            ) : null
-            ) : <Connector />
-          }
-        </div>
-      ))}
+              `}>
+                <ActionItems
+                  item={item}
+                  view={view}
+                  markAsUnread={markAsUnread}
+                  markAsRead={markAsRead}
+                  markAsArchived={markAsArchived}
+                />
+              </NotificationCell>
+            </AnimatedNotificationRow>
+            {(xid === notifications.length - 1) ?
+              (!isLastPage ? (
+                <>
+                  <Connector dot />
+                  <Connector dot offsetX={8} opacity={0.8} />
+                  <Connector dot offsetX={16} opacity={0.6} />
+                </>
+              ) : null
+              ) : <Connector />
+            }
+          </div>
+        );
+      })}
     </animated.tbody>
   );
 }

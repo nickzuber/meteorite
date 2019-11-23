@@ -8,6 +8,88 @@ import {Mode} from '../index';
 import {NotificationIconWrapper} from './ui/ui';
 
 const themeColor = '#27B768';
+export const Colors = [
+  '#1c7ed6',
+  '#ae3ec9',
+  '#e67700',
+  '#2f9e44',
+  // '#9C27B0',
+  // '#27B768',
+  // '#00A0F5',
+  // '#ffc915',
+  // '#EE3F46',
+  // '#10293c',
+  // '#fd9446',
+  // '#fc46fd'
+];
+
+export function colorOfString (str = '') {
+  let i = str.split('').reduce((n, c) => (n + c.charCodeAt()) % Colors.length, 0);
+  return Colors[i];
+}
+
+export function colorOfTag (tag = '') {
+  const base = tag.split('-')[0];
+  return colorOfString(base);
+}
+
+export function extractJiraTags (str) {
+  // Remove any surrounding whitespace.
+  str = str.trim();
+
+  const State = {
+    OPEN_TAG: 0,
+    TAG: 1,
+    CLOSE_TAG: 2,
+    TEXT: 3
+  };
+  const tags = [];
+  let curTag = ''
+  let title = '';
+  let state = State.TEXT;
+
+  for (let i = 0; i < str.length; i++) {
+    const char = str[i];
+    switch (state) {
+      case State.TEXT:
+        if (char === '[') {
+          state = State.OPEN_TAG;
+        } else {
+          state = State.TEXT;
+          title += char;
+        }
+        break;
+      case State.OPEN_TAG:
+      case State.TAG:
+        if (char === ']') {
+          state = State.CLOSE_TAG;
+        } else if (char === ',') {
+          state = State.OPEN_TAG;
+          tags.push(curTag.trim());
+          curTag = '';
+        } else {
+          curTag += char;
+        }
+        break;
+      case State.CLOSE_TAG:
+        state = State.TEXT;
+        tags.push(curTag.trim());
+        curTag = '';
+        // Subtract 1 from the index because the character we're looking at
+        // right now is the character that's after the closing bracket.
+        // We still want to process that one fairly.
+        i = i - 1;
+        break;
+    }
+  }
+
+  // Clean the title by normalizing any inconsistent spacing.
+  // Basically convert 'a   b  c' -> 'a b c'.
+  // This also trims the string for free.
+  title = title.split(' ').filter(Boolean).join(' ');
+
+  return {tags, title};
+}
 
 export function stringOfError (errorText) {
   switch (errorText) {

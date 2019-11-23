@@ -545,7 +545,8 @@ export const NotificationTitle = withOptimizedTouchEvents(styled('span')`
   text-overflow: ellipsis;
 `);
 export const NotificationByline = withOptimizedTouchEvents(styled('span')`
-  display: block;
+  display: flex;
+  align-items: end;
   margin-top: 4px;
   font-size: 12px;
   color: #8893a7cc;
@@ -832,6 +833,18 @@ export const LinkText = withOptimizedTouchEvents(styled('div')`
     color: #37352faa;
   }
 `);
+
+export const JiraTag = withOptimizedTouchEvents(styled('span')(p => `
+  background: ${p.color || '#e2e2e2'}28;
+  color: ${p.color || '#e2e2e2'};
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 4px;
+  margin-right: 4px;
+  margin-bottom: 0px;
+  display: inline-block;
+  padding: 2px 4px;
+`));
 
 export const Bar = withOptimizedTouchEvents(styled('div')`
   position: relative;

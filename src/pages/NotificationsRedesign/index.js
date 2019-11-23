@@ -179,11 +179,11 @@ class NotificationsPage extends React.Component {
       if (!document.hidden && this.isUnreadTab) {
         this.updateTabIcon(false);
       }
-    }, 2000);
+    }, 2 * 1000);
 
     this.syncer = setInterval(() => {
       this.props.notificationsApi.fetchNotificationsSync()
-        .then(error => this.setState({error: null}))
+        .then(() => this.setState({error: null}))
         .catch(error => this.setState({error}));
       this.setState({currentTime: moment()});
     }, 8 * 1000);
@@ -567,6 +567,7 @@ class NotificationsPage extends React.Component {
         reposReadCounts={reposReadCounts}
         mode={this.state.mode}
         setMode={mode => this.setState({mode})}
+        request={this.props.notificationsApi.request}
       />
     );
   }

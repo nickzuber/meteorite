@@ -80,6 +80,9 @@ const ButtonLink = styled('a')`
   line-height: 1.75;
   border-radius: 5px;
   transition: all 0.15s ease-in-out;
+  ${forMobile(`
+    padding: 0.125rem 0.25rem;
+  `)}
 
   &:hover {
     background-color: #f4f4f4;
@@ -109,12 +112,14 @@ const Button = styled(RouterLink)`
   border: 0px solid transparent;
   margin: 0rem 0.25rem;
   width: max-content;
-  padding: 0.125rem 1rem;
+  padding: 0.125rem 0.75rem;
   font-size: 18px;
   line-height: 1.75;
   border-radius: 5px;
-  -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: all 0.15s ease-in-out;
+  ${forMobile(`
+    padding: 0.125rem 0.25rem;
+  `)}
 
   &:hover {
     background-color: #f4f4f4;
@@ -248,6 +253,7 @@ export function BasicPageWrapper ({loggedIn, onLogout, children}) {
           <LogoSection />
           {loggedIn ? (
             <LoginContainer>
+              <Button to={routes.GUIDE}>{'Guide'}</Button>
               <Button to={routes.PRICING}>{'Pricing'}</Button>
               <Button to={routes.REDESIGN_NOTIFICATIONS} css={css`
                 &::after {
@@ -259,11 +265,15 @@ export function BasicPageWrapper ({loggedIn, onLogout, children}) {
                   height: 8px;
                   width: 8px;
                   border-radius: 100%;
+                  ${forMobile(`
+                    right: -1px;
+                  `)}
                 }`}>{'Notifications'}</Button>
               <ButtonLink href="#" onClick={onLogout}>{'Logout'}</ButtonLink>
             </LoginContainer>
           ) : (
             <LoginContainer>
+              <Button to={routes.GUIDE}>{'Guide'}</Button>
               <Button to={routes.PRICING}>{'Pricing'}</Button>
               <MainButton to={routes.LOGIN}>{'Login / Sign up'}</MainButton>
             </LoginContainer>
