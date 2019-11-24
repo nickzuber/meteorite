@@ -12,15 +12,7 @@ export const Colors = [
   '#1c7ed6',
   '#ae3ec9',
   '#e67700',
-  '#2f9e44',
-  // '#9C27B0',
-  // '#27B768',
-  // '#00A0F5',
-  // '#ffc915',
-  // '#EE3F46',
-  // '#10293c',
-  // '#fd9446',
-  // '#fc46fd'
+  '#2f9e44'
 ];
 
 export function colorOfString (str = '') {
