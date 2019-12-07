@@ -234,7 +234,7 @@ function ReadCountGraph ({data, onHover, onExit}) {
       <Tooltip
         isAnimationActive={false}
         wrapperStyle={{
-          opacity: 0.9
+          opacity: 1
         }}
         contentStyle={{
           background: 'rgb(255,254,252)',
@@ -245,7 +245,7 @@ function ReadCountGraph ({data, onHover, onExit}) {
           padding: '6px 12px 8px'
         }}
         itemStyle={{
-          fontSize: 12,
+          transform: 'scale(0.85) translate(-10px, 1px)',
           fontWeight: '500',
           padding: 0,
           opacity: .75
@@ -351,6 +351,10 @@ export default function Scene ({
   readStatistics = readStatistics.map(n => parseInt(n, 10));
   const lastWeekStats = readStatistics.slice(0, 7);
   const thisWeekStats = readStatistics.slice(7);
+
+  // Faux stats for pretty screenshots.
+  // const lastWeekStats = [4, 2, 7, 4, 5, 8, 1];
+  // const thisWeekStats = [7, 8, 5, 6, 4, 9, 12];
 
   const percentageDeltaToday = getPercentageDelta(counts.cur, counts.prev);
   const highestRepoReadCount = Object.values(reposReadCounts).reduce((h, c) => Math.max(h, c), 0);
@@ -989,7 +993,7 @@ function NotificationCollection ({
                     margin-right: 6px;
                   }
                 `}>
-                  {iconsOfBadges(item.badges)}
+                  {view === View.UNREAD && iconsOfBadges(item.badges)}
                   {tags.map(tag => (
                     <JiraTag key={tag} color={colorOfTag(tag)}>
                       {tag}

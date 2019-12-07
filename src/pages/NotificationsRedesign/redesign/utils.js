@@ -15,6 +15,12 @@ export const Colors = [
   '#2f9e44'
 ];
 
+const BadgeColors = {
+  RED: '#e91e63',
+  YELLOW: '#ecc962',
+  BLUE: '#4C84FF'
+}
+
 export function colorOfString (str = '') {
   let i = str.split('').reduce((n, c) => (n + c.charCodeAt()) % Colors.length, 0);
   return Colors[i];
@@ -162,11 +168,11 @@ export function iconsOfBadges (badges) {
   return badges.map(badge => {
     switch (badge) {
       case Badges.HOT:
-        return <i className="fas fa-fire" css={css`color: #e91e63`}></i>;
+        return <i className="fas fa-fire" css={css`color: ${BadgeColors.RED}`}></i>;
       case Badges.COMMENTS:
-        return <i className="fas fa-user-friends" css={css`color: #4C84FF`}></i>;
+        return <i className="fas fa-user-friends" css={css`color: ${BadgeColors.BLUE}`}></i>;
       case Badges.OLD:
-        return <i className="fas fa-stopwatch" css={css`color: #fcc419`}></i>;
+        return <i className="fas fa-stopwatch" css={css`color: ${BadgeColors.YELLOW}`}></i>;
       default:
         return null;
     }
@@ -225,7 +231,7 @@ export function titleOfMode (mode) {
 export function subtitleOfMode (mode) {
   switch (mode) {
     case Mode.ALL:
-      return 'See all of the notifications that matter to you';
+      return 'All of the notifications that matter to you';
     case Mode.HOT:
       return 'Some currently very active threads you care about';
     case Mode.COMMENTS:
@@ -233,6 +239,6 @@ export function subtitleOfMode (mode) {
     case Mode.OLD:
       return 'Older threads that need your review';
     default:
-      return 'See all of the notifications that matter to you';
+      return 'All of the notifications that matter to you';
   }
 }

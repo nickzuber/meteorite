@@ -8,7 +8,7 @@ import {navigate} from "@reach/router"
 import {routes} from '../../../../constants';
 import {withOnEnter, withOptimizedTouchEvents} from '../../../../enhance';
 
-export const BLUE = '#27B768';
+export const themeColor = '#27B768';
 export const WHITE = 'rgb(255, 254, 252)';
 export const FOOTER_HEIGHT = '96px';
 export const COLLAPSED_WIDTH = '72px';
@@ -33,10 +33,14 @@ export const Title = withOptimizedTouchEvents(styled('h1')`
   font-size: 32px;
   line-height: 46px;
   font-weight: 500;
-  letter-spacing: -1.05px;
+  letter-spacing: -0.75px;
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     font-size: 28px;
   }
+
+  font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
+  font-size: 36px;
+  line-height: 52px;
 `);
 
 export const Container = withOptimizedTouchEvents(styled('div')`
@@ -133,21 +137,29 @@ export const Card = withOptimizedTouchEvents(styled('div')`
 `);
 
 export const CardTitle = withOptimizedTouchEvents(styled(Title)`
-  line-height: 1.5em;
-  font-size: 1.5em;
+  letter-spacing: -0.25px;
+  line-height: 1.25em;
+  font-size: 1.75em;
 `);
 
 export const CardSubTitle = withOptimizedTouchEvents(styled(CardTitle)`
-  font-size: 1.2em;
-  color: #9d9b97;
+  font-size: 16px;
+  font-family: medium-content-sans-serif-font,Inter UI,system-ui,sans-serif;
+  color: #6c757d;
+  margin-top: 0px;
 `);
 
 export const ScoreDiff = withOptimizedTouchEvents(styled(CardTitle)`
   position: absolute;
+  font-family: Inter;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 500;
+  letter-spacing: -0.75px;
   top: 30px;
   right: 24px;
   opacity: ${props => props.show ? '1' : '0'};
-  color: ${props => props.under ? '#bfc5d1' : BLUE};
+  color: ${props => props.under ? '#bfc5d1' : themeColor};
 `);
 
 export const IconContainer = withOptimizedTouchEvents(styled('div')`
@@ -217,6 +229,11 @@ export const SubTitleSection = withOptimizedTouchEvents(styled('div')`
     font-weight: 500;
     font-size: 16px;
     color: #9d9b97;
+
+    font-size: 18px;
+    font-family: medium-content-sans-serif-font,Inter UI,system-ui,sans-serif;
+    color: #6c757d;
+    margin-top: 0px;
   }
 `);
 
@@ -256,7 +273,7 @@ export const SearchField = withOptimizedTouchEvents(styled('div')`
     border: 1px solid #bfc5d1aa;
   }
   &:focus-within {
-    border: 1px solid ${BLUE};
+    border: 1px solid ${themeColor};
     box-shadow: rgba(84,70,35,0.01) 0px 2px 19px 8px, rgba(84, 70, 35, 0.11) 0px 2px 12px;
   }
   i {
@@ -460,11 +477,10 @@ export const NotificationRow = withOptimizedTouchEvents(styled(NotificationRowHe
   user-select: none;
   transition: all 200ms ease;
   &:hover {
-    background: ${WHITE};
-    box-shadow: rgba(20, 20, 20, 0.01) 0px 2px 12px 6px, rgba(20, 20, 20, 0.11) 0px 2px 6px;
+    background: #757d8410;
   };
   &:active {
-    background: #f8f8f8;
+    background: #757d8429;
   };
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     padding: 6px 2px;
@@ -582,7 +598,6 @@ export const ProfileContainer = withOptimizedTouchEvents(styled('div')`
   position: absolute;
   right: 0;
   z-index: 3;
-  background: #fffefc;
   transition: all 200ms ease;
   user-select: none;
   cursor: pointer;
@@ -698,6 +713,14 @@ export function ProfileSection ({user, onLogout}) {
         }}>
           <h2>Go home</h2>
           <p>Head over back to the home page</p>
+        </optimized.div>
+        <optimized.div onClick={event => {
+          event.stopPropagation();
+          navigate(routes.GUIDE);
+          setMenuShow(false);
+        }}>
+          <h2>Read guide</h2>
+          <p>Check out the guide for how to use Meteorite</p>
         </optimized.div>
         <optimized.div onClick={event => {
           event.stopPropagation();

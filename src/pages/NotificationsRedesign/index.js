@@ -112,9 +112,9 @@ function badgesOf (notification) {
     badges.push(Badges.COMMENTS);
   }
   // If you've been tagged in for review and the most recent update happened over
-  // 4 hours ago, that specific time is subject to change.
+  // 3 days ago – but that specific time is subject to change here if we want.
   if (notification.reasons.some(r => r.reason === Reasons.REVIEW_REQUESTED) &&
-      timeSinceLastUpdate > 60 * 4) {
+      timeSinceLastUpdate > 60 * 24 * 3) {
     badges.push(Badges.OLD);
   }
   return badges;
