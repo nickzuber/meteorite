@@ -7,6 +7,88 @@ import {Badges, Reasons} from '../../../constants/reasons';
 import {Mode} from '../index';
 import {NotificationIconWrapper} from './ui/ui';
 
+const themeColor = '#27B768';
+export const Colors = [
+  '#1c7ed6',
+  '#ae3ec9',
+  '#e67700',
+  '#2f9e44'
+];
+
+const BadgeColors = {
+  RED: '#e91e63',
+  YELLOW: '#ecc962',
+  BLUE: '#4C84FF'
+}
+
+export function colorOfString (str = '') {
+  let i = str.split('').reduce((n, c) => (n + c.charCodeAt()) % Colors.length, 0);
+  return Colors[i];
+}
+
+export function colorOfTag (tag = '') {
+  const base = tag.split('-')[0];
+  return colorOfString(base);
+}
+
+export function extractJiraTags (str) {
+  // Remove any surrounding whitespace.
+  str = str.trim();
+
+  const State = {
+    OPEN_TAG: 0,
+    TAG: 1,
+    CLOSE_TAG: 2,
+    TEXT: 3
+  };
+  const tags = [];
+  let curTag = ''
+  let title = '';
+  let state = State.TEXT;
+
+  for (let i = 0; i < str.length; i++) {
+    const char = str[i];
+    switch (state) {
+      case State.TEXT:
+        if (char === '[') {
+          state = State.OPEN_TAG;
+        } else {
+          state = State.TEXT;
+          title += char;
+        }
+        break;
+      case State.OPEN_TAG:
+      case State.TAG:
+        if (char === ']') {
+          state = State.CLOSE_TAG;
+        } else if (char === ',') {
+          state = State.OPEN_TAG;
+          tags.push(curTag.trim());
+          curTag = '';
+        } else {
+          curTag += char;
+        }
+        break;
+      case State.CLOSE_TAG:
+        state = State.TEXT;
+        tags.push(curTag.trim());
+        curTag = '';
+        // Subtract 1 from the index because the character we're looking at
+        // right now is the character that's after the closing bracket.
+        // We still want to process that one fairly.
+        i = i - 1;
+        break;
+    }
+  }
+
+  // Clean the title by normalizing any inconsistent spacing.
+  // Basically convert 'a   b  c' -> 'a b c'.
+  // This also trims the string for free.
+  title = title.split(' ').filter(Boolean).join(' ');
+
+  return {tags, title};
+}
+
 export function stringOfError (errorText) {
   switch (errorText) {
     case 'Unauthorized':
@@ -20,18 +102,18 @@ export function getPRIssueIcon (type, _reasons) {
   switch (type) {
     case 'PullRequest':
       return (
-        <NotificationIconWrapper css={css`background: #DBE7FF;`}>
+        <NotificationIconWrapper css={css`background: ${themeColor}29;`}>
           <i className="fas fa-code-branch" css={css`
-            color: #4C84FF;
+            color: ${themeColor};
             font-size: 18px;
           `}></i>
         </NotificationIconWrapper>
       );
     case 'Issue':
       return (
-        <NotificationIconWrapper css={css`background: #47af4c24;`}>
+        <NotificationIconWrapper css={css`background: #DBE7FF;`}>
           <i className="fas fa-exclamation" css={css`
-            color: #47af4c;
+            color: #4C84FF;
             font-size: 18px;
           `}></i>
         </NotificationIconWrapper>
@@ -86,11 +168,11 @@ export function iconsOfBadges (badges) {
   return badges.map(badge => {
     switch (badge) {
       case Badges.HOT:
-        return <i className="fas fa-fire" css={css`color: #e91e63`}></i>;
+        return <i className="fas fa-fire" css={css`color: ${BadgeColors.RED}`}></i>;
       case Badges.COMMENTS:
-        return <i className="fas fa-user-friends" css={css`color: #4C84FF`}></i>;
+        return <i className="fas fa-user-friends" css={css`color: ${BadgeColors.BLUE}`}></i>;
       case Badges.OLD:
-        return <i className="fas fa-stopwatch" css={css`color: #fcc419`}></i>;
+        return <i className="fas fa-stopwatch" css={css`color: ${BadgeColors.YELLOW}`}></i>;
       default:
         return null;
     }
@@ -149,7 +231,7 @@ export function titleOfMode (mode) {
 export function subtitleOfMode (mode) {
   switch (mode) {
     case Mode.ALL:
-      return 'See all of the notifications that matter to you';
+      return 'All of the notifications that matter to you';
     case Mode.HOT:
       return 'Some currently very active threads you care about';
     case Mode.COMMENTS:
@@ -157,6 +239,6 @@ export function subtitleOfMode (mode) {
     case Mode.OLD:
       return 'Older threads that need your review';
     default:
-      return 'See all of the notifications that matter to you';
+      return 'All of the notifications that matter to you';
   }
 }

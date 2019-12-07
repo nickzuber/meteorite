@@ -8,7 +8,7 @@ import {navigate} from "@reach/router"
 import {routes} from '../../../../constants';
 import {withOnEnter, withOptimizedTouchEvents} from '../../../../enhance';
 
-export const BLUE = '#457cff';
+export const themeColor = '#27B768';
 export const WHITE = 'rgb(255, 254, 252)';
 export const FOOTER_HEIGHT = '96px';
 export const COLLAPSED_WIDTH = '72px';
@@ -33,10 +33,14 @@ export const Title = withOptimizedTouchEvents(styled('h1')`
   font-size: 32px;
   line-height: 46px;
   font-weight: 500;
-  letter-spacing: -1.05px;
+  letter-spacing: -0.75px;
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     font-size: 28px;
   }
+
+  font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
+  font-size: 36px;
+  line-height: 52px;
 `);
 
 export const Container = withOptimizedTouchEvents(styled('div')`
@@ -100,12 +104,13 @@ export const ContentItem = withOptimizedTouchEvents(styled(Item)`
   height: 100%;
   min-height: calc(100vh - ${COLLAPSED_WIDTH} - ${FOOTER_HEIGHT});
   width: calc(100% - ${COLLAPSED_WIDTH});
-  background: #f7f6f3;
+  background: ${WHITE};
   border-left: 1px solid #292d35;
+  padding-bottom: 12px;
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     width: 100%;
-    border-left: 1px solid #f7f6f3;
-    border-right: 1px solid #f7f6f3;
+    border-left: 1px solid ${WHITE};
+    border-right: 1px solid ${WHITE};
   }
 `);
 
@@ -132,21 +137,29 @@ export const Card = withOptimizedTouchEvents(styled('div')`
 `);
 
 export const CardTitle = withOptimizedTouchEvents(styled(Title)`
-  line-height: 1.5em;
-  font-size: 1.5em;
+  letter-spacing: -0.25px;
+  line-height: 1.25em;
+  font-size: 1.75em;
 `);
 
 export const CardSubTitle = withOptimizedTouchEvents(styled(CardTitle)`
-  font-size: 1.2em;
-  color: #9d9b97;
+  font-size: 16px;
+  font-family: medium-content-sans-serif-font,Inter UI,system-ui,sans-serif;
+  color: #6c757d;
+  margin-top: 0px;
 `);
 
 export const ScoreDiff = withOptimizedTouchEvents(styled(CardTitle)`
   position: absolute;
+  font-family: Inter;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 500;
+  letter-spacing: -0.75px;
   top: 30px;
   right: 24px;
   opacity: ${props => props.show ? '1' : '0'};
-  color: ${props => props.under ? '#bfc5d1' : BLUE};
+  color: ${props => props.under ? '#bfc5d1' : themeColor};
 `);
 
 export const IconContainer = withOptimizedTouchEvents(styled('div')`
@@ -216,6 +229,11 @@ export const SubTitleSection = withOptimizedTouchEvents(styled('div')`
     font-weight: 500;
     font-size: 16px;
     color: #9d9b97;
+
+    font-size: 18px;
+    font-family: medium-content-sans-serif-font,Inter UI,system-ui,sans-serif;
+    color: #6c757d;
+    margin-top: 0px;
   }
 `);
 
@@ -232,7 +250,7 @@ export const UnorderedList = withOptimizedTouchEvents(styled('ul')`
 `);
 
 export const PageSelection = withOptimizedTouchEvents(styled(UnorderedList)`
-  border-bottom: 2px solid #e5e6eb;
+  border-bottom: 2px solid #bfc5d150;
   flex-wrap: nowrap;
 `);
 
@@ -255,7 +273,7 @@ export const SearchField = withOptimizedTouchEvents(styled('div')`
     border: 1px solid #bfc5d1aa;
   }
   &:focus-within {
-    border: 1px solid ${BLUE};
+    border: 1px solid ${themeColor};
     box-shadow: rgba(84,70,35,0.01) 0px 2px 19px 8px, rgba(84, 70, 35, 0.11) 0px 2px 12px;
   }
   i {
@@ -448,7 +466,8 @@ export const NotificationRowHeader = withOptimizedTouchEvents(styled('tr')`
 
 export const NotificationRow = withOptimizedTouchEvents(styled(NotificationRowHeader)`
   position: relative;
-  background: ${WHITE};
+  background: none;
+  z-index: 1;
   border-radius: 4px;
   padding: 6px 18px;
   font-size: 14px;
@@ -458,10 +477,10 @@ export const NotificationRow = withOptimizedTouchEvents(styled(NotificationRowHe
   user-select: none;
   transition: all 200ms ease;
   &:hover {
-    box-shadow: rgba(84,70,35,0.01) 0px 2px 19px 8px, rgba(84, 70, 35, 0.11) 0px 2px 12px;
+    background: #757d8410;
   };
   &:active {
-    background: rgb(252, 250, 248);
+    background: #757d8429;
   };
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     padding: 6px 2px;
@@ -470,7 +489,7 @@ export const NotificationRow = withOptimizedTouchEvents(styled(NotificationRowHe
 
 export const LoadingNotificationRow = withOptimizedTouchEvents(styled(NotificationRowHeader)`
   position: relative;
-  background: ${WHITE};
+  background: #bfc5d118;
   height: 62px;
   overflow: hidden;
   border-radius: 4px;
@@ -483,7 +502,7 @@ export const LoadingNotificationRow = withOptimizedTouchEvents(styled(Notificati
   transition: all 200ms ease;
   opacity: 0.75;
   &:after {
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0), #f9f8f5, rgba(255, 255, 255, 0));
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0), #bfc5d133, rgba(255, 255, 255, 0));
     display: block;
     content: "";
     position: absolute;
@@ -542,7 +561,8 @@ export const NotificationTitle = withOptimizedTouchEvents(styled('span')`
   text-overflow: ellipsis;
 `);
 export const NotificationByline = withOptimizedTouchEvents(styled('span')`
-  display: block;
+  display: flex;
+  align-items: end;
   margin-top: 4px;
   font-size: 12px;
   color: #8893a7cc;
@@ -578,7 +598,6 @@ export const ProfileContainer = withOptimizedTouchEvents(styled('div')`
   position: absolute;
   right: 0;
   z-index: 3;
-  background: #fffefc;
   transition: all 200ms ease;
   user-select: none;
   cursor: pointer;
@@ -697,6 +716,14 @@ export function ProfileSection ({user, onLogout}) {
         </optimized.div>
         <optimized.div onClick={event => {
           event.stopPropagation();
+          navigate(routes.GUIDE);
+          setMenuShow(false);
+        }}>
+          <h2>Read guide</h2>
+          <p>Check out the guide for how to use Meteorite</p>
+        </optimized.div>
+        <optimized.div onClick={event => {
+          event.stopPropagation();
           navigate(routes.NOTIFICATIONS);
           setMenuShow(false);
         }}>
@@ -708,7 +735,7 @@ export function ProfileSection ({user, onLogout}) {
           onLogout();
           setMenuShow(false);
         }}>
-          <h2>Sign out</h2>
+          <h2>Logout</h2>
           <p>Log off your account and return to home page</p>
         </optimized.div>
       </InteractionMenu>
@@ -773,6 +800,23 @@ export const Divider = withOptimizedTouchEvents(styled('div')`
   }
 `);
 
+export const Connector = withOptimizedTouchEvents(styled('div')`
+  position: absolute;
+  display: block;
+  background: #e5e6eb;
+  border-radius: 4px;
+  left: 34px;
+  top: ${p => (p.offsetX || 0) + 55}px;
+  height: ${p => p.dot ? 4 : 26}px;
+  opacity: ${p => p.opacity || 1};
+  z-index: 0;
+  width: 2px;
+  margin: 0 8px;
+  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+    left: 18px;
+  }
+`);
+
 export const RepoBarContainer = withOptimizedTouchEvents(styled('div')`
   position: relative;
   width: 100%;
@@ -812,6 +856,18 @@ export const LinkText = withOptimizedTouchEvents(styled('div')`
     color: #37352faa;
   }
 `);
+
+export const JiraTag = withOptimizedTouchEvents(styled('span')(p => `
+  background: ${p.color || '#e2e2e2'}28;
+  color: ${p.color || '#e2e2e2'};
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 4px;
+  margin-right: 4px;
+  margin-bottom: 0px;
+  display: inline-block;
+  padding: 2px 4px;
+`));
 
 export const Bar = withOptimizedTouchEvents(styled('div')`
   position: relative;

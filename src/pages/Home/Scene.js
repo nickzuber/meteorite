@@ -31,6 +31,8 @@ import '../../styles/font.css';
 const hash = process.env.GIT_HASH ? `#${process.env.GIT_HASH}` : '';
 const version = require('../../../package.json').version + hash;
 
+const themeColor = '#457cff';
+
 const WIDTH_FOR_MEDIUM_SCREENS = '1100px';
 const WIDTH_FOR_SMALL_SCREENS = '800px';
 
@@ -567,7 +569,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
                   white-space: nowrap;
                   height: 36px;
                   border-radius: 3px;
-                  color: #457cff;
+                  color: ${themeColor};
                   font-size: 14px;
                   line-height: 1;
                   padding-left: 12px;
@@ -586,7 +588,7 @@ export default function Scene ({loggedIn, onLogout, ...props}) {
                 i {
                   z-index: 2;
                   margin-left: 8px;
-                  color: #457cff;
+                  color: ${themeColor};
                 }
               `}>
                 <span onClick={() => navigate(routes.REDESIGN_NOTIFICATIONS)}>{'Let\'s get started'}</span>

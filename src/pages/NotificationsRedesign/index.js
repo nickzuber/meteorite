@@ -112,9 +112,9 @@ function badgesOf (notification) {
     badges.push(Badges.COMMENTS);
   }
   // If you've been tagged in for review and the most recent update happened over
-  // 4 hours ago, that specific time is subject to change.
+  // 3 days ago – but that specific time is subject to change here if we want.
   if (notification.reasons.some(r => r.reason === Reasons.REVIEW_REQUESTED) &&
-      timeSinceLastUpdate > 60 * 4) {
+      timeSinceLastUpdate > 60 * 24 * 3) {
     badges.push(Badges.OLD);
   }
   return badges;
@@ -179,11 +179,11 @@ class NotificationsPage extends React.Component {
       if (!document.hidden && this.isUnreadTab) {
         this.updateTabIcon(false);
       }
-    }, 2000);
+    }, 2 * 1000);
 
     this.syncer = setInterval(() => {
       this.props.notificationsApi.fetchNotificationsSync()
-        .then(error => this.setState({error: null}))
+        .then(() => this.setState({error: null}))
         .catch(error => this.setState({error}));
       this.setState({currentTime: moment()});
     }, 8 * 1000);
@@ -567,6 +567,7 @@ class NotificationsPage extends React.Component {
         reposReadCounts={reposReadCounts}
         mode={this.state.mode}
         setMode={mode => this.setState({mode})}
+        request={this.props.notificationsApi.request}
       />
     );
   }
