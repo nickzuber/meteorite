@@ -2,24 +2,48 @@
 
 import React from 'react';
 import styled from '@emotion/styled';
+import {compose} from 'recompose';
 import {css, jsx, keyframes} from '@emotion/core';
 import {isMobile} from 'react-device-detect';
 import {navigate} from "@reach/router"
 import {routes} from '../../../../constants';
 import {withOnEnter, withOptimizedTouchEvents} from '../../../../enhance';
 
-export const themeColor = '#27B768';
+export const ThemeContext = React.createContext(false);
+export const withTheme = C => p => (
+  <ThemeContext.Consumer>
+    {dark => <C {...p} dark={dark} />}
+  </ThemeContext.Consumer>
+);
+
+const enhance = compose(
+  withTheme,
+  withOptimizedTouchEvents
+);
+
+export const ThemeColor = darkMode => darkMode ? '#E91356' : '#27B768';
 export const WHITE = 'rgb(255, 254, 252)';
 export const FOOTER_HEIGHT = '96px';
 export const COLLAPSED_WIDTH = '72px';
 export const EXPANDED_WIDTH = '286px';
 
+export const DarkTheme = {
+  Primary: '#0F1C26',
+  Secondary: '#11212D',
+  SecondaryAlt: '#112535',
+  Gray: '#667386',
+  Alpha: {
+    Light: '#757d8410',
+    Dark: '#757d8429'
+  }
+};
+
 export const WIDTH_FOR_MEDIUM_SCREENS = '1100px';
 export const WIDTH_FOR_SMALL_SCREENS = '750px';
 
 export const optimized = {
-  li: withOptimizedTouchEvents(props => <li {...props} />),
-  div: withOptimizedTouchEvents(props => <div {...props} />)
+  li: enhance(props => <li {...props} />),
+  div: enhance(props => <div {...props} />)
 };
 
 const loadingKeyframe = keyframes`
@@ -28,7 +52,7 @@ const loadingKeyframe = keyframes`
   }
 `;
 
-export const Title = withOptimizedTouchEvents(styled('h1')`
+export const Title = enhance(styled('h1')(p => `
   margin: 0;
   font-size: 32px;
   line-height: 46px;
@@ -41,9 +65,10 @@ export const Title = withOptimizedTouchEvents(styled('h1')`
   font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
   font-size: 36px;
   line-height: 52px;
-`);
+  color: ${p.dark ? WHITE : 'inherit'};
+`));
 
-export const Container = withOptimizedTouchEvents(styled('div')`
+export const Container = enhance(styled('div')`
   position: relative;
   display: block;
   background: ${WHITE};
@@ -51,44 +76,44 @@ export const Container = withOptimizedTouchEvents(styled('div')`
   overflow-x: hidden;
 `);
 
-export const Row = withOptimizedTouchEvents(styled('div')`
+export const Row = enhance(styled('div')`
   position: relative;
   display: block;
   display: flex;
   flex-direction: row;
 `);
 
-export const Item = withOptimizedTouchEvents(styled('div')`
+export const Item = enhance(styled('div')`
   position: relative;
   display: inline-block;
   transition: all 200ms ease;
 `);
 
-export const MenuHeaderItem = withOptimizedTouchEvents(styled(Item)`
+export const MenuHeaderItem = enhance(styled(Item)`
   height: ${COLLAPSED_WIDTH};
   width: ${({expand}) => expand ? EXPANDED_WIDTH : COLLAPSED_WIDTH};
   flex: ${({expand}) => expand ? `${EXPANDED_WIDTH} 0 0` : 1};
   transition: all 150ms ease;
-  border-bottom: 1px solid #292d35;
-  border-right: 1px solid #292d35;
-  background: #2f343e;
+  border-bottom: 1px solid ${({dark}) => dark ? DarkTheme.Primary : '#292d35'};
+  border-right: 1px solid ${({dark}) => dark ? DarkTheme.Primary : '#292d35'};
+  background: ${({dark}) => dark ? DarkTheme.Primary : '#2f343e'};
   z-index: 1;
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     display: none;
   }
 `);
 
-export const ContentHeaderItem = withOptimizedTouchEvents(styled(Item)`
+export const ContentHeaderItem = enhance(styled(Item)`
   height: ${COLLAPSED_WIDTH};
   width: calc(100% - ${COLLAPSED_WIDTH});
-  border-bottom: 1px solid #E5E6EB;
+  border-bottom: 1px solid ${({dark}) => dark ? DarkTheme.Primary : '#E5E6EB'};
   z-index: 1;
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     width: 100%;
   }
 `);
 
-export const MenuContainerItem = withOptimizedTouchEvents(styled(Item)`
+export const MenuContainerItem = enhance(styled(Item)`
   width: ${({expand}) => expand ? EXPANDED_WIDTH : COLLAPSED_WIDTH};
   flex: ${({expand}) => expand ? `${EXPANDED_WIDTH} 0 0` : 1};
   height: 100%;
@@ -100,12 +125,12 @@ export const MenuContainerItem = withOptimizedTouchEvents(styled(Item)`
 
 // Faded blue: #F5F6FA
 // Faded gray: #fbfbfb
-export const ContentItem = withOptimizedTouchEvents(styled(Item)`
+export const ContentItem = enhance(styled(Item)`
   height: 100%;
   min-height: calc(100vh - ${COLLAPSED_WIDTH} - ${FOOTER_HEIGHT});
   width: calc(100% - ${COLLAPSED_WIDTH});
-  background: ${WHITE};
-  border-left: 1px solid #292d35;
+  background: ${({dark}) => dark ? DarkTheme.Secondary : WHITE};
+  border-left: 1px solid ${({dark}) => dark ? DarkTheme.Primary : '#292d35'};
   padding-bottom: 12px;
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     width: 100%;
@@ -114,7 +139,7 @@ export const ContentItem = withOptimizedTouchEvents(styled(Item)`
   }
 `);
 
-export const CardSection = withOptimizedTouchEvents(styled('div')`
+export const CardSection = enhance(styled('div')`
   float: left;
   display: inline-block;
   width: 330px;
@@ -124,32 +149,35 @@ export const CardSection = withOptimizedTouchEvents(styled('div')`
   }
 `);
 
-export const Card = withOptimizedTouchEvents(styled('div')`
+export const Card = enhance(styled('div')`
   position: relative;
   width: 250px;
   padding: 20px 24px;
   min-height: 100px;
   margin: 32px auto 0;
-  background: ${WHITE};
-  border: 1px solid #E5E6EB;
-  box-shadow: rgba(84, 70, 35, 0) 0px 2px 8px, rgba(84,70,35,0.15) 0px 1px 3px;
+  background: ${({dark}) => dark ? DarkTheme.SecondaryAlt : WHITE};
+  border: 1px solid ${({dark}) => dark ? DarkTheme.Secondary : '#E5E6EB'};
+  box-shadow: ${({dark}) => dark
+    ? 'rgba(0, 0, 0, 0) 0px 2px 8px, rgba(0, 0, 0, 0.25) 0px 2px 6px'
+    : 'rgba(84, 70, 35, 0) 0px 2px 8px, rgba(84, 70, 35, 0.15) 0px 1px 3px'};
   border-radius: 6px;
 `);
 
-export const CardTitle = withOptimizedTouchEvents(styled(Title)`
+export const CardTitle = enhance(styled(Title)(p => `
+  color: ${p.dark ? WHITE : 'inherit'};
   letter-spacing: -0.25px;
   line-height: 1.25em;
   font-size: 1.75em;
-`);
+`));
 
-export const CardSubTitle = withOptimizedTouchEvents(styled(CardTitle)`
+export const CardSubTitle = enhance(styled(CardTitle)(p => `
   font-size: 16px;
   font-family: medium-content-sans-serif-font,Inter UI,system-ui,sans-serif;
-  color: #6c757d;
+  color: ${p.dark ? DarkTheme.Gray : '#6c757d'};
   margin-top: 0px;
-`);
+`));
 
-export const ScoreDiff = withOptimizedTouchEvents(styled(CardTitle)`
+export const ScoreDiff = enhance(styled(CardTitle)`
   position: absolute;
   font-family: Inter;
   font-size: 18px;
@@ -159,10 +187,10 @@ export const ScoreDiff = withOptimizedTouchEvents(styled(CardTitle)`
   top: 30px;
   right: 24px;
   opacity: ${props => props.show ? '1' : '0'};
-  color: ${props => props.under ? '#bfc5d1' : themeColor};
+  color: ${props => props.under ? '#bfc5d1' : ThemeColor(props.dark)};
 `);
 
-export const IconContainer = withOptimizedTouchEvents(styled('div')`
+export const IconContainer = enhance(styled('div')`
   position: relative;
   height: 72px;
   display: flex;
@@ -194,7 +222,7 @@ export const IconContainer = withOptimizedTouchEvents(styled('div')`
   }
 `);
 
-export const NotificationsSection = withOptimizedTouchEvents(styled('div')`
+export const NotificationsSection = enhance(styled('div')`
   display: inline-block;
   width: calc(100% - 362px - 68px);
   padding-top: 36px;
@@ -210,15 +238,19 @@ export const NotificationsSection = withOptimizedTouchEvents(styled('div')`
   }
 `);
 
-export const TitleSection = withOptimizedTouchEvents(styled('div')`
+export const TitleSection = enhance(styled('div')(p => `
   display: flex;
   width: 100%;
   padding: 0;
   margin: 0;
   height: auto;
-`);
 
-export const SubTitleSection = withOptimizedTouchEvents(styled('div')`
+  * {
+    color: ${p.dark ? WHITE : 'inherit'};
+  }
+`));
+
+export const SubTitleSection = enhance(styled('div')(p => `
   display: flex;
   width: 100%;
   padding: 0;
@@ -228,16 +260,15 @@ export const SubTitleSection = withOptimizedTouchEvents(styled('div')`
     margin: 4px 0 8px;
     font-weight: 500;
     font-size: 16px;
-    color: #9d9b97;
 
     font-size: 18px;
     font-family: medium-content-sans-serif-font,Inter UI,system-ui,sans-serif;
-    color: #6c757d;
+    color: ${p.dark ? DarkTheme.Gray : '#9d9b97'};
     margin-top: 0px;
   }
-`);
+`));
 
-export const UnorderedList = withOptimizedTouchEvents(styled('ul')`
+export const UnorderedList = enhance(styled('ul')`
   position: relative;
   width: 100%;
   margin-top: 0;
@@ -249,12 +280,12 @@ export const UnorderedList = withOptimizedTouchEvents(styled('ul')`
   list-style: none;
 `);
 
-export const PageSelection = withOptimizedTouchEvents(styled(UnorderedList)`
+export const PageSelection = enhance(styled(UnorderedList)`
   border-bottom: 2px solid #bfc5d150;
   flex-wrap: nowrap;
 `);
 
-export const SearchField = withOptimizedTouchEvents(styled('div')`
+export const SearchField = enhance(styled('div')(p => `
   position: relative;
   float: left;
   text-align: left;
@@ -263,18 +294,19 @@ export const SearchField = withOptimizedTouchEvents(styled('div')`
   font-size: 13px;
   display: inline-flex;
   margin: 0 24px;
-  background: rgba(255, 255, 255, 0.125);
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 2px;
   padding: 0px;
   text-decoration: none;
   transition: all 0.06s ease-in-out 0s;
-  border: 1px solid #bfc5d161;
+  border: 1px solid ${p.dark ? DarkTheme.Primary : 'rgb(230, 231, 234)'};
   &:hover {
-    border: 1px solid #bfc5d1aa;
+    border: 1px solid ${p.dark ? DarkTheme.Secondary : '#bfc5d1aa'};
   }
   &:focus-within {
-    border: 1px solid ${themeColor};
-    box-shadow: rgba(84,70,35,0.01) 0px 2px 19px 8px, rgba(84, 70, 35, 0.11) 0px 2px 12px;
+    box-shadow: ${p.dark
+      ? 'none'
+      : 'rgba(84,70,35,0.01) 0px 2px 19px 8px, rgba(84, 70, 35, 0.11) 0px 2px 12px'};
   }
   i {
     color: #bfc5d1;
@@ -285,13 +317,14 @@ export const SearchField = withOptimizedTouchEvents(styled('div')`
     justify-content: center;
     font-size: 14px;
   }
-`);
+`));
 
-const SearchInput = withOptimizedTouchEvents(styled('input')`
+const SearchInput = enhance(styled('input')(p => `
   position: relative;
   text-align: left;
   transition: all 200ms ease;
   height: 36px;
+  color: ${p.dark ? WHITE : 'inherit'};
   font-size: 13px;
   display: inline-flex;
   flex: 1 1 0%;
@@ -306,19 +339,23 @@ const SearchInput = withOptimizedTouchEvents(styled('input')`
   border-color: initial;
   border-image: initial;
   outline: none;
-  opacity: 0.5;
+  opacity: 0.75;
+  &::placeholder {
+    color: ${p.dark ? DarkTheme.Gray : 'rgb(230, 231, 234)'};
+  }
   &:focus {
     opacity: 1;
-    color: rgb(55, 53, 47);
+    color: ${p.dark ? WHITE : 'rgb(55, 53, 47)'};
     width: 300px;
     @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
       width: 184px;
     }
   }
-`);
+`));
+
 export const EnhancedSearchInput = withOnEnter(SearchInput);
 
-export const PageItemComponent = withOptimizedTouchEvents(styled('li')`
+export const PageItemComponent = enhance(styled('li')(p => `
   font-size: 14px;
   padding: 0 32px 0 8px;
   width: 98px;
@@ -330,11 +367,14 @@ export const PageItemComponent = withOptimizedTouchEvents(styled('li')`
   user-select: none;
   transition: all 200ms ease;
   font-weight: ${props => props.selected ? 600 : 400};
+  color: ${p.dark ? WHITE : 'inherit'};
+  border-top-right-radius: 8px;
+  border-top-left-radius: 8px;
   &:hover {
-    background: rgba(233, 233, 233, .5);
+    background: #757d8410;
   }
   &:active {
-    background: rgba(233, 233, 233, .75);
+    background: #757d8429;
   }
   &:after {
     transition: all 200ms ease;
@@ -347,11 +387,11 @@ export const PageItemComponent = withOptimizedTouchEvents(styled('li')`
     left: 0;
     height: 3px;
   }
-`);
+`));
 
-export const InteractionSection = withOptimizedTouchEvents(styled('ul')`
+export const InteractionSection = enhance(styled('ul')`
   position: relative;
-  width: 100px;
+  width: 150px;
   height: 50px;
   padding: 0;
   margin: 0;
@@ -375,9 +415,9 @@ export const InteractionSection = withOptimizedTouchEvents(styled('ul')`
   }
 `);
 
-export const InteractionMenu = withOptimizedTouchEvents(styled('div')`
-  height: ${props => props.show ? 345 : 0}px;
-  opacity: ${props => props.show ? 1 : 0};
+export const InteractionMenu = enhance(styled('div')(p => `
+  height: ${p.show ? 345 : 0}px;
+  opacity: ${p.show ? 1 : 0};
   top: 32px;
   left: 72px;
   margin-left: 2px;
@@ -397,7 +437,10 @@ export const InteractionMenu = withOptimizedTouchEvents(styled('div')`
       user-select: none;
       transition: all 200ms ease;
       &:hover {
-        background: rgba(233, 233, 233, .25);
+        background: ${p.dark ? DarkTheme.Alpha.Light : 'rgba(233, 233, 233, .25)'};
+      }
+      &:active {
+        background: ${p.dark ? DarkTheme.Alpha.Dark : 'rgba(233, 233, 233, .5)'};
       }
       a, h2 {
         text-decoration: none;
@@ -416,9 +459,9 @@ export const InteractionMenu = withOptimizedTouchEvents(styled('div')`
     left: -178px;
     top: 24px;
   }
-`);
+`));
 
-export const SortingItemComponent = withOptimizedTouchEvents(styled('div')`
+export const SortingItemComponent = enhance(styled('div')`
   display: flex;
   height: auto;
   margin-right: 12px;
@@ -447,13 +490,13 @@ export const SortingItemComponent = withOptimizedTouchEvents(styled('div')`
   }
 `);
 
-export const NotificationsTable = withOptimizedTouchEvents(styled('table')`
+export const NotificationsTable = enhance(styled('table')`
   position: relative;
   display: flex;
   flex-direction: column;
 `);
 
-export const NotificationRowHeader = withOptimizedTouchEvents(styled('tr')`
+export const NotificationRowHeader = enhance(styled('tr')`
   position: relative;
   width: 100%;
   display: flex;
@@ -464,7 +507,7 @@ export const NotificationRowHeader = withOptimizedTouchEvents(styled('tr')`
   box-sizing: border-box;
 `);
 
-export const NotificationRow = withOptimizedTouchEvents(styled(NotificationRowHeader)`
+export const NotificationRow = enhance(styled(NotificationRowHeader)`
   position: relative;
   background: none;
   z-index: 1;
@@ -487,7 +530,7 @@ export const NotificationRow = withOptimizedTouchEvents(styled(NotificationRowHe
   }
 `);
 
-export const LoadingNotificationRow = withOptimizedTouchEvents(styled(NotificationRowHeader)`
+export const LoadingNotificationRow = enhance(styled(NotificationRowHeader)`
   position: relative;
   background: #bfc5d118;
   height: 62px;
@@ -515,11 +558,11 @@ export const LoadingNotificationRow = withOptimizedTouchEvents(styled(Notificati
   }
 `);
 
-export const NotificationBlock = withOptimizedTouchEvents(styled('tbody')`
+export const NotificationBlock = enhance(styled('tbody')`
   transition: all 200ms ease;
 `);
 
-export const ErrorContainer = withOptimizedTouchEvents(styled('div')`
+export const ErrorContainer = enhance(styled('div')`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -541,7 +584,7 @@ export const ErrorContainer = withOptimizedTouchEvents(styled('div')`
   }
 `);
 
-export const NotificationCell = withOptimizedTouchEvents(styled('td')`
+export const NotificationCell = enhance(styled('td')`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -554,13 +597,14 @@ export const NotificationCell = withOptimizedTouchEvents(styled('td')`
   }};
 `);
 
-export const NotificationTitle = withOptimizedTouchEvents(styled('span')`
+export const NotificationTitle = enhance(styled('span')(p => `
   font-size: 14px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-`);
-export const NotificationByline = withOptimizedTouchEvents(styled('span')`
+  color: ${p.dark ? '#FFFEFC' : 'inherit'};
+`));
+export const NotificationByline = enhance(styled('span')`
   display: flex;
   align-items: end;
   margin-top: 4px;
@@ -587,13 +631,13 @@ export const NotificationByline = withOptimizedTouchEvents(styled('span')`
   }
 `);
 
-export const ProfileContainer = withOptimizedTouchEvents(styled('div')`
+export const ProfileContainer = enhance(styled('div')(p => `
   display: flex;
   height: 100%;
   width: 188px;
   justify-content: space-between;
   align-items: center;
-  border-left: 1px solid #edeef0;
+  border-left: 1px solid ${p.dark ? DarkTheme.Primary : '#edeef0'};
   padding: 0 22px;
   position: absolute;
   right: 0;
@@ -607,7 +651,13 @@ export const ProfileContainer = withOptimizedTouchEvents(styled('div')`
     color: #bfc5d1a3
   }
   &:hover {
-    background: rgba(233, 233, 233, .25);
+    background: ${p.dark ? DarkTheme.Alpha.Light : 'rgba(233, 233, 233, .25)'};
+    i {
+      color: #bfc5d1
+    }
+  }
+  &:active {
+    background: ${p.dark ? DarkTheme.Alpha.Dark : 'rgba(233, 233, 233, .5)'};
     i {
       color: #bfc5d1
     }
@@ -615,22 +665,23 @@ export const ProfileContainer = withOptimizedTouchEvents(styled('div')`
   @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
     width: 48px;
   }
-`);
+`));
 
-export const ProfileName = withOptimizedTouchEvents(styled('span')`
+export const ProfileName = enhance(styled('span')(p => `
   font-size: 14px;
   font-weight: 500;
   margin: 0 12px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: ${p.dark ? WHITE : 'inherit'};
   margin-right: auto;
   @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
     display: none;
   }
-`);
+`));
 
-export const ProfilePicture = withOptimizedTouchEvents(styled('img')`
+export const ProfilePicture = enhance(styled('img')`
   height: 36px;
   width: 36px;
   border-radius: 4px;
@@ -743,7 +794,7 @@ export function ProfileSection ({user, onLogout}) {
   );
 }
 
-export const NotificationIconWrapper = withOptimizedTouchEvents(styled('div')`
+export const NotificationIconWrapper = enhance(styled('div')`
   width: 48px;
   height: 48px;
   display: flex;
@@ -753,7 +804,7 @@ export const NotificationIconWrapper = withOptimizedTouchEvents(styled('div')`
   transform: scale(.65);
 `);
 
-export const IconLink = withOptimizedTouchEvents(styled('span')`
+export const IconLink = enhance(styled('span')`
   position: relative;
   cursor: ${props => props.disabled ? 'default' : 'pointer'};
   display: inline-flex;
@@ -788,7 +839,7 @@ export const IconLink = withOptimizedTouchEvents(styled('span')`
   }
 `);
 
-export const Divider = withOptimizedTouchEvents(styled('div')`
+export const Divider = enhance(styled('div')`
   position: relative;
   display: inline-block;
   background: #e5e6eb;
@@ -800,28 +851,29 @@ export const Divider = withOptimizedTouchEvents(styled('div')`
   }
 `);
 
-export const Connector = withOptimizedTouchEvents(styled('div')`
+export const Connector = enhance(styled('div')(p => `
   position: absolute;
   display: block;
-  background: #e5e6eb;
+  background: ${p.dark ? '#2E3D4B' : '#e5e6eb'};
   border-radius: 4px;
   left: 34px;
-  top: ${p => (p.offsetX || 0) + 55}px;
-  height: ${p => p.dot ? 4 : 26}px;
-  opacity: ${p => p.opacity || 1};
+  top: ${(p.offsetX || 0) + 55}px;
+  height: ${p.dot ? 4 : 26}px;
+  opacity: ${p.opacity || 1};
   z-index: 0;
   width: 2px;
   margin: 0 8px;
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     left: 18px;
   }
-`);
+`));
 
-export const RepoBarContainer = withOptimizedTouchEvents(styled('div')`
+export const RepoBarContainer = enhance(styled('div')(p => `
   position: relative;
   width: 100%;
   margin-bottom: 28px;
   p {
+    color: ${p.dark ? WHITE : 'inherit'};
     font-size: 15px;
     font-weight: 600;
     white-space: nowrap;
@@ -832,6 +884,7 @@ export const RepoBarContainer = withOptimizedTouchEvents(styled('div')`
     margin: 8px 0 0;
   }
   span {
+    color: ${p.dark ? DarkTheme.Gray : '#bfc5d1'};
     margin: 2px 0 8px;
     font-size: 13px;
     font-weight: 500;
@@ -840,24 +893,23 @@ export const RepoBarContainer = withOptimizedTouchEvents(styled('div')`
     overflow: hidden;
     width: 100%;
     display: block;
-    color: #bfc5d1;
   }
-`);
+`));
 
-export const LinkText = withOptimizedTouchEvents(styled('div')`
+export const LinkText = enhance(styled('div')(p => `
   text-decoration: underline;
   font-size: 12px;
-  color: #37352f59;
+  color: ${p.dark ? DarkTheme.Gray : '#37352f59'};
   font-weight: 500;
   text-underline-position: under;
   cursor: pointer;
   transition: all 200ms ease;
   &:hover {
-    color: #37352faa;
+    color: ${p.dark ? DarkTheme.Gray + 'aa' : '#37352faa'};
   }
-`);
+`));
 
-export const JiraTag = withOptimizedTouchEvents(styled('span')(p => `
+export const JiraTag = enhance(styled('span')(p => `
   background: ${p.color || '#e2e2e2'}28;
   color: ${p.color || '#e2e2e2'};
   font-size: 10px;
@@ -869,20 +921,20 @@ export const JiraTag = withOptimizedTouchEvents(styled('span')(p => `
   padding: 2px 4px;
 `));
 
-export const Bar = withOptimizedTouchEvents(styled('div')`
+export const Bar = enhance(styled('div')(p => `
   position: relative;
   width: 100%;
   height: 5px;
   border-radius: 8px;
-  background: #e5e7ea;
+  background: ${p.dark ? DarkTheme.Primary : '#e5e7ea'};
   &:after {
     content: "";
     position: absolute;
-    width: ${props => Math.max(Math.min((props.value * 100), 100), 0)}%;
+    width: ${Math.max(Math.min((p.value * 100), 100), 0)}%;
     border-radius: 8px;
-    background: ${props => props.color};
+    background: ${ThemeColor(p.dark)}d1;
     left: 0;
     top: 0;
     bottom: 0;
   }
-`);
+`));
