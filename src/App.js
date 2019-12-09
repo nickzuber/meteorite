@@ -4,7 +4,6 @@ import {
   Location,
   LocationProvider
 } from "@reach/router";
-import ReactGA from 'react-ga';
 import { routes } from './constants';
 import { AuthProvider } from './providers/Auth';
 import {
@@ -16,13 +15,24 @@ import {
   NotificationsRedesign,
 } from './pages';
 
-// Initialize Google Analytics.
-ReactGA.initialize('UA-154218045-1');
+// @TODO: abstract further once confirmed this works.
+function gtag () {
+  window.dataLayer = window.dataLayer || [];
+  return () => {
+    window.dataLayer.push(arguments);
+  };
+}
+function gaTrack (options) {
+  gtag('config', 'UA-154218045-1', options);
+}
 
 // Effectively track each new page.
 function PageTracker ({location}) {
   React.useEffect(() => {
-    ReactGA.pageview(location.pathname);
+    gaTrack({
+      page_location: location,
+      page_path: location.pathname
+    });
   }, [location]);
 
   return null;
