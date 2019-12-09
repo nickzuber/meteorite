@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
-import { Router } from "@reach/router";
+import {
+  Router,
+  Location,
+  LocationProvider
+} from "@reach/router";
+import ReactGA from 'react-ga';
 import { routes } from './constants';
 import { AuthProvider } from './providers/Auth';
 import {
@@ -11,18 +16,35 @@ import {
   NotificationsRedesign,
 } from './pages';
 
+// Initialize Google Analytics.
+ReactGA.initialize('UA-154218045-1');
+
+// Effectively track each new page.
+function PageTracker ({location}) {
+  React.useEffect(() => {
+    ReactGA.pageview(location.pathname);
+  }, [location]);
+
+  return null;
+}
+
 class App extends Component {
   render() {
     return (
       <AuthProvider>
-        <Router>
-          <Home path={routes.HOME} />
-          <Login path={routes.LOGIN} />
-          <Pricing path={routes.PRICING} />
-          <Guide path={routes.GUIDE} />
-          <Notifications path={routes.NOTIFICATIONS} />
-          <NotificationsRedesign path={routes.REDESIGN_NOTIFICATIONS} />
-        </Router>
+        <LocationProvider>
+          <Location>
+            {({location}) => <PageTracker location={location} />}
+          </Location>
+          <Router>
+            <Home path={routes.HOME} />
+            <Login path={routes.LOGIN} />
+            <Pricing path={routes.PRICING} />
+            <Guide path={routes.GUIDE} />
+            <Notifications path={routes.NOTIFICATIONS} />
+            <NotificationsRedesign path={routes.REDESIGN_NOTIFICATIONS} />
+          </Router>
+        </LocationProvider>
       </AuthProvider>
     );
   }
