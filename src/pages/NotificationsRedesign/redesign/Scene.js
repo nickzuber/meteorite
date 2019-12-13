@@ -466,7 +466,7 @@ export default function Scene ({
               onClick={() => window.scrollTo(0, 0)}
               size={32}
             />
-            <ProfileSection user={user} onLogout={onLogout} />
+            <ProfileSection dark={darkMode} user={user} onLogout={onLogout} />
           </ContentHeaderItem>
         </Row>
         {/* Sidebar options & notifications content */}

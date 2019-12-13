@@ -689,7 +689,7 @@ export const ProfilePicture = enhance(styled('img')`
   opacity: ${props => props.src ? 1 : 0.25};
 `);
 
-export function ProfileSection ({user, onLogout}) {
+export function ProfileSection ({dark, user, onLogout}) {
   const [menuShow, setMenuShow] = React.useState(false);
   React.useEffect(() => {
     const body = window.document.querySelector('body');
@@ -713,19 +713,22 @@ export function ProfileSection ({user, onLogout}) {
         `}></i>
       </ProfileContainer>
       <InteractionMenu show={menuShow} css={css`
-        top: ${COLLAPSED_WIDTH};
+        top: calc(${COLLAPSED_WIDTH} + 1px);
         height: ${menuShow ? 'auto' : '0px'};
         border-bottom-right-radius: 4px;
         border-bottom-left-radius: 4px;
         right: 0;
         left: auto;
-        background: ${WHITE};
-        border: ${menuShow ? '1px' : '0px'} solid #edeef0;
+        background: ${dark ? DarkTheme.SecondaryAlt : WHITE};
+        border: ${menuShow ? '1px' : '0px'} solid ${dark ? DarkTheme.Secondary : '#edeef0'};
+        border-top: 0;
         width: ${22 + 187 + 22}px;
         cursor: pointer;
         outline: none;
         user-select: none;
-        box-shadow: rgba(84,70,35,0) 0px 2px 8px, rgba(84,70,35,0.15) 0px 1px 3px;
+        box-shadow: ${dark
+          ? 'rgba(0, 0, 0, 0) 0px 2px 8px, rgba(0, 0, 0, 0.25) 0px 2px 6px'
+          : 'rgba(84, 70, 35, 0) 0px 2px 8px, rgba(84, 70, 35, 0.15) 0px 1px 3px'};
         transition: height 200ms ease, opacity 200ms ease;
         @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
           left: auto;
@@ -738,14 +741,19 @@ export function ProfileSection ({user, onLogout}) {
           user-select: none;
           transition: all 200ms ease;
           &:hover {
-            background: rgba(233, 233, 233, .25);
+            background: ${dark ? DarkTheme.Alpha.Light : 'rgba(233, 233, 233, .25)'};
+          }
+          &:active {
+            background: ${dark ? DarkTheme.Alpha.Dark : 'rgba(233, 233, 233, .5)'};
           }
         }
         h2 {
+          color: ${dark ? WHITE : 'inherit'};
           margin: 0 0 4px;
           font-size: 15px;
         }
         p {
+          color: ${dark ? WHITE : 'inherit'};
           margin: 0;
           font-size: 13px;
           opacity: 0.7;
