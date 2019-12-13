@@ -366,7 +366,7 @@ export const PageItemComponent = enhance(styled('li')(p => `
   outline: none;
   user-select: none;
   transition: all 200ms ease;
-  font-weight: ${props => props.selected ? 600 : 400};
+  font-weight: ${p.selected ? 600 : 400};
   color: ${p.dark ? WHITE : 'inherit'};
   border-top-right-radius: 8px;
   border-top-left-radius: 8px;
@@ -381,7 +381,7 @@ export const PageItemComponent = enhance(styled('li')(p => `
     content: "";
     position: absolute;
     width: 100%;
-    background: ${props => props.selected ? props.primary : 'none'};
+    background: ${p.selected ? p.primary : 'none'};
     right: 0;
     bottom: -2px;
     left: 0;
