@@ -416,7 +416,7 @@ export const InteractionSection = enhance(styled('ul')`
 `);
 
 export const InteractionMenu = enhance(styled('div')(p => `
-  height: ${p.show ? 345 : 0}px;
+  height: ${p.show ? (5 * 85 + 5) : 0}px;
   opacity: ${p.show ? 1 : 0};
   top: 32px;
   left: 72px;
@@ -804,9 +804,9 @@ export const NotificationIconWrapper = enhance(styled('div')`
   transform: scale(.65);
 `);
 
-export const IconLink = enhance(styled('span')`
+export const IconLink = enhance(styled('span')(p => `
   position: relative;
-  cursor: ${props => props.disabled ? 'default' : 'pointer'};
+  cursor: ${p.disabled ? 'default' : 'pointer'};
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -816,7 +816,10 @@ export const IconLink = enhance(styled('span')`
   width: 40px;
   transition: all 150ms ease;
   i {
-    color: ${props => props.disabled ? '#bfc5d1' : 'inherit'};
+    color: ${p.disabled
+      ? p.dark ? DarkTheme.Gray : '#bfc5d1'
+      : p.dark ? WHITE : 'inherit'
+    };
   }
   &:before {
     content: "";
@@ -832,12 +835,12 @@ export const IconLink = enhance(styled('span')`
     transform: scale(0);
   }
   &:hover:before {
-    transform: ${props => props.disabled ? 'scale(0)' : 'scale(1)'};
+    transform: ${p.disabled ? 'scale(0)' : 'scale(1)'};
   }
   &:active:before {
-    background: ${props => props.disabled ? '#BFC5D122' : '#BFC5D144'};;
+    background: ${p.disabled ? '#BFC5D122' : '#BFC5D144'};
   }
-`);
+`));
 
 export const Divider = enhance(styled('div')`
   position: relative;

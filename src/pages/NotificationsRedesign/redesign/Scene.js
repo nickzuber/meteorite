@@ -354,25 +354,25 @@ export default function Scene ({
   });
 
   readStatistics = readStatistics.map(n => parseInt(n, 10));
-  // const lastWeekStats = readStatistics.slice(0, 7);
-  // const thisWeekStats = readStatistics.slice(7);
+  const lastWeekStats = readStatistics.slice(0, 7);
+  const thisWeekStats = readStatistics.slice(7);
 
   // Faux stats for pretty screenshots.
-  const lastWeekStats = [4, 2, 7, 4, 5, 8, 1];
-  const thisWeekStats = [7, 8, 5, 6, 4, 9, 12];
+  // const lastWeekStats = [4, 2, 7, 4, 5, 8, 1];
+  // const thisWeekStats = [7, 8, 5, 6, 4, 9, 12];
 
   const percentageDeltaToday = getPercentageDelta(counts.cur, counts.prev);
   const highestRepoReadCount = Object.values(reposReadCounts).reduce((h, c) => Math.max(h, c), 0);
   const colorOfRepoCount = createColorOfScore(0, highestRepoReadCount);
 
   const data = [
-    {name: 'Sunday', cur: thisWeekStats[0], prev: lastWeekStats[0]},
+    // {name: 'Sunday', cur: thisWeekStats[0], prev: lastWeekStats[0]},
     {name: 'Monday', cur: thisWeekStats[1], prev: lastWeekStats[1]},
     {name: 'Tuesday', cur: thisWeekStats[2], prev: lastWeekStats[2]},
     {name: 'Wednesday', cur: thisWeekStats[3], prev: lastWeekStats[3]},
     {name: 'Thursday', cur: thisWeekStats[4], prev: lastWeekStats[4]},
     {name: 'Friday', cur: thisWeekStats[5], prev: lastWeekStats[5]},
-    {name: 'Saturday', cur: thisWeekStats[6], prev: lastWeekStats[6]},
+    // {name: 'Saturday', cur: thisWeekStats[6], prev: lastWeekStats[6]},
   ];
 
   // Global event listeners for things like the dropdowns & popups.
@@ -627,6 +627,14 @@ export default function Scene ({
                         </optimized.div>
                         <optimized.div onClick={event => {
                           event.stopPropagation();
+                          setDarkMode(mode => !mode);
+                          setDropdownOpen(false);
+                        }}>
+                          <h2>{darkMode ? 'Disable' : 'Enable'} dark mode</h2>
+                          <p>Turn {darkMode ? 'on' : 'off'} the dark mode theme for this page</p>
+                        </optimized.div>
+                        <optimized.div onClick={event => {
+                          event.stopPropagation();
                           const response = window.confirm('Are you sure you want to mark all your notifications as read?');
                           void (response && onMarkAllAsStaged());
                           setDropdownOpen(false);
@@ -685,8 +693,12 @@ export default function Scene ({
                   {unreadCount > 0 && (
                     <span css={css`
                       transition: all 200ms ease;
-                      background: ${view === View.UNREAD ? ThemeColor(darkMode) : '#bfc5d1'};
+                      background: ${view === View.UNREAD
+                        ? ThemeColor(darkMode)
+                        : darkMode ? DarkTheme.Gray : '#bfc5d1'
+                      };
                       color: ${WHITE};
+                      transition: background 200ms ease;
                       font-size: 9px;
                       margin: 0 6px;
                       padding: 2px 6px;
@@ -708,8 +720,12 @@ export default function Scene ({
                   {readCount > 0 && (
                     <span css={css`
                       transition: all 200ms ease;
-                      background: ${view === View.READ ? ThemeColor(darkMode) : '#bfc5d1'};
+                      background: ${view === View.READ
+                        ? ThemeColor(darkMode)
+                        : darkMode ? DarkTheme.Gray : '#bfc5d1'
+                      };
                       color: ${WHITE};
+                      transition: background 200ms ease;
                       font-size: 9px;
                       margin: 0 6px;
                       padding: 2px 6px;
@@ -731,8 +747,12 @@ export default function Scene ({
                   {archivedCount > 0 && (
                     <span css={css`
                       transition: all 200ms ease;
-                      background: ${view === View.ARCHIVED ? ThemeColor(darkMode) : '#bfc5d1'};
+                      background: ${view === View.ARCHIVED
+                        ? ThemeColor(darkMode)
+                        : darkMode ? DarkTheme.Gray : '#bfc5d1'
+                      };
                       color: ${WHITE};
+                      transition: background 200ms ease;
                       font-size: 9px;
                       margin: 0 6px;
                       padding: 2px 6px;
@@ -905,7 +925,7 @@ export default function Scene ({
         {/* Footer links */}
         <Row css={css`
           height: calc(100% - ${COLLAPSED_WIDTH});
-          background: #2f343e;
+          background: ${darkMode ? DarkTheme.Primary : '#2f343e'};
         `}>
           <MenuContainerItem expand={menuOpen}>
           </MenuContainerItem>
@@ -918,7 +938,7 @@ export default function Scene ({
             span {
               display: inline-block;
               font-size: 11px;
-              color: #37352f52;
+              color: ${darkMode ? DarkTheme.Gray : '#37352f52'};
               margin: 0 12px;
               font-weight: 500;
             }
@@ -926,14 +946,14 @@ export default function Scene ({
               display: inline-block;
               text-decoration: underline;
               font-size: 11px;
-              color: #37352f52;
+              color: ${darkMode ? DarkTheme.Gray : '#37352f52'};
               margin: 0 12px;
               font-weight: 500;
               cursor: pointer;
               text-underline-position: under;
               transition: all 200ms ease;
               &:hover {
-                color: #37352faa;
+                color: ${darkMode ? DarkTheme.Gray + 'aa' : '#37352f52'};
               }
             }
           `}>
