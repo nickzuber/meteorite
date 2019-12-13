@@ -784,13 +784,13 @@ export default function Scene ({
                     <>
                       <span css={css`
                         font-size: 13px;
-                        color: #797d8c;
+                        color: ${darkMode ? DarkTheme.Gray : '#797d8c'};
                         font-weight: 500;
                         vertical-align: text-top;
                         margin-right: 8px;
                         span {
                           font-size: 13px;
-                          color: #37352f;
+                          color: ${darkMode ? WHITE : '#37352f'};
                           font-weight: 600;
                           vertical-align: text-top;
                         }

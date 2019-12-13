@@ -842,17 +842,17 @@ export const IconLink = enhance(styled('span')(p => `
   }
 `));
 
-export const Divider = enhance(styled('div')`
+export const Divider = enhance(styled('div')(p => `
   position: relative;
   display: inline-block;
-  background: #e5e6eb;
+  background: ${p.dark ? '#bfc5d150' : '#e5e6eb'};
   height: 28px;
   width: 2px;
   margin: 0 8px;
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     display: none;
   }
-`);
+`));
 
 export const Connector = enhance(styled('div')(p => `
   position: absolute;
