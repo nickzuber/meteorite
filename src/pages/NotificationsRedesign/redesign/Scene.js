@@ -446,7 +446,7 @@ export default function Scene ({
                 position: 'absolute',
                 right: 0,
                 transform: 'scale(0.8)',
-                backgroundColor: 'white'
+                backgroundColor: 'transparent'
               }} />}
             </SearchField>
             <Logo
