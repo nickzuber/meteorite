@@ -568,6 +568,8 @@ class NotificationsPage extends React.Component {
         mode={this.state.mode}
         setMode={mode => this.setState({mode})}
         request={this.props.notificationsApi.request}
+        getUserItem={this.props.storageApi.getUserItem}
+        setUserItem={this.props.storageApi.setUserItem}
       />
     );
   }

@@ -5,9 +5,8 @@ import moment from 'moment';
 import {css, jsx} from '@emotion/core';
 import {Badges, Reasons} from '../../../constants/reasons';
 import {Mode} from '../index';
-import {NotificationIconWrapper} from './ui/ui';
+import {NotificationIconWrapper, ThemeColor} from './ui/ui';
 
-const themeColor = '#27B768';
 export const Colors = [
   '#1c7ed6',
   '#ae3ec9',
@@ -98,13 +97,13 @@ export function stringOfError (errorText) {
   }
 }
 
-export function getPRIssueIcon (type, _reasons) {
+export function getPRIssueIcon (type, _reasons, dark) {
   switch (type) {
     case 'PullRequest':
       return (
-        <NotificationIconWrapper css={css`background: ${themeColor}29;`}>
+        <NotificationIconWrapper css={css`background: ${ThemeColor(dark)}29;`}>
           <i className="fas fa-code-branch" css={css`
-            color: ${themeColor};
+            color: ${ThemeColor(dark)};
             font-size: 18px;
           `}></i>
         </NotificationIconWrapper>
