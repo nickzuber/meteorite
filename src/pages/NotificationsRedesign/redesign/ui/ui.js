@@ -179,7 +179,7 @@ export const CardSubTitle = enhance(styled(CardTitle)(p => `
 
 export const ScoreDiff = enhance(styled(CardTitle)`
   position: absolute;
-  font-family: Inter;
+  font-family: Inter, Inter UI, sans-serif;
   font-size: 18px;
   line-height: 24px;
   font-weight: 500;
