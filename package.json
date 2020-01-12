@@ -78,7 +78,7 @@
     "build": "node scripts/build.js && cp build/index.html build/200.html",
     "now-build": "npm run build",
     "test": "node scripts/test.js",
-    "deploy": "now --target production"
+    "deploy": "now --prod"
   },
   "eslintConfig": {
     "extends": "react-app"
