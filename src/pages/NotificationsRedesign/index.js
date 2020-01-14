@@ -41,6 +41,28 @@ export const Mode = {
   OLD: 3
 };
 
+// @TODO: abstract further once confirmed this works.
+function gtag () {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push(arguments);
+}
+
+function gaTrackNotificationStaged (value) {
+  gtag('event', 'notification_staged', {
+    event_category: 'notification',
+    event_label: 'Notification read',
+    value
+  });
+}
+
+function gaTrackNotificationRead (value) {
+  gtag('event', 'notification_read', {
+    event_category: 'notification',
+    event_label: 'Notification archived',
+    value
+  });
+}
+
 // @TODO Move these functions.
 
 /**
@@ -244,12 +266,14 @@ class NotificationsPage extends React.Component {
   }
 
   enhancedOnStageThread = (thread_id, repository) => {
+    gaTrackNotificationStaged(thread_id);
     this.props.storageApi.incrStat('stagedCount');
     this.props.storageApi.incrStat(repository + '-stagedCount', '__REPO__');
     this.props.notificationsApi.stageThread(thread_id);
   }
 
   enhancedOnMarkAsRead = (thread_id, repository) => {
+    gaTrackNotificationRead(thread_id);
     this.props.storageApi.incrStat('stagedCount');
     this.props.storageApi.incrStat(repository + '-stagedCount', '__REPO__');
     this.props.notificationsApi.markAsRead(thread_id);

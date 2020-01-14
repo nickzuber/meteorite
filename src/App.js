@@ -18,10 +18,9 @@ import {
 // @TODO: abstract further once confirmed this works.
 function gtag () {
   window.dataLayer = window.dataLayer || [];
-  return () => {
-    window.dataLayer.push(arguments);
-  };
+  window.dataLayer.push(arguments);
 }
+
 function gaTrack (options) {
   gtag('config', 'UA-154218045-1', options);
 }
