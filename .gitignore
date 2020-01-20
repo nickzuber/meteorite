@@ -9,6 +9,9 @@
 # production
 /build
 
+# meta
+git-hash.txt
+
 # misc
 .DS_Store
 .env.local
