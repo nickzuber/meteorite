@@ -37,6 +37,7 @@
     "file-loader": "2.0.0",
     "fs-extra": "7.0.0",
     "html-webpack-plugin": "4.0.0-alpha.2",
+    "husky": "^4.0.10",
     "identity-obj-proxy": "3.0.0",
     "jest": "^24.7.1",
     "jest-pnp-resolver": "1.0.1",
@@ -76,11 +77,15 @@
   },
   "scripts": {
     "start": "node scripts/start.js",
-    "build": "npm run before-build && node scripts/build.js && cp build/index.html build/200.html",
+    "build": "node scripts/build.js && cp build/index.html build/200.html",
     "now-build": "npm run build",
     "test": "node scripts/test.js",
-    "before-build": "git rev-parse --short HEAD > git-hash.txt",
     "deploy": "now --prod"
+  },
+  "husky": {
+    "hooks": {
+      "post-commit": "git rev-parse --short HEAD > git-hash.txt"
+    }
   },
   "eslintConfig": {
     "extends": "react-app"
