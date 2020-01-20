@@ -12,6 +12,7 @@
     "@rehooks/component-size": "^1.0.2",
     "@svgr/webpack": "2.4.1",
     "ajv": "^6.10.0",
+    "amplitude-js": "^5.8.0",
     "axios": "^0.18.1",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "9.0.0",

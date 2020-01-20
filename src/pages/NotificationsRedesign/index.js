@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment';
+import amplitude from 'amplitude-js';
 import { Redirect } from "@reach/router";
 import { compose } from 'recompose';
 import { withNotificationsProvider } from '../../providers/Notifications';
@@ -41,22 +42,16 @@ export const Mode = {
   OLD: 3
 };
 
-// @TODO: abstract further once confirmed this works.
-function gtag () {
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push(arguments);
-}
-
-function gaTrackNotificationStaged (value) {
-  gtag('event', 'notification_staged', {
+function logNotificationRead (value) {
+  amplitude.getInstance().logEvent('notification_read', {
     event_category: 'notification',
     event_label: 'Notification read',
     value
   });
 }
 
-function gaTrackNotificationRead (value) {
-  gtag('event', 'notification_read', {
+function logNotificationArchived (value) {
+  amplitude.getInstance().logEvent('notification_archived', {
     event_category: 'notification',
     event_label: 'Notification archived',
     value
@@ -266,14 +261,14 @@ class NotificationsPage extends React.Component {
   }
 
   enhancedOnStageThread = (thread_id, repository) => {
-    gaTrackNotificationStaged(thread_id);
+    logNotificationRead(thread_id);
     this.props.storageApi.incrStat('stagedCount');
     this.props.storageApi.incrStat(repository + '-stagedCount', '__REPO__');
     this.props.notificationsApi.stageThread(thread_id);
   }
 
   enhancedOnMarkAsRead = (thread_id, repository) => {
-    gaTrackNotificationRead(thread_id);
+    logNotificationArchived(thread_id);
     this.props.storageApi.incrStat('stagedCount');
     this.props.storageApi.incrStat(repository + '-stagedCount', '__REPO__');
     this.props.notificationsApi.markAsRead(thread_id);

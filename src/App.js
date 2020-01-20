@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import amplitude from 'amplitude-js';
 import {
   Router,
   Location,
@@ -15,7 +16,10 @@ import {
   NotificationsRedesign,
 } from './pages';
 
-// @TODO: abstract further once confirmed this works.
+
+// Initalize Amplitude for this session.
+amplitude.init('752af9db0250fe93d507f42362a2977d');
+
 function gtag () {
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(arguments);
