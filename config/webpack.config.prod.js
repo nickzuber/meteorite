@@ -19,7 +19,10 @@ const paths = require('./paths');
 const getClientEnvironment = require('./env');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 
-const gitHash = readFileSync('./git-hash.txt').toString().trim();
+let gitHash = '';
+try {
+  gitHash = readFileSync('./git-hash.txt').toString().trim();
+} catch (e) {}
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.

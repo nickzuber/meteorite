@@ -76,10 +76,10 @@
   },
   "scripts": {
     "start": "node scripts/start.js",
-    "build": "node scripts/build.js && cp build/index.html build/200.html",
+    "build": "npm run before-build && node scripts/build.js && cp build/index.html build/200.html",
     "now-build": "npm run build",
     "test": "node scripts/test.js",
-    "postcommit": "git rev-parse --short HEAD > git-hash.txt",
+    "before-build": "git rev-parse --short HEAD > git-hash.txt",
     "deploy": "now --prod"
   },
   "eslintConfig": {
