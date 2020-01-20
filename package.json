@@ -79,6 +79,7 @@
     "build": "node scripts/build.js && cp build/index.html build/200.html",
     "now-build": "npm run build",
     "test": "node scripts/test.js",
+    "postcommit": "git rev-parse --short HEAD > git-hash.txt",
     "deploy": "now --prod"
   },
   "eslintConfig": {

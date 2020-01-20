@@ -2,7 +2,7 @@
 
 const path = require('path');
 const webpack = require('webpack');
-const {execSync} = require('child_process');
+const {readFileSync} = require('fs');
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
@@ -19,7 +19,7 @@ const paths = require('./paths');
 const getClientEnvironment = require('./env');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 
-const gitHash = execSync('git rev-parse --short HEAD').toString().trim();
+const gitHash = readFileSync('./git-hash.txt').toString().trim();
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
