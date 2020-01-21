@@ -189,6 +189,12 @@ class NotificationsPage extends React.Component {
 
     this.props.notificationsApi.fetchNotifications();
     this.props.notificationsApi.requestUser().then(user => {
+      amplitude.getInstance().setUserId(user.id);
+      amplitude.getInstance().setUserProperties({
+        username: user.login,
+        full_name: user.name,
+        version: process.env.GIT_HASH ? process.env.GIT_HASH : 'unknown'
+      });
       this.setState({user});
     });
 
