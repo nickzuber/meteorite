@@ -504,6 +504,10 @@ module.exports = {
       ServiceWorker: {
         events: true,
         navigateFallbackURL: '/'
+      },
+
+      AppCache: {
+        events: true
       }
     }),
   ].filter(Boolean),
