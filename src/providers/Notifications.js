@@ -343,6 +343,7 @@ class NotificationsProvider extends React.Component {
       if (cached_n) {
         const newValue = {
           ...cached_n,
+          status_last_changed: moment(),
           status: Status.STAGED
         };
         this.props.setItemInStorage(thread_id, newValue);
@@ -364,6 +365,7 @@ class NotificationsProvider extends React.Component {
           cached_n = JSON.parse(window.localStorage.getItem(nKey));
           const newValue = {
             ...cached_n,
+            status_last_changed: moment(),
             status: Status.STAGED
           };
           window.localStorage.setItem(nKey, JSON.stringify(newValue));
@@ -380,6 +382,7 @@ class NotificationsProvider extends React.Component {
       if (cached_n) {
         const newValue = {
           ...cached_n,
+          status_last_changed: moment(),
           status: Status.QUEUED
         };
         this.props.setItemInStorage(thread_id, newValue);

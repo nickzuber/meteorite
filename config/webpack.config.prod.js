@@ -3,6 +3,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const {readFileSync} = require('fs');
+const OfflinePlugin = require('offline-plugin');
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
@@ -18,6 +19,7 @@ const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent')
 const paths = require('./paths');
 const getClientEnvironment = require('./env');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
+const APP_AUTOUPDATE_INTERVAL = 1000 * 60 * 2; // 2 minutes
 
 let gitHash = '';
 try {
@@ -493,6 +495,16 @@ module.exports = {
         // public/ and not a SPA route
         new RegExp('/[^/]+\\.[^/]+$'),
       ],
+    }),
+    new OfflinePlugin({
+      excludes: ['**/*.map'],
+      updateStrategy: 'all',
+      autoUpdate: APP_AUTOUPDATE_INTERVAL,
+
+      ServiceWorker: {
+        events: true,
+        navigateFallbackURL: '/'
+      }
     }),
   ].filter(Boolean),
   // Some libraries import Node modules but don't use them in the browser.

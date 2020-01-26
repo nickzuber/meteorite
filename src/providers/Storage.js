@@ -7,6 +7,15 @@ export const LOCAL_STORAGE_PREFIX = '__meteorite_noti_cache__';
 export const LOCAL_STORAGE_USER_PREFIX = '__meteorite_user_cache__';
 export const LOCAL_STORAGE_STATISTIC_PREFIX = '__meteorite_statistic_cache__';
 
+// For each state of a notification, the amount of time passed in days before
+// we kick it off to the next triaged ranking.
+// After `Archived` is deleted from cache.
+export const TriageLimit = {
+  Unread: 2,
+  Read: 14,
+  Archived: 14
+};
+
 class StorageProvider extends React.Component {
   constructor (props) {
     super(props);
@@ -39,13 +48,59 @@ class StorageProvider extends React.Component {
    * Loads up the notifications state with the cache.
    */
   refreshNotifications = () => {
-    const notifications = Object.keys(window.localStorage).reduce((acc, key) => {
-      if (key.indexOf(LOCAL_STORAGE_PREFIX) > -1) {
-        const cached_n = JSON.parse(window.localStorage.getItem(key));
-        acc.push(cached_n);
-      }
-      return acc;
-    }, []);
+    const notifications = Object
+      .keys(window.localStorage)
+      .reduce((acc, key) => {
+        if (key.indexOf(LOCAL_STORAGE_PREFIX) > -1) {
+          const cached_n = JSON.parse(window.localStorage.getItem(key));
+          acc.push(cached_n);
+        }
+        return acc;
+      }, [])
+      .filter(notification => {
+        // `status_last_changed` reflects when we last updated the status of
+        // a notification, however we should fallback to `updated_at` in case
+        // there is a thread that doesn't have this set yet.
+        const lastUpdated = moment(
+          notification.status_last_changed ||
+          notification.updated_at
+        );
+        const daysOld = moment().diff(lastUpdated, 'days');
+
+        switch (notification.status) {
+          case Status.Unread:
+            // Mark as unread
+            if (daysOld > TriageLimit.Unread) {
+              const newValue = {
+                ...notification,
+                status_last_changed: moment(),
+                status: Status.Read
+              };
+              this.setItem(notification.id, newValue);
+            }
+            return true;
+          case Status.Read:
+            // Mark as archived
+            if (daysOld > TriageLimit.Read) {
+              const newValue = {
+                ...notification,
+                status_last_changed: moment(),
+                status: Status.Archived
+              };
+              this.setItem(notification.id, newValue);
+            }
+            return true;
+          case Status.Archived:
+            // Delete from cache
+            if (daysOld > TriageLimit.Archived) {
+              this.deleteItem(notification.id);
+            }
+            return true;
+        }
+
+        // Fallback, if there's no status.
+        return false;
+      });
 
     this.setState({ notifications });
 
@@ -145,6 +200,11 @@ class StorageProvider extends React.Component {
     window.localStorage.setItem(`${LOCAL_STORAGE_USER_PREFIX}${id}`, JSON.stringify(value));
   }
 
+  // Actually does the work of deleting the item from the cache.
+  deleteItem = id => {
+    window.localStorage.removeItem(`${LOCAL_STORAGE_PREFIX}${id}`);
+  }
+
   removeItem = id => {
     // We never really want to purge anything from the cache if we can help it,
     // since there's always a chance that a read notification can be resurrected.
@@ -154,6 +214,7 @@ class StorageProvider extends React.Component {
     const cached_n = this.getItem(id);
     const closed_cached_n = {
       ...cached_n,
+      status_last_changed: moment(),
       status: Status.CLOSED
     };
     this.setItem(id, closed_cached_n);

@@ -288,7 +288,7 @@ class NotificationsPage extends React.Component {
     this.props.notificationsApi.setNotificationsPermission(...args);
   }
 
-  updateTabIcon (hasUnread = true) {
+  updateTabIcon (hasUnread = false) {
     this.isUnreadTab = hasUnread;
     var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
     link.rel = 'shortcut icon';
