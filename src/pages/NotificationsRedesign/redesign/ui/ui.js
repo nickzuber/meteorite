@@ -783,14 +783,6 @@ export function ProfileSection ({dark, user, onLogout}) {
         </optimized.div>
         <optimized.div onClick={event => {
           event.stopPropagation();
-          navigate(routes.NOTIFICATIONS);
-          setMenuShow(false);
-        }}>
-          <h2>Use old design</h2>
-          <p>Switch back to the original Meteorite design</p>
-        </optimized.div>
-        <optimized.div onClick={event => {
-          event.stopPropagation();
           onLogout();
           setMenuShow(false);
         }}>
