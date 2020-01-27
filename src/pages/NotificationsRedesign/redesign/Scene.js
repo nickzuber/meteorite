@@ -78,7 +78,7 @@ import {
 } from './ui';
 export const AnimatedNotificationRow = animated(NotificationRow);
 
-const hash = process.env.GIT_HASH ? `#${process.env.GIT_HASH}` : '';
+const hash = process.localEnv.GIT_HASH ? `#${process.localEnv.GIT_HASH}` : '';
 const version = require('../../../../package.json').version + hash;
 
 function PageItem ({children, onChange, ...props}) {

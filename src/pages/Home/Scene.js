@@ -28,7 +28,7 @@ import FacebookLogo from '../../images/logos/facebook-logo.png';
 import '../../styles/gradient.css';
 import '../../styles/font.css';
 
-const hash = process.env.GIT_HASH ? `#${process.env.GIT_HASH}` : '';
+const hash = process.localEnv.GIT_HASH ? `#${process.localEnv.GIT_HASH}` : '';
 const version = require('../../../package.json').version + hash;
 
 const themeColor = '#457cff';

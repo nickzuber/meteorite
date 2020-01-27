@@ -424,7 +424,8 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin({
-      'process.env': {
+      'process.localEnv': {
+        'NODE_ENV': JSON.stringify('production'),
         'GIT_HASH': JSON.stringify(gitHash)
       }
     }),

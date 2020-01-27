@@ -339,7 +339,8 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin({
-      'process.env': {
+      'process.localEnv': {
+        'NODE_ENV': JSON.stringify('local'),
         'GIT_HASH': JSON.stringify(gitHash),
         'OAUTH_TOKEN': JSON.stringify(localEnv.OAUTH_TOKEN)
       }

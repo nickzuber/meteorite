@@ -12,7 +12,7 @@ import '../../styles/font.css';
 
 const themeColor = '#27B768';
 
-const hash = process.env.GIT_HASH ? `#${process.env.GIT_HASH}` : '';
+const hash = process.localEnv.GIT_HASH ? `#${process.localEnv.GIT_HASH}` : '';
 const version = require('../../../package.json').version + hash;
 
 export const forSmallScreens = rules => `

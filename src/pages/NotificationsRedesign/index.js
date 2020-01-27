@@ -193,7 +193,7 @@ class NotificationsPage extends React.Component {
       amplitude.getInstance().setUserProperties({
         username: user.login,
         full_name: user.name,
-        version: process.env.GIT_HASH ? process.env.GIT_HASH : 'unknown'
+        version: process.localEnv.GIT_HASH ? process.localEnv.GIT_HASH : 'unknown'
       });
       this.setState({user});
     });
