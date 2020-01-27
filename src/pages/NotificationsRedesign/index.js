@@ -494,11 +494,11 @@ class NotificationsPage extends React.Component {
       fetchNotifications,
       markAllAsStaged,
       clearCache,
-      clearArchivedCache,
       notificationsPermission,
       loading: isFetchingNotifications,
       error: fetchingNotificationsError,
     } = this.props.notificationsApi;
+
     const {
       notifications: scoredAndSortedNotifications,
       queuedCount,
@@ -573,7 +573,6 @@ class NotificationsPage extends React.Component {
         onMarkAsRead={this.enhancedOnMarkAsRead}
         onMarkAllAsStaged={markAllAsStaged}
         onClearCache={clearCache}
-        onClearArchivedCache={clearArchivedCache}
         onStageThread={this.enhancedOnStageThread}
         onRestoreThread={this.restoreThread}
         onRefreshNotifications={this.props.storageApi.refreshNotifications}

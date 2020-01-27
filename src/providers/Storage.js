@@ -221,7 +221,7 @@ class StorageProvider extends React.Component {
   }
 
   clearArchivedCache = () => {
-    const notifications = Object
+    Object
       .keys(window.localStorage)
       .reduce((acc, key) => {
         if (key.indexOf(LOCAL_STORAGE_PREFIX) > -1) {

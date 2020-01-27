@@ -487,7 +487,7 @@ const withNotificationsProvider = WrappedComponent => props => (
           setItem,
           getUserItem,
           setUserItem,
-          clearCache,
+          clearArchivedCache,
           removeItem
         }) => (
           <NotificationsProvider
@@ -497,7 +497,7 @@ const withNotificationsProvider = WrappedComponent => props => (
             setItemInStorage={setItem}
             getUserItem={getUserItem}
             setUserItem={setUserItem}
-            clearStorageCache={clearCache}
+            clearStorageCache={clearArchivedCache}
             removeItemFromStorage={removeItem}
             token={token}
           >
