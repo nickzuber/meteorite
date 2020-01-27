@@ -11,6 +11,7 @@
 
 # meta
 git-hash.txt
+.env
 
 # misc
 .DS_Store

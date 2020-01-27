@@ -329,6 +329,7 @@ export default function Scene ({
   onFetchNotifications,
   onMarkAllAsStaged,
   onClearCache,
+  onClearArchivedCache,
   setNotificationsPermission,
   onStageThread,
   onArchiveThread,
@@ -641,6 +642,15 @@ export default function Scene ({
                         }}>
                           <h2>Mark all as read</h2>
                           <p>Move all your unread notifications to the read tab</p>
+                        </optimized.div>
+                        <optimized.div onClick={event => {
+                          event.stopPropagation();
+                          const response = window.confirm('Are you sure you want to delete the archived section?');
+                          void (response && onClearArchivedCache());
+                          setDropdownOpen(false);
+                        }}>
+                          <h2>Empty archived</h2>
+                          <p>Clear all the notifications in the archived section from your local storage</p>
                         </optimized.div>
                         <optimized.div onClick={event => {
                           event.stopPropagation();

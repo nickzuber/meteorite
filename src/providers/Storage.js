@@ -220,6 +220,20 @@ class StorageProvider extends React.Component {
     this.setItem(id, closed_cached_n);
   }
 
+  clearArchivedCache = () => {
+    const notifications = Object
+      .keys(window.localStorage)
+      .reduce((acc, key) => {
+        if (key.indexOf(LOCAL_STORAGE_PREFIX) > -1) {
+          const cached_n = JSON.parse(window.localStorage.getItem(key));
+          acc.push(cached_n);
+        }
+        return acc;
+      }, [])
+      .filter(notification => notification.status === Status.Archived)
+      .forEach(notification => this.deleteItem(notification.id));
+  }
+
   clearCache = () => {
     window.localStorage.clear();
   }
@@ -233,6 +247,7 @@ class StorageProvider extends React.Component {
       setUserItem: this.setUserItem,
       removeItem: this.removeItem,
       clearCache: this.clearCache,
+      clearArchivedCache: this.clearArchivedCache,
       refreshNotifications: this.refreshNotifications,
       getStat: this.getStat,
       getAllRepoStagedCounts: this.getAllRepoStagedCounts,

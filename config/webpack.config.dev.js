@@ -2,7 +2,7 @@
 
 const path = require('path');
 const webpack = require('webpack');
-const {execSync} = require('child_process');
+const fs = require('fs');
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
@@ -15,7 +15,16 @@ const paths = require('./paths');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 
-const gitHash = execSync('git rev-parse --short HEAD').toString().trim();
+let gitHash = '';
+let localEnv = {};
+
+try {
+  gitHash = readFileSync('./git-hash.txt').toString().trim();
+} catch (e) {}
+
+try {
+  localEnv = JSON.parse(fs.readFileSync('./.env').toString());
+} catch (e) {}
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
@@ -331,7 +340,8 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
-        'GIT_HASH': JSON.stringify(gitHash)
+        'GIT_HASH': JSON.stringify(gitHash),
+        'OAUTH_TOKEN': JSON.stringify(localEnv.OAUTH_TOKEN)
       }
     }),
     // Generates an `index.html` file with the <script> injected.
