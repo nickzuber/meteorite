@@ -255,7 +255,7 @@ export function BasicPageWrapper ({loggedIn, onLogout, children}) {
             <LoginContainer>
               <Button to={routes.GUIDE}>{'Guide'}</Button>
               <Button to={routes.PRICING}>{'Pricing'}</Button>
-              <Button to={routes.REDESIGN_NOTIFICATIONS} css={css`
+              <Button to={routes.NOTIFICATIONS} css={css`
                 &::after {
                   content: "";
                   position: absolute;

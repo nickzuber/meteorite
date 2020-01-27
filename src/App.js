@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import amplitude from 'amplitude-js';
 import {
+  Redirect,
   Router,
   Location,
   LocationProvider
@@ -12,7 +13,6 @@ import {
   Login,
   Pricing,
   Guide,
-  Notifications,
   NotificationsRedesign,
 } from './pages';
 
@@ -41,6 +41,10 @@ function PageTracker ({location}) {
   return null;
 }
 
+function RedirectShell () {
+  return <Redirect noThrow to={routes.NOTIFICATIONS} />;
+}
+
 class App extends Component {
   render() {
     return (
@@ -54,8 +58,8 @@ class App extends Component {
             <Login path={routes.LOGIN} />
             <Pricing path={routes.PRICING} />
             <Guide path={routes.GUIDE} />
-            <Notifications path={routes.NOTIFICATIONS} />
-            <NotificationsRedesign path={routes.REDESIGN_NOTIFICATIONS} />
+            <RedirectShell path={routes.REDESIGN_NOTIFICATIONS} />
+            <NotificationsRedesign path={routes.NOTIFICATIONS} />
           </Router>
         </LocationProvider>
       </AuthProvider>
