@@ -36,24 +36,34 @@ class Tooltip extends React.Component {
     }
 
     const {tooltipOffsetX, tooltipOffsetY} = this.props;
-    const {x, y} = event.target.getBoundingClientRect();
+    const {
+      x,
+      y,
+      width: targetWidth,
+      height: targetHeight
+    } = event.target.getBoundingClientRect();
     const text = document.createTextNode(this.props.message);
     const tooltipElement = document.createElement('div');
 
     tooltipElement.setAttribute('id', this.id);
     tooltipElement.setAttribute('class', 'react-tooltip');
-    tooltipElement.setAttribute(
-      'style',
-      `top: ${y + tooltipOffsetY + window.scrollY}px; left: ${x + tooltipOffsetX}px;`
-    );
     tooltipElement.appendChild(text);
 
     document.querySelector('body').appendChild(tooltipElement);
 
+    const {width} = tooltipElement.getBoundingClientRect();
+    const positionStyle = `
+      top: ${y + targetHeight + window.scrollY + tooltipOffsetY}px;
+      left: ${x - (width / 2) + (targetWidth / 2) + tooltipOffsetX}px;
+    `;
+
+    tooltipElement.setAttribute('style', positionStyle);
     this.timeout = setTimeout(() => {
       tooltipElement.setAttribute(
-        'style',
-        `top: ${y + tooltipOffsetY + window.scrollY}px; left: ${x + tooltipOffsetX}px; opacity: .83;`
+        'style', `
+          ${positionStyle}
+          opacity: .9;
+        `
       );
     }, this.props.tooltipSpeed);
   }

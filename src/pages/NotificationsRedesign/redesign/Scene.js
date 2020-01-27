@@ -10,7 +10,7 @@ import Logo from '../../../components/Logo';
 import LoadingIcon from '../../../components/LoadingIcon'
 import {getFact} from '../../../utils/facts';
 import {Mode, Sort, View} from '../index';
-import {isMobile} from 'react-device-detect';
+import {withTooltip} from '../../../enhance';
 import {
   stringOfError,
   getPRIssueIcon,
@@ -60,10 +60,10 @@ import {
   LoadingNotificationRow,
   NotificationBlock,
   ErrorContainer,
-  NotificationCell,
+  NotificationCell as BaseNotificationCell,
   NotificationTitle,
   NotificationByline,
-  IconLink,
+  IconLink as BaseIconLink,
   Divider,
   Connector,
   RepoBarContainer,
@@ -78,10 +78,13 @@ import {
 } from './ui';
 export const AnimatedNotificationRow = animated(NotificationRow);
 
+const IconLink = withTooltip(BaseIconLink);
+const NotificationCell = withTooltip(BaseNotificationCell);
+
 const hash = process.localEnv.GIT_HASH ? `#${process.localEnv.GIT_HASH}` : '';
 const version = require('../../../../package.json').version + hash;
 
-function PageItem ({children, onChange, ...props}) {
+function BasePageItem ({children, onChange, ...props}) {
   return (
     <PageItemComponent
       onClick={() => onChange(props.view)}
@@ -91,6 +94,8 @@ function PageItem ({children, onChange, ...props}) {
     </PageItemComponent>
   );
 }
+
+const PageItem = withTooltip(BasePageItem);
 
 function MenuIconItem ({children, onChange, selected, alwaysActive, noBorder, ...props}) {
   return (
@@ -587,7 +592,7 @@ export default function Scene ({
                       setDropdownOpen(false);
                     }}
                   >
-                    <IconLink>
+                    <IconLink tooltip={`${hasNotificationsOn ? 'Disable' : 'Enable'} notifications`}>
                       {hasNotificationsOn ? (
                           <i className="fas fa-bell"></i>
                         ) : (
@@ -607,12 +612,12 @@ export default function Scene ({
                       setDarkMode(m => !m);
                     }}
                   >
-                    <IconLink>
+                    <IconLink tooltip={`${darkMode ? 'Disable' : 'Enable'} dark mode`}>
                       <i className="fas fa-moon"></i>
                     </IconLink>
                   </optimized.li>
                   <optimized.li>
-                    <IconLink onClick={() => setDropdownOpen(true)}>
+                    <IconLink tooltip="View more options" onClick={() => setDropdownOpen(true)}>
                       <i className="fas fa-ellipsis-v"></i>
                     </IconLink>
                     <InteractionMenu show={dropdownOpen}>
@@ -688,6 +693,8 @@ export default function Scene ({
                   primary={ThemeColor(darkMode)}
                   onChange={setView}
                   mark={hasUnread}
+                  tooltip="View your active unread notifications"
+                  tooltipOffsetY={-72}
                 >
                   {'Unread'}
                   {unreadCount > 0 && (
@@ -715,6 +722,8 @@ export default function Scene ({
                   selected={view === View.READ}
                   primary={ThemeColor(darkMode)}
                   onChange={setView}
+                  tooltip="View notifications you have already read"
+                  tooltipOffsetY={-72}
                 >
                   {'Read'}
                   {readCount > 0 && (
@@ -742,6 +751,8 @@ export default function Scene ({
                   selected={view === View.ARCHIVED}
                   primary={ThemeColor(darkMode)}
                   onChange={setView}
+                  tooltip="View notifications that are considered completed"
+                  tooltipOffsetY={-72}
                 >
                   {'Archived'}
                   {archivedCount > 0 && (
@@ -1084,12 +1095,17 @@ function NotificationCollection ({
                 {'@' + item.repository}
               </NotificationCell>
               {/* Score */}
-              <NotificationCell width={60} css={css`
-                font-weight: 600;
-                color: ${colorOfScore(item.score)};
-                font-size: 12px;
-                text-align: center;
-              `}>
+              <NotificationCell
+                tooltip="Score representing this notification's importance compared to the others"
+                tooltipOffsetX={-100}
+                width={60}
+                css={css`
+                  font-weight: 600;
+                  color: ${colorOfScore(item.score)};
+                  font-size: 12px;
+                  text-align: center;
+                `}
+              >
                 {'+' + item.score}
               </NotificationCell>
               <NotificationCell width={80} css={css`
@@ -1133,10 +1149,16 @@ function ActionItems ({item, view, markAsRead, markAsArchived, markAsUnread}) {
     case View.UNREAD:
       return (
         <>
-          <IconLink onClick={() => markAsRead(item.id, item.repository)}>
+          <IconLink
+            tooltip="Mark as read"
+            onClick={() => markAsRead(item.id, item.repository)}
+          >
             <i className="fas fa-check"></i>
           </IconLink>
-          <IconLink onClick={() => markAsArchived(item.id, item.repository)}>
+          <IconLink
+            tooltip="Mark as archived"
+            onClick={() => markAsArchived(item.id, item.repository)}
+          >
             <i className="fas fa-times"></i>
           </IconLink>
         </>
@@ -1144,10 +1166,16 @@ function ActionItems ({item, view, markAsRead, markAsArchived, markAsUnread}) {
     case View.READ:
       return (
         <>
-          <IconLink onClick={() => markAsUnread(item.id)}>
+          <IconLink
+            tooltip="Mark as unread"
+            onClick={() => markAsUnread(item.id)}
+          >
             <i className="fas fa-undo"></i>
           </IconLink>
-          <IconLink onClick={() => markAsArchived(item.id, item.repository)}>
+          <IconLink
+            tooltip="Mark as archived"
+            onClick={() => markAsArchived(item.id, item.repository)}
+          >
             <i className="fas fa-times"></i>
           </IconLink>
         </>
@@ -1155,10 +1183,16 @@ function ActionItems ({item, view, markAsRead, markAsArchived, markAsUnread}) {
     case View.ARCHIVED:
       return (
         <>
-          <IconLink onClick={() => markAsUnread(item.id)}>
+          <IconLink
+            tooltip="Mark as read"
+            onClick={() => markAsUnread(item.id)}
+          >
             <i className="fas fa-undo"></i>
           </IconLink>
-          <IconLink onClick={() => markAsRead(item.id, item.repository)}>
+          <IconLink
+            tooltip="Mark as unread"
+            onClick={() => markAsRead(item.id, item.repository)}
+          >
             <i className="fas fa-check"></i>
           </IconLink>
         </>
