@@ -7,6 +7,7 @@ import {css, jsx, keyframes} from '@emotion/core';
 import {isMobile} from 'react-device-detect';
 import {navigate} from "@reach/router"
 import {routes} from '../../../../constants';
+import {withTooltip} from '../../../../enhance';
 import {withOnEnter, withOptimizedTouchEvents} from '../../../../enhance';
 
 export const ThemeContext = React.createContext(false);
@@ -18,6 +19,7 @@ export const withTheme = C => p => (
 
 const enhance = compose(
   withTheme,
+  withTooltip,
   withOptimizedTouchEvents
 );
 

@@ -60,10 +60,10 @@ import {
   LoadingNotificationRow,
   NotificationBlock,
   ErrorContainer,
-  NotificationCell as BaseNotificationCell,
+  NotificationCell,
   NotificationTitle,
   NotificationByline,
-  IconLink as BaseIconLink,
+  IconLink,
   Divider,
   Connector,
   RepoBarContainer,
@@ -77,9 +77,6 @@ import {
   optimized
 } from './ui';
 export const AnimatedNotificationRow = animated(NotificationRow);
-
-const IconLink = withTooltip(BaseIconLink);
-const NotificationCell = withTooltip(BaseNotificationCell);
 
 const hash = process.localEnv.GIT_HASH ? `#${process.localEnv.GIT_HASH}` : '';
 const version = require('../../../../package.json').version + hash;
@@ -693,6 +690,7 @@ export default function Scene ({
                   primary={ThemeColor(darkMode)}
                   onChange={setView}
                   mark={hasUnread}
+                  dark={darkMode}
                   tooltip="View your active unread notifications"
                   tooltipOffsetY={-72}
                 >
@@ -722,6 +720,7 @@ export default function Scene ({
                   selected={view === View.READ}
                   primary={ThemeColor(darkMode)}
                   onChange={setView}
+                  dark={darkMode}
                   tooltip="View notifications you have already read"
                   tooltipOffsetY={-72}
                 >
@@ -751,6 +750,7 @@ export default function Scene ({
                   selected={view === View.ARCHIVED}
                   primary={ThemeColor(darkMode)}
                   onChange={setView}
+                  dark={darkMode}
                   tooltip="View notifications that are considered completed"
                   tooltipOffsetY={-72}
                 >

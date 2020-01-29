@@ -55,6 +55,10 @@ class Tooltip extends React.Component {
     const positionStyle = `
       top: ${y + targetHeight + window.scrollY + tooltipOffsetY}px;
       left: ${x - (width / 2) + (targetWidth / 2) + tooltipOffsetX}px;
+      ${this.props.dark ? `
+        background: #ffffff;
+        color: #10293c;
+      ` : ''}
     `;
 
     tooltipElement.setAttribute('style', positionStyle);
@@ -62,7 +66,7 @@ class Tooltip extends React.Component {
       tooltipElement.setAttribute(
         'style', `
           ${positionStyle}
-          opacity: .9;
+          opacity: ${this.props.dark ? 1 : 0.9};
         `
       );
     }, this.props.tooltipSpeed);
@@ -93,6 +97,7 @@ export const withTooltip = WrappedComponent => ({
     ...props
   }) => (
     <Tooltip
+      dark={props.dark}
       message={tooltip}
       tooltipOffsetX={tooltipOffsetX}
       tooltipOffsetY={tooltipOffsetY}
