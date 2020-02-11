@@ -355,6 +355,24 @@ class NotificationsProvider extends React.Component {
     });
   }
 
+  requestSnoozeThread = thread_id => {
+    return new Promise((resolve, reject) => {
+      const cached_n = this.props.getItemFromStorage(thread_id);
+      if (cached_n) {
+        const newValue = {
+          ...cached_n,
+          status_last_changed: moment(),
+          status: Status.Snoozed
+        };
+        this.props.setItemInStorage(thread_id, newValue);
+        this.props.refreshNotifications();
+        return resolve();
+      } else {
+        throw new Error(`Attempted to snooze thread ${thread_id} that wasn't found in the cache.`);
+      }
+    });
+  }
+
   requestStageAll = () => {
     return new Promise((resolve, reject) => {
       Object.keys(localStorage).forEach(nKey => {
@@ -405,6 +423,14 @@ class NotificationsProvider extends React.Component {
   stageThread = thread_id => {
     this.setState({ loading: true });
     return this.requestStageThread(thread_id)
+      .then(() => this.setState({error: null}))
+      .catch(error => this.setState({error}))
+      .finally(() => this.setState({ loading: false }));
+  }
+
+  snoozeThread = thread_id => {
+    this.setState({ loading: true });
+    return this.requestSnoozeThread(thread_id)
       .then(() => this.setState({error: null}))
       .catch(error => this.setState({error}))
       .finally(() => this.setState({ loading: false }));
@@ -470,6 +496,7 @@ class NotificationsProvider extends React.Component {
       markAllAsStaged: this.markAllAsStaged,
       clearCache: this.clearCache,
       stageThread: this.stageThread,
+      snoozeThread: this.snoozeThread,
       restoreThread: this.restoreThread,
       setNotificationsPermission: this.setNotificationsPermission,
     });

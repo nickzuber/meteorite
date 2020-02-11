@@ -94,12 +94,21 @@ function BasePageItem ({children, onChange, ...props}) {
 
 const PageItem = withTooltip(BasePageItem);
 
-function MenuIconItem ({children, onChange, selected, alwaysActive, noBorder, ...props}) {
+function MenuIconItem ({
+  children,
+  onChange,
+  selected,
+  alwaysActive,
+  noBorder,
+  count,
+  ...props
+}) {
   return (
     <IconContainer
       onClick={() => onChange(props.mode)}
       selected={alwaysActive || selected}
       noBorder={noBorder}
+      count={count}
       {...props}
     >
       {children}
@@ -303,6 +312,7 @@ function ReadCountGraph ({data, onHover, onExit, dark}) {
 
 export default function Scene ({
   notifications,
+  snoozedNotifications,
   notificationsPermission,
   currentTime,
   highestScore,
@@ -339,6 +349,7 @@ export default function Scene ({
   reposReadCounts,
   readTodayLastWeekCount,
   onRestoreThread,
+  onSnoozeThread,
   onLogout,
   mode,
   setMode,
@@ -490,11 +501,23 @@ export default function Scene ({
               selected={mode === Mode.ALL}
               onChange={setMode}
               open={menuOpen}
+              count={unreadCount}
             >
               <span>{titleOfMode(Mode.ALL)}</span>
               <i className="fas fa-leaf"></i>
             </MenuIconItem>
             <MenuIconItem
+              mode={Mode.SNOOZED}
+              primary="#e91e63"
+              selected={mode === Mode.SNOOZED}
+              onChange={setMode}
+              open={menuOpen}
+              count={snoozedNotifications.length}
+            >
+              <span>{titleOfMode(Mode.SNOOZED)}</span>
+              <i className="far fa-clock"></i>
+            </MenuIconItem>
+            {/* <MenuIconItem
               mode={Mode.HOT}
               primary="#e91e63"
               selected={mode === Mode.HOT}
@@ -523,7 +546,7 @@ export default function Scene ({
             >
               <span>{titleOfMode(Mode.OLD)}</span>
               <i className="fas fa-stopwatch"></i>
-            </MenuIconItem>
+            </MenuIconItem> */}
           </MenuContainerItem>
           <ContentItem>
             <CardSection>
@@ -687,97 +710,129 @@ export default function Scene ({
                 <h4>{subtitleOfMode(mode)}</h4>
               </SubTitleSection>
               <PageSelection>
-                <PageItem
-                  view={View.UNREAD}
-                  selected={view === View.UNREAD}
-                  primary={ThemeColor(darkMode)}
-                  onChange={setView}
-                  mark={hasUnread}
-                  dark={darkMode}
-                  tooltip="View your active unread notifications"
-                  tooltipOffsetY={-72}
-                >
-                  {'Unread'}
-                  {unreadCount > 0 && (
-                    <span css={css`
-                      transition: all 200ms ease;
-                      background: ${view === View.UNREAD
-                        ? ThemeColor(darkMode)
-                        : darkMode ? DarkTheme.Gray : '#bfc5d1'
-                      };
-                      color: ${WHITE};
-                      transition: background 200ms ease;
-                      font-size: 9px;
-                      margin: 0 6px;
-                      padding: 2px 6px;
-                      border-radius: 4px;
-                      font-weight: 600;
-                      vertical-align: middle;
-                    `}>
-                      {unreadCount}
-                    </span>
-                  )}
-                </PageItem>
-                <PageItem
-                  view={View.READ}
-                  selected={view === View.READ}
-                  primary={ThemeColor(darkMode)}
-                  onChange={setView}
-                  dark={darkMode}
-                  tooltip="View notifications you have already read"
-                  tooltipOffsetY={-72}
-                >
-                  {'Read'}
-                  {readCount > 0 && (
-                    <span css={css`
-                      transition: all 200ms ease;
-                      background: ${view === View.READ
-                        ? ThemeColor(darkMode)
-                        : darkMode ? DarkTheme.Gray : '#bfc5d1'
-                      };
-                      color: ${WHITE};
-                      transition: background 200ms ease;
-                      font-size: 9px;
-                      margin: 0 6px;
-                      padding: 2px 6px;
-                      border-radius: 4px;
-                      font-weight: 600;
-                      vertical-align: middle;
-                    `}>
-                      {readCount}
-                    </span>
-                  )}
-                </PageItem>
-                <PageItem
-                  view={View.ARCHIVED}
-                  selected={view === View.ARCHIVED}
-                  primary={ThemeColor(darkMode)}
-                  onChange={setView}
-                  dark={darkMode}
-                  tooltip="View notifications that are considered completed"
-                  tooltipOffsetY={-72}
-                >
-                  {'Archived'}
-                  {archivedCount > 0 && (
-                    <span css={css`
-                      transition: all 200ms ease;
-                      background: ${view === View.ARCHIVED
-                        ? ThemeColor(darkMode)
-                        : darkMode ? DarkTheme.Gray : '#bfc5d1'
-                      };
-                      color: ${WHITE};
-                      transition: background 200ms ease;
-                      font-size: 9px;
-                      margin: 0 6px;
-                      padding: 2px 6px;
-                      border-radius: 4px;
-                      font-weight: 600;
-                      vertical-align: middle;
-                    `}>
-                      {archivedCount}
-                    </span>
-                  )}
-                </PageItem>
+                {mode !== Mode.SNOOZED ? (
+                  <React.Fragment>
+                    <PageItem
+                      view={View.UNREAD}
+                      selected={view === View.UNREAD}
+                      primary={ThemeColor(darkMode)}
+                      onChange={setView}
+                      mark={hasUnread}
+                      dark={darkMode}
+                      tooltip="View your active unread notifications"
+                      tooltipOffsetY={-72}
+                    >
+                      {'Unread'}
+                      {unreadCount > 0 && (
+                        <span css={css`
+                          transition: all 200ms ease;
+                          background: ${view === View.UNREAD
+                            ? ThemeColor(darkMode)
+                            : darkMode ? DarkTheme.Gray : '#bfc5d1'
+                          };
+                          color: ${WHITE};
+                          transition: background 200ms ease;
+                          font-size: 9px;
+                          margin: 0 6px;
+                          padding: 2px 6px;
+                          border-radius: 4px;
+                          font-weight: 600;
+                          vertical-align: middle;
+                        `}>
+                          {unreadCount}
+                        </span>
+                      )}
+                    </PageItem>
+                    <PageItem
+                      view={View.READ}
+                      selected={view === View.READ}
+                      primary={ThemeColor(darkMode)}
+                      onChange={setView}
+                      dark={darkMode}
+                      tooltip="View notifications you have already read"
+                      tooltipOffsetY={-72}
+                    >
+                      {'Read'}
+                      {readCount > 0 && (
+                        <span css={css`
+                          transition: all 200ms ease;
+                          background: ${view === View.READ
+                            ? ThemeColor(darkMode)
+                            : darkMode ? DarkTheme.Gray : '#bfc5d1'
+                          };
+                          color: ${WHITE};
+                          transition: background 200ms ease;
+                          font-size: 9px;
+                          margin: 0 6px;
+                          padding: 2px 6px;
+                          border-radius: 4px;
+                          font-weight: 600;
+                          vertical-align: middle;
+                        `}>
+                          {readCount}
+                        </span>
+                      )}
+                    </PageItem>
+                    <PageItem
+                      view={View.ARCHIVED}
+                      selected={view === View.ARCHIVED}
+                      primary={ThemeColor(darkMode)}
+                      onChange={setView}
+                      dark={darkMode}
+                      tooltip="View notifications that are considered completed"
+                      tooltipOffsetY={-72}
+                    >
+                      {'Archived'}
+                      {archivedCount > 0 && (
+                        <span css={css`
+                          transition: all 200ms ease;
+                          background: ${view === View.ARCHIVED
+                            ? ThemeColor(darkMode)
+                            : darkMode ? DarkTheme.Gray : '#bfc5d1'
+                          };
+                          color: ${WHITE};
+                          transition: background 200ms ease;
+                          font-size: 9px;
+                          margin: 0 6px;
+                          padding: 2px 6px;
+                          border-radius: 4px;
+                          font-weight: 600;
+                          vertical-align: middle;
+                        `}>
+                          {archivedCount}
+                        </span>
+                      )}
+                    </PageItem>
+                  </React.Fragment>
+                ) : (
+                  <PageItem
+                    view={View.UNREAD}
+                    selected={true}
+                    primary={ThemeColor(darkMode)}
+                    onChange={setView}
+                    dark={darkMode}
+                    tooltip="View your snoozed unread notifications"
+                    tooltipOffsetY={-72}
+                  >
+                    {'Snoozed'}
+                    {snoozedNotifications.length > 0 && (
+                      <span css={css`
+                        transition: all 200ms ease;
+                        background: ${ThemeColor(darkMode)};
+                        color: ${WHITE};
+                        transition: background 200ms ease;
+                        font-size: 9px;
+                        margin: 0 6px;
+                        padding: 2px 6px;
+                        border-radius: 4px;
+                        font-weight: 600;
+                        vertical-align: middle;
+                      `}>
+                        {snoozedNotifications.length}
+                      </span>
+                    )}
+                  </PageItem>
+                )}
                 <div css={css`
                   height: auto;
                   position: absolute;
@@ -918,19 +973,46 @@ export default function Scene ({
                     <span onClick={() => onFetchNotifications()}>{'Try loading again'}</span>
                   </ErrorContainer>
                 ) : (
-                  <NotificationCollection
-                    dark={darkMode}
-                    isLastPage={isLastPage}
-                    page={page}
-                    view={view}
-                    fact={fact}
-                    notifications={notifications}
-                    colorOfScore={createColorOfScore(lowestScore, highestScore)}
-                    markAsRead={onStageThread}
-                    markAsArchived={onArchiveThread}
-                    markAsUnread={onRestoreThread}
-                    user={user}
-                  />
+                  <React.Fragment>
+                    {/* {mode !== Mode.SNOOZED && snoozedNotifications.length > 0 && (
+                      <div onClick={() => setMode(Mode.SNOOZED)} css={css`
+                        background: ${darkMode ? '#4b5662' : '#d3d3d3'};
+                        color: ${darkMode ? WHITE : '#2f343e'};
+                        font-size: 12px;
+                        font-weight: 500;
+                        opacity: 0.35;
+                        padding: 4px 18px;
+                        margin: 0 auto 12px;
+                        text-align: center;
+                        border-radius: 20px;
+                        user-select: none;
+                        cursor: pointer;
+                        transition: all 200ms ease;
+                        &:hover {
+                          opacity: .4;
+                        }
+                        &:active {
+                          opacity: .5;
+                        }
+                      `}>
+                        {`${snoozedNotifications.length} snoozed notifications`}
+                      </div>
+                    )} */}
+                    <NotificationCollection
+                      dark={darkMode}
+                      isLastPage={isLastPage}
+                      page={page}
+                      view={view}
+                      fact={fact}
+                      notifications={notifications}
+                      colorOfScore={createColorOfScore(lowestScore, highestScore)}
+                      markAsRead={onStageThread}
+                      markAsArchived={onArchiveThread}
+                      markAsUnread={onRestoreThread}
+                      markAsSnoozed={onSnoozeThread}
+                      user={user}
+                    />
+                  </React.Fragment>
                 )}
               </NotificationsTable>
             </NotificationsSection>
@@ -995,6 +1077,7 @@ function NotificationCollection ({
   markAsRead,
   markAsArchived,
   markAsUnread,
+  markAsSnoozed,
   user
 }) {
   const props = useSpring({
@@ -1121,6 +1204,7 @@ function NotificationCollection ({
                   markAsUnread={markAsUnread}
                   markAsRead={markAsRead}
                   markAsArchived={markAsArchived}
+                  markAsSnoozed={markAsSnoozed}
                 />
               </NotificationCell>
             </AnimatedNotificationRow>
@@ -1141,7 +1225,7 @@ function NotificationCollection ({
   );
 }
 
-function ActionItems ({item, view, markAsRead, markAsArchived, markAsUnread}) {
+function ActionItems ({item, view, markAsRead, markAsArchived, markAsUnread, markAsSnoozed}) {
   switch (view) {
     case View.UNREAD:
       return (
@@ -1153,10 +1237,10 @@ function ActionItems ({item, view, markAsRead, markAsArchived, markAsUnread}) {
             <i className="fas fa-check"></i>
           </IconLink>
           <IconLink
-            tooltip="Mark as archived"
-            onClick={() => markAsArchived(item.id, item.repository)}
+            tooltip="Snooze, save for later"
+            onClick={() => markAsSnoozed(item.id, item.repository)}
           >
-            <i className="fas fa-times"></i>
+            <i className="far fa-clock"></i>
           </IconLink>
         </>
       );

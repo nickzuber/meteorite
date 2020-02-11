@@ -216,6 +216,8 @@ export function titleOfMode (mode) {
   switch (mode) {
     case Mode.ALL:
       return 'All Relevent Threads';
+    case Mode.SNOOZED:
+      return 'Saved for later';
     case Mode.HOT:
       return 'Hot Threads';
     case Mode.COMMENTS:
@@ -231,6 +233,8 @@ export function subtitleOfMode (mode) {
   switch (mode) {
     case Mode.ALL:
       return 'All of the notifications that matter to you';
+    case Mode.SNOOZED:
+        return 'Notifications that you\'ve saved to look at later';
     case Mode.HOT:
       return 'Some currently very active threads you care about';
     case Mode.COMMENTS:

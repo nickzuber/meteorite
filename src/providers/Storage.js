@@ -68,6 +68,9 @@ class StorageProvider extends React.Component {
         const daysOld = moment().diff(lastUpdated, 'days');
 
         switch (notification.status) {
+          // Do nothing with snoozed.
+          case Status.Snoozed:
+            return true;
           case Status.Unread:
             // Mark as unread
             if (daysOld > TriageLimit.Unread) {
@@ -98,7 +101,7 @@ class StorageProvider extends React.Component {
             return true;
         }
 
-        // Fallback, if there's no status.
+        // Fallback, if there's no valid status.
         return false;
       });
 

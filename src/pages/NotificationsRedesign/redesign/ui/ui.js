@@ -204,6 +204,7 @@ export const IconContainer = enhance(styled('div')`
   user-select: none;
   transition: all 200ms ease;
   i {
+    position: relative;
     transition: all 200ms ease;
     color: ${props => props.selected ? props.primary : '#bfc5d15e'}
   }
@@ -222,6 +223,26 @@ export const IconContainer = enhance(styled('div')`
   &:hover {
     background: ${props => props.selected ? 'rgba(255, 255, 255, 0)' : 'rgba(233, 233, 233, .1)'};
   }
+  ${({count, selected}) => count  && `
+    i::after {
+      content: "${count}";
+      color: ${WHITE};
+      bottom: -10px;
+      right: -14px;
+      position: absolute;
+      background: #E91356;
+      display: flex;
+      min-width: 12px;
+      border-radius: 4px;
+      font-family: 'Inter UI', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+        "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+      font-weight: 700;
+      font-size: 10px;
+      padding: 2px 4px;
+      align-items: center;
+      justify-content: center;
+    }
+  `}
 `);
 
 export const NotificationsSection = enhance(styled('div')`
@@ -564,7 +585,7 @@ export const NotificationBlock = enhance(styled('tbody')`
   transition: all 200ms ease;
 `);
 
-export const ErrorContainer = enhance(styled('div')`
+export const ErrorContainer = enhance(styled('div')(p => `
   display: flex;
   justify-content: center;
   align-items: center;
@@ -575,16 +596,21 @@ export const ErrorContainer = enhance(styled('div')`
     font-weight: 500;
     margin-bottom: 0;
     text-align: center;
+    color: ${p.dark ? WHITE : 'inherit'};
   }
   p {
     margin-bottom: 6px;
+    opacity: 0.5;
+    color: ${p.dark ? WHITE : 'inherit'};
   }
   span {
     text-decoration: underline;
     text-underline-position: under;
     cursor: pointer;
+    opacity: 0.5;
+    color: ${p.dark ? WHITE : 'inherit'};
   }
-`);
+`));
 
 export const NotificationCell = enhance(styled('td')`
   white-space: nowrap;

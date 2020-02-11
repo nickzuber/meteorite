@@ -39,13 +39,22 @@ export const Mode = {
   ALL: 0,
   HOT: 1,
   COMMENTS: 2,
-  OLD: 3
+  OLD: 3,
+  SNOOZED: 4
 };
 
 function logNotificationRead (value) {
   amplitude.getInstance().logEvent('notification_read', {
     event_category: 'notification',
     event_label: 'Notification read',
+    value
+  });
+}
+
+function logNotificationSnoozed (value) {
+  amplitude.getInstance().logEvent('notification_snoozed', {
+    event_category: 'notification',
+    event_label: 'Notification snoozed',
     value
   });
 }
@@ -273,6 +282,13 @@ class NotificationsPage extends React.Component {
     this.props.notificationsApi.stageThread(thread_id);
   }
 
+  enhancedOnSnoozeThread = (thread_id, repository) => {
+    logNotificationSnoozed(thread_id);
+    // this.props.storageApi.incrStat('stagedCount');
+    // this.props.storageApi.incrStat(repository + '-stagedCount', '__REPO__');
+    this.props.notificationsApi.snoozeThread(thread_id);
+  }
+
   enhancedOnMarkAsRead = (thread_id, repository) => {
     logNotificationArchived(thread_id);
     this.props.storageApi.incrStat('stagedCount');
@@ -392,17 +408,24 @@ class NotificationsPage extends React.Component {
     let notificationsStaged = filteredNotifications.filter(n => n.status === Status.STAGED);
     let notificationsClosed = filteredNotifications.filter(n => n.status === Status.CLOSED);
 
+    const notificationsSnoozed = filteredNotifications.filter(n => n.status === Status.Snoozed);
+
     let notificationsToRender = [];
-    switch (this.state.activeStatus) {
-      case View.ARCHIVED:
-        notificationsToRender = notificationsClosed;
-        break;
-      case View.READ:
-        notificationsToRender = notificationsStaged;
-        break;
-      case View.UNREAD:
-      default:
-        notificationsToRender = notificationsQueued;
+    if (this.state.mode !== Mode.SNOOZED) {
+      switch (this.state.activeStatus) {
+        case View.ARCHIVED:
+          notificationsToRender = notificationsClosed;
+          break;
+        case View.READ:
+          notificationsToRender = notificationsStaged;
+          break;
+        case View.UNREAD:
+        default:
+          notificationsToRender = notificationsQueued;
+      }
+    } else {
+      // Viewing snoozed notifications.
+      notificationsToRender = notificationsSnoozed;
     }
 
     if (this.state.sort === Sort.TITLE) {
@@ -479,6 +502,7 @@ class NotificationsPage extends React.Component {
 
     return {
       notifications: notificationsToRender,
+      snoozedNotifications: notificationsSnoozed,
       queuedCount: notificationsQueued.length,
       stagedCount: notificationsStaged.length,
       closedCount: notificationsClosed.length,
@@ -501,6 +525,7 @@ class NotificationsPage extends React.Component {
 
     const {
       notifications: scoredAndSortedNotifications,
+      snoozedNotifications,
       queuedCount,
       stagedCount,
       closedCount,
@@ -548,6 +573,7 @@ class NotificationsPage extends React.Component {
         currentTime={this.state.currentTime}
         readStatistics={stagedStatistics}
         isFirstTimeUser={this.state.isFirstTimeUser}
+        snoozedNotifications={snoozedNotifications}
         setNotificationsPermission={this.setNotificationsPermission}
         notificationsPermission={notificationsPermission}
         unreadCount={queuedCount}
@@ -574,6 +600,7 @@ class NotificationsPage extends React.Component {
         onMarkAllAsStaged={markAllAsStaged}
         onClearCache={clearCache}
         onStageThread={this.enhancedOnStageThread}
+        onSnoozeThread={this.enhancedOnSnoozeThread}
         onRestoreThread={this.restoreThread}
         onRefreshNotifications={this.props.storageApi.refreshNotifications}
         isSearching={this.state.isSearching}

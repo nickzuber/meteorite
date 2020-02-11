@@ -7,4 +7,5 @@ export const Status = {
   Unread: 'queued',
   Read: 'staged',
   Archived: 'closed',
+  Snoozed: 'snoozed'
 };
