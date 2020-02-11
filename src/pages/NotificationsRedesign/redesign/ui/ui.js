@@ -564,7 +564,7 @@ export const NotificationBlock = enhance(styled('tbody')`
   transition: all 200ms ease;
 `);
 
-export const ErrorContainer = enhance(styled('div')`
+export const ErrorContainer = enhance(styled('div')(p => `
   display: flex;
   justify-content: center;
   align-items: center;
@@ -574,17 +574,21 @@ export const ErrorContainer = enhance(styled('div')`
     font-size: 20px;
     font-weight: 500;
     margin-bottom: 0;
-    text-align: center;
+    color: ${p.dark ? WHITE : 'inherit'};
   }
   p {
     margin-bottom: 6px;
+    opacity: 0.5;
+    color: ${p.dark ? WHITE : 'inherit'};
   }
   span {
     text-decoration: underline;
     text-underline-position: under;
     cursor: pointer;
+    opacity: 0.5;
+    color: ${p.dark ? WHITE : 'inherit'};
   }
-`);
+`));
 
 export const NotificationCell = enhance(styled('td')`
   white-space: nowrap;
