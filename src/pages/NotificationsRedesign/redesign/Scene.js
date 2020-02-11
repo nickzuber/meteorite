@@ -461,6 +461,9 @@ export default function Scene ({
                 &:hover {
                   opacity: 0.5;
                 }
+                &:active {
+                  opacity: 0.7;
+                }
                 @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
                   display: none;
                 }
