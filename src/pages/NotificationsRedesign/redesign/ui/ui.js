@@ -601,6 +601,7 @@ export const NotificationCell = enhance(styled('td')`
 
 export const NotificationTitle = enhance(styled('span')(p => `
   font-size: 14px;
+  position: relative;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -110,9 +110,9 @@ export function getPRIssueIcon (type, _reasons, dark) {
       );
     case 'Issue':
       return (
-        <NotificationIconWrapper css={css`background: #DBE7FF;`}>
+        <NotificationIconWrapper css={css`background: ${ThemeColor(dark)}29;`}>
           <i className="fas fa-exclamation" css={css`
-            color: #4C84FF;
+            color: ${ThemeColor(dark)};
             font-size: 18px;
           `}></i>
         </NotificationIconWrapper>

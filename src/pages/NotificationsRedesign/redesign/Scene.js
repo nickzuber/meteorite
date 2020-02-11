@@ -861,7 +861,7 @@ export default function Scene ({
                       </SortingItem>
                     </NotificationCell>
                     {/* Repository */}
-                    <NotificationCell flex={2} css={css`@media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) { display: none; }`}>
+                    <NotificationCell flex={1.5} css={css`@media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) { display: none; }`}>
                       <SortingItem
                         sort={Sort.REPOSITORY}
                         descending={descending}
@@ -1051,6 +1051,7 @@ function NotificationCollection ({
                 <NotificationTitle css={css`
                   display: flex;
                   align-items: center;
+                  transition: all 200ms ease;
                   i {
                     font-size: 10px;
                     margin-right: 6px;
@@ -1066,33 +1067,26 @@ function NotificationCollection ({
                 </NotificationTitle>
                 {/* Byline */}
                 <NotificationByline>
-                  {/* {user && user.avatar_url && (
-                    <img
-                      css={css`
-                        border-radius: 100%;
-                        height: 12px;
-                        width: 12px;
-                        margin-right: 5px;
-                      `}
-                      src={user.avatar_url}
-                    />
-                  )} */}
                   {getMessageFromReasons(item.reasons, item.type)}
                   {` ${getRelativeTime(item.updated_at).toLowerCase()}`}
                 </NotificationByline>
               </NotificationCell>
               {/* Repository */}
               <NotificationCell
-                flex={2}
+                flex={1.5}
                 onClick={() => window.open(item.repositoryUrl)}
                 css={css`
                   font-weight: 500;
                   color: #8994A6;
+                  padding-left: 20px;
                   @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
                     display: none;
                   }
               `}>
-                {'@' + item.repository}
+                {'@' + item.repository.split('/')[0]}
+                <NotificationByline>
+                  {item.repository.split('/')[1]}
+                </NotificationByline>
               </NotificationCell>
               {/* Score */}
               <NotificationCell
