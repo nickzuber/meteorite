@@ -91,15 +91,63 @@ const snackStates = {
   exited: 'transform: scale(0.9); opacity: 0'
 };
 
+const useTabFocused = () => {
+  const [focused, setFocused] = React.useState(true);
+
+  React.useEffect(() => {
+    const onFocus = () => setFocused(true);
+    const onBlur = () => setFocused(false);
+    window.addEventListener('focus', onFocus);
+    window.addEventListener('blur', onBlur);
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      window.removeEventListener('blur', onBlur);
+    }
+  }, []);
+
+  return focused;
+}
+
 const Snack = ({
   children,
-  transitionDuration,
   transitionState,
   onDismiss,
   action,
   dark,
-  onUndo
+  onUndo,
+  autoDismissTimeout
 }) => {
+  const interval = 50; // ms
+  const [running, setRunning] = React.useState(true);
+  const [completed, setCompleted] = React.useState(false);
+  const countdown = React.useRef(autoDismissTimeout);
+  const timer = React.useRef();
+  const focused = useTabFocused();
+
+  if (completed) {
+    onDismiss();
+  }
+
+  React.useEffect(() => {
+    if (completed) return;
+    if (!focused) return;
+    if (countdown.current <= 0) {
+      setRunning(false);
+      setCompleted(true);
+      return;
+    }
+
+    timer.current = setInterval(() => {
+      countdown.current -= interval;
+      if (countdown.current <= 0) {
+        clearInterval(timer.current);
+        setRunning(false);
+        setCompleted(true);
+      }
+    }, interval);
+    return () => clearInterval(timer.current);
+  }, [focused, running, completed]);
+
   return (
     <div css={css`
       display: flex;
@@ -191,7 +239,6 @@ const Snack = ({
 
 const withToastProvider = WrappedComponent => props => (
   <ToastProvider
-    // autoDismiss
     autoDismissTimeout={5000}
     components={{Toast: Snack}}
     placement="bottom-left"
