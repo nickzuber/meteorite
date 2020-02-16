@@ -63,6 +63,7 @@
     "react-ga": "^2.7.0",
     "react-spring": "^8.0.18",
     "react-svg-inline": "^2.1.1",
+    "react-toast-notifications": "^2.4.0",
     "recharts": "^1.5.0",
     "recompose": "^0.30.0",
     "resolve": "1.8.1",

@@ -1,8 +1,10 @@
 /** @jsx jsx */
 
 import React from 'react';
+import styled from '@emotion/styled';
 import {animated} from 'react-spring'
 import {css, jsx} from '@emotion/core';
+import { compose } from 'recompose';
 import {useSpring} from 'react-spring'
 import {AreaChart, Area, XAxis, Tooltip} from 'recharts';
 import {ReactComponent as BlankCanvasSvg} from '../../../images/svg/blank.svg'
@@ -76,10 +78,134 @@ import {
   ThemeContext,
   optimized
 } from './ui';
+import {ToastProvider, useToasts} from 'react-toast-notifications';
 export const AnimatedNotificationRow = animated(NotificationRow);
 
 const hash = process.localEnv.GIT_HASH ? `#${process.localEnv.GIT_HASH}` : '';
 const version = require('../../../../package.json').version + hash;
+
+const snackStates = {
+  entering: 'transform: translateX(-120%); opacity: 0',
+  entered: 'transform: translateX(0%); opacity: 1',
+  exiting: 'transform: scale(0.9); opacity: 0',
+  exited: 'transform: scale(0.9); opacity: 0'
+};
+
+const Snack = ({
+  children,
+  transitionDuration,
+  transitionState,
+  onDismiss,
+  action,
+  dark,
+  onUndo
+}) => {
+  return (
+    <div css={css`
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: ${dark ? DarkTheme.SecondaryAlt : WHITE};
+      border: 1px solid ${dark ? DarkTheme.Secondary : '#ebecee'};
+      box-shadow: rgba(0,0,0,0) 0px 2px 8px, rgba(0,0,0,0.25) 0px 2px 6px;
+      border-radius: 6px;
+      margin: 8px;
+      overflow: hidden;
+      height: 40px;
+      max-width: 560px;
+      min-width: 400px;
+      padding: 8px 16px;
+      transition: all 200ms ease;
+      transform: translateX(-120%);
+      ${snackStates[transitionState]};
+    `}>
+      <div css={css`
+        background: ${ThemeColor(dark)}29;
+        border-radius: 100%;
+        height: 30px;
+        width: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        i {
+          color: ${ThemeColor(dark)};
+        }
+      `}>
+        {action === 'read' ? (
+          <i className="fas fa-check"></i>
+        ) : (
+          <i className="fas fa-times"></i>
+        )}
+      </div>
+      <div css={css`
+        margin: 8px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: end;
+
+        span {
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          max-width: 400px;
+        }
+      `}>
+        {children}
+      </div>
+      <div css={css`
+        user-select: none;
+        cursor: pointer;
+        height: 100%;
+        position: relative;
+        flex: 1;
+        text-align: right;
+        min-width: 40px;
+      `}>
+        <span css={css`
+          font-size: 13px;
+          font-weight: 500;
+          color: ${dark ? WHITE : 'inherit'};
+          transition: all 150ms ease;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: absolute;
+          right: 0;
+          &:hover {
+            opacity: 0.6;
+          }
+          &:active {
+            opacity: 0.4;
+          }
+        `} onClick={() => {
+          onDismiss();
+          onUndo();
+        }}>
+          {'Undo'}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+const withToastProvider = WrappedComponent => props => (
+  <ToastProvider
+    // autoDismiss
+    autoDismissTimeout={5000}
+    components={{Toast: Snack}}
+    placement="bottom-left"
+  >
+    <WrappedComponent {...props} />
+  </ToastProvider>
+);
+
+const withToasts = WrappedComponent => props => {
+  const {addToast} = useToasts();
+  return (
+    <WrappedComponent addToast={addToast} {...props} />
+  );
+};
 
 function BasePageItem ({children, onChange, ...props}) {
   return (
@@ -93,6 +219,20 @@ function BasePageItem ({children, onChange, ...props}) {
 }
 
 const PageItem = withTooltip(BasePageItem);
+
+const ToastTitle = styled('div')(p => `
+  font-size: 13px;
+  font-weight: 500;
+  margin: 2px 0;
+  color: ${p.dark ? WHITE : 'inherit'};
+`);
+
+const ToastByline = styled('div')`
+  font-size: 12px;
+  font-weight: 500;
+  color: #8893a7cc;
+  margin: 2px 0;
+`;
 
 function MenuIconItem ({children, onChange, selected, alwaysActive, noBorder, ...props}) {
   return (
@@ -301,7 +441,7 @@ function ReadCountGraph ({data, onHover, onExit, dark}) {
   );
 }
 
-export default function Scene ({
+function Scene ({
   notifications,
   notificationsPermission,
   currentTime,
@@ -343,7 +483,8 @@ export default function Scene ({
   mode,
   setMode,
   getUserItem,
-  setUserItem
+  setUserItem,
+  addToast
 }) {
   const hasNotificationsOn = notificationsPermission === 'granted';
   const [darkMode, setDarkMode] = React.useState(getUserItem('dark-mode-enabled'));
@@ -354,6 +495,58 @@ export default function Scene ({
     cur: readTodayCount,
     prev: readTodayLastWeekCount
   });
+
+  const onStageThreadWithToast = (thread_id, repository) => {
+    const notification = notifications.find(({id}) => id === thread_id);
+    const {title, tags} = extractJiraTags(notification.name);
+
+    addToast((
+      <React.Fragment>
+        <ToastTitle dark={darkMode}>
+          {tags.map(tag => (
+            <JiraTag key={tag} css={css`vertical-align: middle;`} color={colorOfTag(tag)}>
+              {tag}
+            </JiraTag>
+          ))}
+          {title}
+        </ToastTitle>
+        <ToastByline>
+          {'Notification was marked as read'}
+        </ToastByline>
+      </React.Fragment>
+    ), {
+      dark: darkMode,
+      action: 'read',
+      onUndo: () => onRestoreThread(thread_id)
+    });
+    onStageThread(thread_id, repository);
+  }
+
+  const onArchiveThreadWithToast = (thread_id, repository) => {
+    const notification = notifications.find(({id}) => id === thread_id);
+    const {title, tags} = extractJiraTags(notification.name);
+
+    addToast((
+      <React.Fragment>
+        <ToastTitle dark={darkMode}>
+          {tags.map(tag => (
+            <JiraTag key={tag} css={css`vertical-align: middle;`} color={colorOfTag(tag)}>
+              {tag}
+            </JiraTag>
+          ))}
+          {title}
+        </ToastTitle>
+        <ToastByline>
+          {'Notification was marked as archived'}
+        </ToastByline>
+      </React.Fragment>
+    ), {
+      dark: darkMode,
+      action: 'archive',
+      onUndo: () => onRestoreThread(thread_id)
+    });
+    onArchiveThread(thread_id, repository);
+  }
 
   readStatistics = readStatistics.map(n => parseInt(n, 10));
   const lastWeekStats = readStatistics.slice(0, 7);
@@ -926,8 +1119,8 @@ export default function Scene ({
                     fact={fact}
                     notifications={notifications}
                     colorOfScore={createColorOfScore(lowestScore, highestScore)}
-                    markAsRead={onStageThread}
-                    markAsArchived={onArchiveThread}
+                    markAsRead={onStageThreadWithToast}
+                    markAsArchived={onArchiveThreadWithToast}
                     markAsUnread={onRestoreThread}
                     user={user}
                   />
@@ -1156,6 +1349,7 @@ function ActionItems ({item, view, markAsRead, markAsArchived, markAsUnread}) {
             tooltip="Mark as archived"
             onClick={() => markAsArchived(item.id, item.repository)}
           >
+            {/* <i className="fas fa-thumbtack"></i> */}
             <i className="fas fa-times"></i>
           </IconLink>
         </>
@@ -1198,3 +1392,10 @@ function ActionItems ({item, view, markAsRead, markAsArchived, markAsUnread}) {
       return null
   }
 }
+
+const enhance = compose(
+  withToastProvider,
+  withToasts
+)
+
+export default enhance(Scene);
