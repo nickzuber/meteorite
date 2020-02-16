@@ -118,9 +118,9 @@ const Snack = ({
   autoDismissTimeout
 }) => {
   const interval = 50; // ms
-  const [running, setRunning] = React.useState(true);
+  const [paused, setPaused] = React.useState(false);
   const [completed, setCompleted] = React.useState(false);
-  const countdown = React.useRef(autoDismissTimeout);
+  const [countdown, setCountdown] = React.useState(autoDismissTimeout);
   const timer = React.useRef();
   const focused = useTabFocused();
 
@@ -129,44 +129,55 @@ const Snack = ({
   }
 
   React.useEffect(() => {
-    if (completed) return;
-    if (!focused) return;
-    if (countdown.current <= 0) {
-      setRunning(false);
+    const stop = () => clearInterval(timer.current);
+    if (paused) return stop();
+    if (completed) return stop();
+    if (!focused) return stop();
+    if (countdown <= 0) {
       setCompleted(true);
-      return;
+      return stop();
     }
 
-    timer.current = setInterval(() => {
-      countdown.current -= interval;
-      if (countdown.current <= 0) {
-        clearInterval(timer.current);
-        setRunning(false);
+    timer.current = setTimeout(() => {
+      setCountdown(countdown => countdown -= interval);
+      if (countdown <= 0) {
         setCompleted(true);
       }
     }, interval);
     return () => clearInterval(timer.current);
-  }, [focused, running, completed]);
+  }, [focused, paused, countdown, completed]);
 
   return (
-    <div css={css`
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: ${dark ? DarkTheme.SecondaryAlt : WHITE};
-      border: 1px solid ${dark ? DarkTheme.Secondary : '#ebecee'};
-      box-shadow: rgba(0,0,0,0) 0px 2px 8px, rgba(0,0,0,0.25) 0px 2px 6px;
-      border-radius: 6px;
-      margin: 8px;
-      overflow: hidden;
-      height: 40px;
-      max-width: 560px;
-      min-width: 400px;
-      padding: 8px 16px;
-      transition: all 200ms ease;
-      transform: translateX(-120%);
-      ${snackStates[transitionState]};
-    `}>
+    <div
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      css={css`
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: ${dark ? DarkTheme.SecondaryAlt : WHITE};
+        border: 1px solid ${dark ? DarkTheme.Secondary : '#ebecee'};
+        box-shadow: rgba(0,0,0,0) 0px 2px 8px, rgba(0,0,0,0.25) 0px 2px 6px;
+        border-radius: 6px;
+        margin: 8px;
+        overflow: hidden;
+        height: 40px;
+        max-width: 560px;
+        min-width: 400px;
+        padding: 8px 16px;
+        transition: all 200ms ease;
+        transform: translateX(-120%);
+        ${snackStates[transitionState]};
+        cursor: pointer;
+        user-select: none;
+        &:hover {
+          background: ${dark ? '#162632' : '#f6f6f4'};
+        }
+        &:active {
+          transform: scale(0.98);
+        }
+      `}
+    >
       <div css={css`
         background: ${ThemeColor(dark)}29;
         border-radius: 100%;
@@ -175,6 +186,8 @@ const Snack = ({
         display: flex;
         justify-content: center;
         align-items: center;
+        overflow: hidden;
+        position: relative;
         i {
           color: ${ThemeColor(dark)};
         }
@@ -184,6 +197,14 @@ const Snack = ({
         ) : (
           <i className="fas fa-times"></i>
         )}
+        <div css={css`
+          background: ${ThemeColor(dark)}29;
+          height: 35px;
+          width: 35px;
+          position: absolute;
+          z-index: -1;
+          transform: translateY(${35 - ((countdown / autoDismissTimeout) * 35)}px);
+        `} />
       </div>
       <div css={css`
         margin: 8px 20px;
@@ -197,7 +218,7 @@ const Snack = ({
           text-overflow: ellipsis;
           max-width: 400px;
         }
-      `}>
+      `} onClick={onDismiss}>
         {children}
       </div>
       <div css={css`
@@ -239,7 +260,7 @@ const Snack = ({
 
 const withToastProvider = WrappedComponent => props => (
   <ToastProvider
-    autoDismissTimeout={5000}
+    autoDismissTimeout={6000}
     components={{Toast: Snack}}
     placement="bottom-left"
   >
