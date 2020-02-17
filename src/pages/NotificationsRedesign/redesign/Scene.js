@@ -614,7 +614,7 @@ function Scene ({
     ), {
       dark: darkMode,
       action: 'archive',
-      onUndo: () => onRestoreThread(thread_id)
+      onUndo: () => onStageThread(thread_id, repository)
     });
     onArchiveThread(thread_id, repository);
   }
