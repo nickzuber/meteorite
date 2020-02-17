@@ -509,9 +509,8 @@ export const NotificationRowHeader = enhance(styled('tr')`
   box-sizing: border-box;
 `);
 
-export const NotificationRow = enhance(styled(NotificationRowHeader)`
+export const NotificationRow = enhance(styled(NotificationRowHeader)(p => `
   position: relative;
-  background: none;
   z-index: 1;
   border-radius: 4px;
   padding: 6px 18px;
@@ -520,7 +519,9 @@ export const NotificationRow = enhance(styled(NotificationRowHeader)`
   border-radius: 6px;
   cursor: pointer;
   user-select: none;
+  opacity: ${p.readPinned ? 0.5 : 1};
   transition: all 200ms ease;
+  background: none;
   &:hover {
     background: #757d8410;
   };
@@ -530,7 +531,7 @@ export const NotificationRow = enhance(styled(NotificationRowHeader)`
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     padding: 6px 2px;
   }
-`);
+`));
 
 export const LoadingNotificationRow = enhance(styled(NotificationRowHeader)`
   position: relative;
@@ -613,7 +614,7 @@ export const NotificationTitle = enhance(styled('span')(p => `
 `));
 export const NotificationByline = enhance(styled('span')`
   display: flex;
-  align-items: end;
+  align-items: center;
   margin-top: 4px;
   font-size: 12px;
   color: #8893a7cc;
@@ -621,8 +622,8 @@ export const NotificationByline = enhance(styled('span')`
   white-space: nowrap;
   overflow: hidden;
   i {
-    margin-right: 4px;
-    font-size: 10px;
+    margin-right: 6px;
+    font-size: 12px;
     color: #8893a7cc;
   }
   span {
@@ -809,6 +810,7 @@ export const NotificationIconWrapper = enhance(styled('div')`
   align-items: center;
   border-radius: 100%;
   transform: scale(.65);
+  transition: all 100ms ease;
 `);
 
 export const IconLink = enhance(styled('span')(p => `
@@ -922,6 +924,7 @@ export const LinkText = enhance(styled('div')(p => `
 export const JiraTag = enhance(styled('span')(p => `
   background: ${p.color || '#e2e2e2'}28;
   color: ${p.color || '#e2e2e2'};
+  vertical-align: bottom;
   font-size: 10px;
   font-weight: 600;
   border-radius: 4px;

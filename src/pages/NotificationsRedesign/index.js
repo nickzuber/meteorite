@@ -42,6 +42,14 @@ export const Mode = {
   OLD: 3
 };
 
+function logNotificationPinned (value) {
+  amplitude.getInstance().logEvent('notification_pinned', {
+    event_category: 'notification',
+    event_label: 'Notification pinned',
+    value
+  });
+}
+
 function logNotificationRead (value) {
   amplitude.getInstance().logEvent('notification_read', {
     event_category: 'notification',
@@ -266,6 +274,18 @@ class NotificationsPage extends React.Component {
     }, 800);
   }
 
+  enhancedOnMarkAsPinned = (thread_id) => {
+    logNotificationPinned(thread_id);
+    this.props.notificationsApi.pinThread(thread_id);
+  }
+
+  enhancedOnMarkAsReadPinned = (thread_id, repository) => {
+    logNotificationRead(thread_id);
+    this.props.storageApi.incrStat('stagedCount');
+    this.props.storageApi.incrStat(repository + '-stagedCount', '__REPO__');
+    this.props.notificationsApi.readPinThread(thread_id);
+  }
+
   enhancedOnStageThread = (thread_id, repository) => {
     logNotificationRead(thread_id);
     this.props.storageApi.incrStat('stagedCount');
@@ -388,7 +408,11 @@ class NotificationsPage extends React.Component {
         .filter(item => item.badges.includes(Badges.OLD));
     }
 
-    let notificationsQueued = filteredNotifications.filter(n => n.status === Status.QUEUED);
+    let notificationsQueued = filteredNotifications.filter(n => (
+      n.status === Status.QUEUED ||
+      n.status === Status.Pinned ||
+      n.status === Status.PinnedRead
+    ));
     let notificationsStaged = filteredNotifications.filter(n => n.status === Status.STAGED);
     let notificationsClosed = filteredNotifications.filter(n => n.status === Status.CLOSED);
 
@@ -476,6 +500,26 @@ class NotificationsPage extends React.Component {
         this.sendWebNotification(filteredNewChanges);
       }
     }
+
+    // Final pinned sort
+    notificationsToRender.sort((a, b) => {
+      if (a.status === Status.Pinned && b.status === Status.Pinned) {
+        return a.score - a.score;
+      }
+      if (a.status === Status.Pinned) {
+        return -1;
+      }
+      if (b.status === Status.Pinned) {
+        return 1;
+      }
+      if (a.status === Status.PinnedRead) {
+        return -1;
+      }
+      if (b.status === Status.PinnedRead) {
+        return 1;
+      }
+      return 0;
+    });
 
     return {
       notifications: notificationsToRender,
@@ -596,6 +640,8 @@ class NotificationsPage extends React.Component {
         request={this.props.notificationsApi.request}
         getUserItem={this.props.storageApi.getUserItem}
         setUserItem={this.props.storageApi.setUserItem}
+        onPinThread={this.enhancedOnMarkAsPinned}
+        onReadPinThread={this.enhancedOnMarkAsReadPinned}
       />
     );
   }

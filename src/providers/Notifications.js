@@ -223,7 +223,7 @@ class NotificationsProvider extends React.Component {
     }
 
     if (this.state.loading) {
-      // Don't try to fetch if we're already fetching
+      // Don't try to fetch if we're already fetching.
       return;
     }
 
@@ -251,7 +251,7 @@ class NotificationsProvider extends React.Component {
         if (cached_n) {
           // Something's changed, we want to push
           if (cached_n.updated_at !== n.updated_at) {
-            return this.updateNotification(n, cached_n.reasons);;
+            return this.updateNotification(n, cached_n);
           }
           // This means that something didn't update, which means the page we're
           // currently processing has stale data so we don't need to fetch the next page.
@@ -355,6 +355,42 @@ class NotificationsProvider extends React.Component {
     });
   }
 
+  requestPinThread = thread_id => {
+    return new Promise((resolve, reject) => {
+      const cached_n = this.props.getItemFromStorage(thread_id);
+      if (cached_n) {
+        const newValue = {
+          ...cached_n,
+          status_last_changed: moment(),
+          status: Status.Pinned
+        };
+        this.props.setItemInStorage(thread_id, newValue);
+        this.props.refreshNotifications();
+        return resolve();
+      } else {
+        throw new Error(`Attempted to stage thread ${thread_id} that wasn't found in the cache.`);
+      }
+    });
+  }
+
+  requestReadPinThread = thread_id => {
+    return new Promise((resolve, reject) => {
+      const cached_n = this.props.getItemFromStorage(thread_id);
+      if (cached_n) {
+        const newValue = {
+          ...cached_n,
+          status_last_changed: moment(),
+          status: Status.PinnedRead
+        };
+        this.props.setItemInStorage(thread_id, newValue);
+        this.props.refreshNotifications();
+        return resolve();
+      } else {
+        throw new Error(`Attempted to stage thread ${thread_id} that wasn't found in the cache.`);
+      }
+    });
+  }
+
   requestStageAll = () => {
     return new Promise((resolve, reject) => {
       Object.keys(localStorage).forEach(nKey => {
@@ -403,22 +439,35 @@ class NotificationsProvider extends React.Component {
   }
 
   stageThread = thread_id => {
-    this.setState({ loading: true });
     return this.requestStageThread(thread_id)
       .then(() => this.setState({error: null}))
-      .catch(error => this.setState({error}))
-      .finally(() => this.setState({ loading: false }));
+      .catch(error => this.setState({error}));
+  }
+
+  pinThread = thread_id => {
+    return this.requestPinThread(thread_id)
+      .then(() => this.setState({error: null}))
+      .catch(error => this.setState({error}));
+  }
+
+  readPinThread = thread_id => {
+    return this.requestReadPinThread(thread_id)
+      .then(() => this.setState({error: null}))
+      .catch(error => this.setState({error}));
   }
 
   restoreThread = thread_id => {
-    this.setState({ loading: true });
     return this.requestRestoreThread(thread_id)
       .then(() => this.setState({error: null}))
-      .catch(error => this.setState({error}))
-      .finally(() => this.setState({ loading: false }));
+      .catch(error => this.setState({error}));
   }
 
-  updateNotification = (n, prevReason = null) => {
+  updateNotification = (n, cachedNotification = null) => {
+    const prevReason = cachedNotification ? cachedNotification.reasons : null;
+    const isPinned = cachedNotification ? (
+      cachedNotification.status === Status.Pinned ||
+      cachedNotification.status === Status.PinnedRead
+    ) : false;
     let reasons = [];
     const newReason = {
       reason: n.reason,
@@ -439,13 +488,30 @@ class NotificationsProvider extends React.Component {
       ? transformUrlFromResponse(n.subject.url) + '#issuecomment-' + commentNumber
       : transformUrlFromResponse(n.subject.url);
 
-    // Notification model
+    let nextStatus = null;
+    if (n.unread) {
+      // If the notification is unread.
+      if (isPinned) {
+        nextStatus = Status.Pinned;
+      } else {
+        nextStatus = Status.Unread;
+      }
+    } else {
+      // If the notification is read.
+      if (isPinned) {
+        nextStatus = Status.PinnedRead;
+      } else {
+        nextStatus = Status.Read;
+      }
+    }
+
+    // Notification model.
     const value = {
       id: n.id,
       pullRequestURL: n.subject.url,
       isAuthor: reasons.some(r => r.reason === 'author'),
       updated_at: n.updated_at,
-      status: n.unread ? Status.QUEUED : Status.STAGED,
+      status: nextStatus,
       reasons: reasons,
       type: n.subject.type,
       name: n.subject.title,
@@ -471,6 +537,8 @@ class NotificationsProvider extends React.Component {
       clearCache: this.clearCache,
       stageThread: this.stageThread,
       restoreThread: this.restoreThread,
+      pinThread: this.pinThread,
+      readPinThread: this.readPinThread,
       setNotificationsPermission: this.setNotificationsPermission,
     });
   }

@@ -79,6 +79,7 @@ import {
   optimized
 } from './ui';
 import {ToastProvider, useToasts} from 'react-toast-notifications';
+import {Status} from '../../../constants/status';
 export const AnimatedNotificationRow = animated(NotificationRow);
 
 const hash = process.localEnv.GIT_HASH ? `#${process.localEnv.GIT_HASH}` : '';
@@ -542,6 +543,8 @@ function Scene ({
   setNotificationsPermission,
   onStageThread,
   onArchiveThread,
+  onPinThread,
+  onReadPinThread,
   readStatistics,
   readTodayCount,
   reposReadCounts,
@@ -1190,6 +1193,8 @@ function Scene ({
                     markAsRead={onStageThreadWithToast}
                     markAsArchived={onArchiveThreadWithToast}
                     markAsUnread={onRestoreThread}
+                    markAsPinned={onPinThread}
+                    markAsReadPinned={onReadPinThread}
                     user={user}
                   />
                 )}
@@ -1256,6 +1261,8 @@ function NotificationCollection ({
   markAsRead,
   markAsArchived,
   markAsUnread,
+  markAsPinned,
+  markAsReadPinned,
   user
 }) {
   const props = useSpring({
@@ -1292,29 +1299,34 @@ function NotificationCollection ({
   return (
     <animated.tbody style={props} page={page}>
       {notifications.map((item, xid) => {
+        const pinned = item.status === Status.Pinned || item.status === Status.PinnedRead;
         const name = item.name;
         const {title, tags} = extractJiraTags(name);
 
         return (
           <div css={css`position: relative;`}>
-            <AnimatedNotificationRow key={notifications.id || xid}>
+            <AnimatedNotificationRow
+              readPinned={item.status === Status.PinnedRead}
+              key={notifications.id || xid}
+            >
               {/* Type */}
               <NotificationCell width={60} css={css`@media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) { flex: 50px 0 0; }`}>
-                {getPRIssueIcon(item.type, item.reasons, dark)}
+                {getPRIssueIcon({type: item.type, reasons: item.reasons, dark, pinned})}
               </NotificationCell>
               {/* Title */}
               <NotificationCell
                 flex={4}
                 onClick={() => {
                   window.open(item.url);
-                  markAsRead(item.id, item.repository);
+                  if (item.status === Status.Pinned || item.status === Status.PinnedRead) {
+                    markAsReadPinned(item.id, item.repository);
+                  } else {
+                    markAsRead(item.id, item.repository);
+                  }
                 }}
-                css={css`
-                  font-weight: 500;
-              `}>
+                css={css`font-weight: 500;`}>
                 <NotificationTitle css={css`
-                  display: flex;
-                  align-items: center;
+                  display: block;
                   transition: all 200ms ease;
                   i {
                     font-size: 10px;
@@ -1331,6 +1343,7 @@ function NotificationCollection ({
                 </NotificationTitle>
                 {/* Byline */}
                 <NotificationByline>
+                  {item.isAuthor && <i className="fas fa-user-circle"></i>}
                   {getMessageFromReasons(item.reasons, item.type)}
                   {` ${getRelativeTime(item.updated_at).toLowerCase()}`}
                 </NotificationByline>
@@ -1379,6 +1392,8 @@ function NotificationCollection ({
                 <ActionItems
                   item={item}
                   view={view}
+                  markAsPinned={markAsPinned}
+                  markAsReadPinned={markAsReadPinned}
                   markAsUnread={markAsUnread}
                   markAsRead={markAsRead}
                   markAsArchived={markAsArchived}
@@ -1402,26 +1417,53 @@ function NotificationCollection ({
   );
 }
 
-function ActionItems ({item, view, markAsRead, markAsArchived, markAsUnread}) {
+function ActionItems ({
+  item,
+  view,
+  markAsRead,
+  markAsArchived,
+  markAsUnread,
+  markAsPinned,
+  markAsReadPinned
+}) {
   switch (view) {
     case View.UNREAD:
-      return (
-        <>
-          <IconLink
-            tooltip="Mark as read"
-            onClick={() => markAsRead(item.id, item.repository)}
-          >
-            <i className="fas fa-check"></i>
-          </IconLink>
-          <IconLink
-            tooltip="Mark as archived"
-            onClick={() => markAsArchived(item.id, item.repository)}
-          >
-            {/* <i className="fas fa-thumbtack"></i> */}
-            <i className="fas fa-times"></i>
-          </IconLink>
-        </>
-      );
+      if (item.status === Status.Pinned || item.status === Status.PinnedRead) {
+        return (
+          <>
+            <IconLink
+              tooltip="Mark as read"
+              onClick={() => markAsReadPinned(item.id, item.repository)}
+            >
+              <i className="fas fa-check"></i>
+            </IconLink>
+            <IconLink
+              tooltip="Unpin notification"
+              onClick={() => markAsUnread(item.id)}
+            >
+              <i className="fas fa-map-pin"></i>
+            </IconLink>
+          </>
+        );
+      } else {
+        return (
+          <>
+            <IconLink
+              tooltip="Mark as read"
+              onClick={() => markAsRead(item.id, item.repository)}
+            >
+              <i className="fas fa-check"></i>
+            </IconLink>
+            <IconLink
+              tooltip="Pin to the top of your queue"
+              css={css`i { transform: rotate(45deg); }`}
+              onClick={() => markAsPinned(item.id)}
+            >
+              <i className="fas fa-map-pin"></i>
+            </IconLink>
+          </>
+        );
+      }
     case View.READ:
       return (
         <>

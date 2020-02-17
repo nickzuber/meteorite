@@ -97,7 +97,19 @@ export function stringOfError (errorText) {
   }
 }
 
-export function getPRIssueIcon (type, _reasons, dark) {
+const PinnedColor = '#fab005';
+export function getPRIssueIcon ({type, reasons, dark, pinned}) {
+  if (pinned) {
+    return (
+      <NotificationIconWrapper css={css`background: ${PinnedColor}29;`}>
+        <i className="fas fa-star" css={css`
+          color: ${PinnedColor};
+          font-size: 18px;
+        `}></i>
+      </NotificationIconWrapper>
+    );
+  }
+
   switch (type) {
     case 'PullRequest':
       return (

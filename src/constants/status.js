@@ -7,4 +7,6 @@ export const Status = {
   Unread: 'queued',
   Read: 'staged',
   Archived: 'closed',
+  Pinned: 'pinned', // Same idea as "PinnedUnread"
+  PinnedRead: 'pinned-read'
 };

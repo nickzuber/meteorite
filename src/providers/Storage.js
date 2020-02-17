@@ -96,9 +96,12 @@ class StorageProvider extends React.Component {
               this.deleteItem(notification.id);
             }
             return true;
+          case Status.Pinned:
+          case Status.PinnedRead:
+            return true;
         }
 
-        // Fallback, if there's no status.
+        // Fallback, if there's no valid status.
         return false;
       });
 
