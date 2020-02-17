@@ -1360,9 +1360,9 @@ function NotificationCollection ({
                     display: none;
                   }
               `}>
-                {'@' + item.repository.split('/')[0]}
+                {item.repository.split('/')[1]}
                 <NotificationByline>
-                  {item.repository.split('/')[1]}
+                  {'@' + item.repository.split('/')[0]}
                 </NotificationByline>
               </NotificationCell>
               {/* Score */}
