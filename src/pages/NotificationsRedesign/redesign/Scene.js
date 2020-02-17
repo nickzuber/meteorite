@@ -1428,41 +1428,59 @@ function ActionItems ({
 }) {
   switch (view) {
     case View.UNREAD:
-      if (item.status === Status.Pinned || item.status === Status.PinnedRead) {
-        return (
-          <>
-            <IconLink
-              tooltip="Mark as read"
-              onClick={() => markAsReadPinned(item.id, item.repository)}
-            >
-              <i className="fas fa-check"></i>
-            </IconLink>
-            <IconLink
-              tooltip="Unpin notification"
-              onClick={() => markAsUnread(item.id)}
-            >
-              <i className="fas fa-map-pin"></i>
-            </IconLink>
-          </>
-        );
-      } else {
-        return (
-          <>
-            <IconLink
-              tooltip="Mark as read"
-              onClick={() => markAsRead(item.id, item.repository)}
-            >
-              <i className="fas fa-check"></i>
-            </IconLink>
-            <IconLink
-              tooltip="Pin to the top of your queue"
-              css={css`i { transform: rotate(45deg); }`}
-              onClick={() => markAsPinned(item.id)}
-            >
-              <i className="fas fa-map-pin"></i>
-            </IconLink>
-          </>
-        );
+      switch (item.status) {
+        case Status.Pinned:
+          return (
+            <>
+              <IconLink
+                tooltip="Mark as read"
+                onClick={() => markAsReadPinned(item.id, item.repository)}
+              >
+                <i className="fas fa-check"></i>
+              </IconLink>
+              <IconLink
+                tooltip="Unpin notification"
+                onClick={() => markAsUnread(item.id)}
+              >
+                <i className="fas fa-map-pin"></i>
+              </IconLink>
+            </>
+          );
+        case Status.PinnedRead:
+          return (
+            <>
+              <IconLink
+                tooltip="Mark as unread"
+                onClick={() => markAsPinned(item.id, item.repository)}
+              >
+                <i className="fas fa-undo"></i>
+              </IconLink>
+              <IconLink
+                tooltip="Unpin notification"
+                onClick={() => markAsUnread(item.id)}
+              >
+                <i className="fas fa-map-pin"></i>
+              </IconLink>
+            </>
+          );
+        default:
+          return (
+            <>
+              <IconLink
+                tooltip="Mark as read"
+                onClick={() => markAsRead(item.id, item.repository)}
+              >
+                <i className="fas fa-check"></i>
+              </IconLink>
+              <IconLink
+                tooltip="Pin to the top of your queue"
+                css={css`i { transform: rotate(45deg); }`}
+                onClick={() => markAsPinned(item.id)}
+              >
+                <i className="fas fa-map-pin"></i>
+              </IconLink>
+            </>
+          );
       }
     case View.READ:
       return (
