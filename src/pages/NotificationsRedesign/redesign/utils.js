@@ -4,6 +4,7 @@ import React from 'react';
 import moment from 'moment';
 import {css, jsx} from '@emotion/core';
 import {Badges, Reasons} from '../../../constants/reasons';
+import {Filters} from '../../../constants/filters';
 import {Mode} from '../index';
 import {NotificationIconWrapper, ThemeColor} from './ui/ui';
 
@@ -234,6 +235,23 @@ export function titleOfMode (mode) {
       return 'Talkative Threads';
     case Mode.OLD:
       return 'Overdue Threads';
+    default:
+      return 'Updates';
+  }
+}
+
+export function titleOfFilter (filter) {
+  switch (filter) {
+    case Filters.PARTICIPATING:
+      return 'All Relevent';
+    case Filters.SUBSCRIBED:
+      return 'Subscribed';
+    case Filters.COMMENT:
+      return 'Commented';
+    case Filters.ASSIGNED:
+      return 'Assigned';
+    case Filters.REVIEW_REQUESTED:
+      return 'Requested Reviews';
     default:
       return 'Updates';
   }

@@ -22,7 +22,7 @@ import {
   createColorOfScore,
   getPercentageDelta,
   prettify,
-  titleOfMode,
+  titleOfFilter,
   subtitleOfMode,
   colorOfTag,
   extractJiraTags
@@ -80,6 +80,7 @@ import {
 } from './ui';
 import {ToastProvider, useToasts} from 'react-toast-notifications';
 import {Status} from '../../../constants/status';
+import {Filters} from '../../../constants/filters';
 export const AnimatedNotificationRow = animated(NotificationRow);
 
 const hash = process.localEnv.GIT_HASH ? `#${process.localEnv.GIT_HASH}` : '';
@@ -303,7 +304,7 @@ const ToastByline = styled('div')`
   margin: 2px 0;
 `;
 
-function MenuIconItem ({children, onChange, selected, alwaysActive, noBorder, ...props}) {
+function BaseMenuIconItem ({children, onChange, selected, alwaysActive, noBorder, ...props}) {
   return (
     <IconContainer
       onClick={() => onChange(props.mode)}
@@ -315,6 +316,8 @@ function MenuIconItem ({children, onChange, selected, alwaysActive, noBorder, ..
     </IconContainer>
   );
 }
+
+const MenuIconItem = withTooltip(BaseMenuIconItem);
 
 function SortingItem ({children, selected, onChange, descending, setDescending, ...props}) {
   return (
@@ -553,6 +556,8 @@ function Scene ({
   onLogout,
   mode,
   setMode,
+  activeFilter,
+  onSetActiveFilter,
   getUserItem,
   setUserItem,
   addToast
@@ -749,44 +754,60 @@ function Scene ({
         `}>
           <MenuContainerItem expand={menuOpen}>
             <MenuIconItem
-              mode={Mode.ALL}
+              mode={Filters.PARTICIPATING}
               primary="#4caf50"
-              selected={mode === Mode.ALL}
-              onChange={setMode}
+              selected={activeFilter === Filters.PARTICIPATING}
+              onChange={onSetActiveFilter}
               open={menuOpen}
+              dark={darkMode}
+              tooltip="View all of your relevant notifications"
+              tooltipOffsetX={132}
+              tooltipOffsetY={-46}
             >
-              <span>{titleOfMode(Mode.ALL)}</span>
+              <span>{titleOfFilter(Filters.PARTICIPATING)}</span>
               <i className="fas fa-leaf"></i>
             </MenuIconItem>
             <MenuIconItem
-              mode={Mode.HOT}
-              primary="#e91e63"
-              selected={mode === Mode.HOT}
-              onChange={setMode}
+              mode={Filters.REVIEW_REQUESTED}
+              primary="#fab003"
+              selected={activeFilter === Filters.REVIEW_REQUESTED}
+              onChange={onSetActiveFilter}
               open={menuOpen}
+              dark={darkMode}
+              tooltip="View notifications that request your review"
+              tooltipOffsetX={148}
+              tooltipOffsetY={-46}
             >
-              <span>{titleOfMode(Mode.HOT)}</span>
-              <i className="fas fa-fire"></i>
+              <span>{titleOfFilter(Filters.REVIEW_REQUESTED)}</span>
+              <i className="fas fa-eye"></i>
             </MenuIconItem>
             <MenuIconItem
-              mode={Mode.COMMENTS}
-              primary={ThemeColor(darkMode)}
-              selected={mode === Mode.COMMENTS}
-              onChange={setMode}
+              mode={Filters.ASSIGNED}
+              primary="#e91156"
+              selected={activeFilter === Filters.ASSIGNED}
+              onChange={onSetActiveFilter}
               open={menuOpen}
+              dark={darkMode}
+              tooltip="View notifications that are assigned to you"
+              tooltipOffsetX={148}
+              tooltipOffsetY={-46}
             >
-              <span>{titleOfMode(Mode.COMMENTS)}</span>
-              <i className="fas fa-user-friends"></i>
+              <span>{titleOfFilter(Filters.ASSIGNED)}</span>
+              <i className="fas fa-tags"></i>
             </MenuIconItem>
             <MenuIconItem
-              mode={Mode.OLD}
-              primary="#fcc419"
-              selected={mode === Mode.OLD}
-              onChange={setMode}
+              mode={Filters.COMMENT}
+              primary="#1c7ed6"
+              selected={activeFilter === Filters.COMMENT}
+              onChange={onSetActiveFilter}
               open={menuOpen}
+              dark={darkMode}
+              tooltip="View notifications that you've commented on"
+              tooltipOffsetX={148}
+              tooltipOffsetY={-46}
             >
-              <span>{titleOfMode(Mode.OLD)}</span>
-              <i className="fas fa-stopwatch"></i>
+              <span>{titleOfFilter(Filters.COMMENT)}</span>
+              <i className="fas fa-comments"></i>
             </MenuIconItem>
           </MenuContainerItem>
           <ContentItem>
@@ -833,7 +854,7 @@ function Scene ({
             </CardSection>
             <NotificationsSection>
               <TitleSection>
-                <Title>{titleOfMode(mode)}</Title>
+                <Title>{titleOfFilter(activeFilter)}</Title>
                 <InteractionSection>
                   <optimized.li
                     css={css`

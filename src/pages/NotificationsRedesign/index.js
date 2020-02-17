@@ -608,6 +608,7 @@ class NotificationsPage extends React.Component {
         page={this.state.currentPage}
         activeStatus={this.state.activeStatus}
         activeFilter={this.state.activeFilter}
+        onSetActiveFilter={this.onSetActiveFilter}
         onChangePage={this.onChangePage}
         onLogout={this.onLogout}
         onSetActiveStatus={this.onSetActiveStatus}
@@ -623,7 +624,6 @@ class NotificationsPage extends React.Component {
         isSearching={this.state.isSearching}
         isFetchingNotifications={isFetchingNotifications}
         fetchingNotificationsError={fetchingNotificationsError || this.state.error}
-        onSetActiveFilter={this.onSetActiveFilter}
         highestScore={highestScore}
         lowestScore={lowestScore}
         hasUnread={this.isUnreadTab}
