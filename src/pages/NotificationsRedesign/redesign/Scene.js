@@ -13,6 +13,7 @@ import LoadingIcon from '../../../components/LoadingIcon'
 import {getFact} from '../../../utils/facts';
 import {Mode, Sort, View} from '../index';
 import {withTooltip} from '../../../enhance';
+import EmptyState from './ui/EmptyState';
 import {
   stringOfError,
   getPRIssueIcon,
@@ -1293,27 +1294,7 @@ function NotificationCollection ({
 
   if (notifications.length === 0) {
     return (
-      <div css={css`
-        text-align: center;
-        margin: 128px auto 0;
-        font-size: 15px;
-        font-weight: 500;
-        color: ${dark ? '#fff' : '#bfc5d1'};
-        user-select: none;
-        width: 60%;
-        span {
-          text-align: center;
-          margin: 8px auto 0;
-          font-size: 12px;
-          font-weight: 400;
-          display: block;
-          color: ${dark ? '#fff' : '#bfc5d1'};
-          user-select: none;
-        }
-      `}>
-        {'No new updates to show'}
-        <span>{`Fun fact: ${fact}`}</span>
-      </div>
+      <EmptyState dark={dark} />
     );
   }
 
