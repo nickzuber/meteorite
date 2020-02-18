@@ -1459,7 +1459,7 @@ function ActionItems ({
               </IconLink>
               <IconLink
                 tooltip="Unpin notification"
-                onClick={() => markAsUnread(item.id)}
+                onClick={() => markAsRead(item.id, item.repository)}
               >
                 <i className="fas fa-map-pin"></i>
               </IconLink>
