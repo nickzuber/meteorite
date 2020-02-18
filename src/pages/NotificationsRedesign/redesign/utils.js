@@ -103,7 +103,7 @@ export function getPRIssueIcon ({type, reasons, dark, pinned}) {
   if (pinned) {
     return (
       <NotificationIconWrapper css={css`background: ${PinnedColor}29;`}>
-        <i className="fas fa-star" css={css`
+        <i className="fas fa-map-pin" css={css`
           color: ${PinnedColor};
           font-size: 18px;
         `}></i>
