@@ -102,8 +102,8 @@ function EmptyState ({dark}) {
 
   return (
     <Container opacity={opacity}>
-      <Blob1 />
-      <Blob2 />
+      <Blob1 css={css`opacity: ${dark ? 0.15 : 1};`} />
+      <Blob2 css={css`opacity: ${dark ? 0.15 : 1};`} />
       <Header dark={dark}>
         {"🌱 You're all caught up"}
         <Byline dark={dark}>
