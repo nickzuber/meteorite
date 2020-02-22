@@ -53,6 +53,7 @@ import {
   PageSelection,
   SearchField,
   EnhancedSearchInput,
+  Dropdown,
   PageItemComponent,
   InteractionSection,
   InteractionMenu,
@@ -514,6 +515,10 @@ function ReadCountGraph ({data, onHover, onExit, dark}) {
   );
 }
 
+function pickRandom (collection) {
+  return collection[Math.floor(Math.random() * collection.length)];
+}
+
 function Scene ({
   notifications,
   notificationsPermission,
@@ -564,6 +569,12 @@ function Scene ({
   addToast
 }) {
   const hasNotificationsOn = notificationsPermission === 'granted';
+  const [exampleNotification, setExampleNotification] = React.useState({
+    name: 'Update README',
+    repository: 'nickzuber/meteorite',
+    score: 53,
+    fake: true
+  });
   const [darkMode, setDarkMode] = React.useState(getUserItem('dark-mode-enabled'));
   const [fact, setFact] = React.useState(null);
   const [menuOpen, setMenuOpen] = React.useState(false);
@@ -676,6 +687,13 @@ function Scene ({
     setUserItem('dark-mode-enabled', darkMode);
   }, [darkMode]);
 
+  React.useEffect(() => {
+    const notification = pickRandom(notifications);
+    if (notification && exampleNotification.fake) {
+      setExampleNotification(notification);
+    }
+  }, [notifications]);
+
   return (
     <ThemeContext.Provider value={darkMode}>
       <Container>
@@ -713,6 +731,21 @@ function Scene ({
                 placeholder="Search for notifications"
                 onEnter={onSearch}
               />
+              <Dropdown>
+                <span>
+                  {`title: ${exampleNotification.name}`}
+                  <p>{'Search for specific titles'}</p>
+                </span>
+                <span>
+                  {`repo: ${exampleNotification.repository.split('/')[1]}`}
+                  <p>{'Search for specific repositories'}</p>
+                </span>
+                <span>
+                  {`score: > ${exampleNotification.score}`}
+                  <p>{'Search for specific score ranges'}</p>
+                </span>
+                <h5>{'Not including a filter will search everything across all the fields'}</h5>
+              </Dropdown>
               {isSearching && <LoadingIcon size={36} style={{
                 transition: 'all 100ms ease',
                 position: 'absolute',

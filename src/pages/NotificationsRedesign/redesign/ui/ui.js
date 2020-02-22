@@ -296,7 +296,7 @@ export const SearchField = enhance(styled('div')(p => `
   font-size: 13px;
   display: inline-flex;
   margin: 0 24px;
-  background: rgba(255, 255, 255, 0.05);
+  background: ${p.dark ? DarkTheme.SecondaryAlt : '#fffefc'};
   border-radius: 2px;
   padding: 0px;
   text-decoration: none;
@@ -305,11 +305,7 @@ export const SearchField = enhance(styled('div')(p => `
   &:hover {
     border: 1px solid ${p.dark ? DarkTheme.Secondary : '#bfc5d1aa'};
   }
-  &:focus-within {
-    box-shadow: ${p.dark
-      ? 'none'
-      : 'rgba(84,70,35,0.01) 0px 2px 19px 8px, rgba(84, 70, 35, 0.11) 0px 2px 12px'};
-  }
+  &:focus-within {}
   i {
     color: #bfc5d1;
     height: 36px;
@@ -333,7 +329,7 @@ const SearchInput = enhance(styled('input')(p => `
   font-weight: 500;
   margin: 0px auto;
   background: none;
-  width: 184px;
+  width: 240px;
   padding: 0px;
   text-decoration: none;
   border-width: 0px;
@@ -341,16 +337,69 @@ const SearchInput = enhance(styled('input')(p => `
   border-color: initial;
   border-image: initial;
   outline: none;
-  opacity: 0.75;
+  opacity: 1;
   &::placeholder {
-    color: ${p.dark ? DarkTheme.Gray : 'rgb(230, 231, 234)'};
+    color: ${p.dark ? DarkTheme.Gray : '#bfc5d1'};
   }
   &:focus {
     opacity: 1;
     color: ${p.dark ? WHITE : 'rgb(55, 53, 47)'};
-    width: 300px;
     @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
       width: 184px;
+    }
+  }
+`));
+
+export const Dropdown = enhance(styled('div')(p => `
+  background: red;
+  width: 288px;
+  min-height: 40px;
+  position: absolute;
+  top: calc(100% - 1px);
+  left: -1px;
+  background: ${p.dark ? DarkTheme.SecondaryAlt : '#fffefc'};
+  border: 1px solid ${p.dark ? DarkTheme.Secondary : '#bfc5d1aa'};
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  padding-bottom: 12px;
+  box-shadow: ${p.dark
+    ? 'rgba(0,0,0,0) 0px 2px 8px, rgba(0,0,0,0.25) 0px 2px 6px'
+    : 'rgba(84,70,35,0) 0px 2px 8px, rgba(84,70,35,0.15) 0px 1px 3px'};
+
+  h5 {
+    border-top: 1px solid ${p.dark ? DarkTheme.Secondary : '#bfc5d155'};
+    margin: 0;
+    padding: 12px 16px 2px;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+    color: #8893a7cc;
+  }
+
+  span {
+    display: block;
+    padding: 12px 16px;
+    font-weight: 500;
+    font-size: 13px;
+    color: ${p.dark ? WHITE : 'inherit'};
+    cursor: pointer;
+    user-select: none;
+    transition: all 200ms ease;
+    text-transform: lowercase;
+
+    &:hover {
+      background: ${p.dark ? '#273947' : '#eff0f2'};
+    }
+
+    p {
+      text-transform: initial;
+      padding: 0;
+      margin: 0;
+      font-weight: 500;
+      margin-top: 4px;
+      font-size: 12px;
+      color: #8893a7cc;
     }
   }
 `));
