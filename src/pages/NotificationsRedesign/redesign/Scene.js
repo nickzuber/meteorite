@@ -2,6 +2,7 @@
 
 import React from 'react';
 import styled from '@emotion/styled';
+import Typed from 'typed.js';
 import {animated} from 'react-spring'
 import {css, jsx} from '@emotion/core';
 import { compose } from 'recompose';
@@ -519,6 +520,34 @@ function pickRandom (collection) {
   return collection[Math.floor(Math.random() * collection.length)];
 }
 
+function TypedSpan ({source, toString, options = {}}) {
+  const spanRef = React.useRef();
+  const typed = React.useRef();
+
+  function clean (string) {
+    const illegalChars = new Set(['-']);
+    return string.split(' ').filter(char => !illegalChars.has(char)).join(' ')
+  }
+
+  // return <span>{clean(toString(source[0]))}</span>
+
+  React.useEffect(() => {
+    const defaultOptions = {
+      strings: source.map(toString).map(clean),
+      startDelay: 100,
+      typeSpeed: 50,
+      backSpeed: 15,
+      backDelay: 3000,
+      loop: true,
+      ...options
+    };
+    typed.current = new Typed(spanRef.current, defaultOptions);
+    return () => typed.current.destroy();
+  }, [source]);
+
+  return <span ref={spanRef} />;
+}
+
 function Scene ({
   notifications,
   notificationsPermission,
@@ -569,14 +598,24 @@ function Scene ({
   addToast
 }) {
   const hasNotificationsOn = notificationsPermission === 'granted';
-  const [exampleNotification, setExampleNotification] = React.useState({
+  const searchRef = React.useRef();
+  const [exampleNotifications, setExampleNotifications] = React.useState([{
     name: 'Update README',
     repository: 'nickzuber/meteorite',
-    score: 53,
-    fake: true
-  });
+    score: 53
+  }, {
+    name: 'Update innerRef to allow React.createRef and React.forwardRef api usage    ',
+    repository: 'robinpowered/glamorous-native',
+    score: 78
+  }, {
+    name: 'Refactor and test updated logic',
+    repository: 'nickzuber/infrared',
+    score: 35
+  }]);
   const [darkMode, setDarkMode] = React.useState(getUserItem('dark-mode-enabled'));
   const [fact, setFact] = React.useState(null);
+  const [searchMenuOpened, setSearchMenuOpened] = React.useState(false);
+  const [hasSearchInput, setHasSearchInput] = React.useState(false);
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [counts, setCounts] = React.useState({
@@ -663,10 +702,14 @@ function Scene ({
     window.scrollTo(0, 0);
     const body = window.document.querySelector('body');
     const hideDropdownMenu = () => setDropdownOpen(false);
-    // For mobile `touchend`
+    const hideSearchFocused = () => setSearchMenuOpened(false);
     const eventType = 'click'; // isMobile ? 'touchend' : 'click';
     body.addEventListener(eventType, hideDropdownMenu);
-    return () => body.removeEventListener(eventType, hideDropdownMenu);
+    body.addEventListener(eventType, hideSearchFocused);
+    return () => {
+      body.removeEventListener(eventType, hideDropdownMenu);
+      body.removeEventListener(eventType, hideSearchFocused);
+    }
   }, []);
 
   // Updating the counts when new stats come in.
@@ -688,11 +731,17 @@ function Scene ({
   }, [darkMode]);
 
   React.useEffect(() => {
-    const notification = pickRandom(notifications);
-    if (notification && exampleNotification.fake) {
-      setExampleNotification(notification);
+    if (notifications.length > 3) {
+      const examples = notifications.slice(0, 5);
+      setExampleNotifications(examples);
     }
-  }, [notifications]);
+  }, [view]);
+
+  const setSearchField = text => {
+    searchRef.current.value = text;
+    searchRef.current.focus();
+    setHasSearchInput(true);
+  };
 
   return (
     <ThemeContext.Provider value={darkMode}>
@@ -725,27 +774,71 @@ function Scene ({
             <SearchField>
               <i className="fas fa-search"></i>
               <EnhancedSearchInput
+                innerRef={searchRef}
                 disabled={loading}
-                onClick={event => event.target.select()}
+                // onClick={event => event.target.select()}
                 type="text"
+                onClick={() => setSearchMenuOpened(true)}
+                onChange={(e) => {
+                  if (e.target.value === '' && hasSearchInput) {
+                    setHasSearchInput(false);
+                  } else if (e.target.value !== '' && !hasSearchInput) {
+                    setHasSearchInput(true);
+                  }
+                }}
                 placeholder="Search for notifications"
                 onEnter={onSearch}
               />
-              <Dropdown>
-                <span>
-                  {`title: ${exampleNotification.name}`}
-                  <p>{'Search for specific titles'}</p>
-                </span>
-                <span>
-                  {`repo: ${exampleNotification.repository.split('/')[1]}`}
-                  <p>{'Search for specific repositories'}</p>
-                </span>
-                <span>
-                  {`score: > ${exampleNotification.score}`}
-                  <p>{'Search for specific score ranges'}</p>
-                </span>
-                <h5>{'Not including a filter will search everything across all the fields'}</h5>
-              </Dropdown>
+              {searchMenuOpened && (
+                <Dropdown>
+                  {hasSearchInput ? (
+                    // Previews
+                    <span>{'previews using filter logic on `notifications`'}</span>
+                  ) : (
+                    // Filter Suggestion Menu
+                    <React.Fragment>
+                      <span onMouseDown={() => setSearchField('title: ')}>
+                        {`title:`}
+                        <TypedSpan
+                          source={exampleNotifications}
+                          toString={n => {
+                            const parts = n.name.split(' ');
+                            const length = parts.length;
+                            if (length > 2) {
+                              return parts.slice(
+                                Math.floor(length / 2),
+                                length
+                              ).join(' ');
+                            }
+                            return parts.slice(0, length).join(' ');
+                          }}
+                        />
+                        <p>{'Search for specific titles'}</p>
+                      </span>
+                      <span onMouseDown={() => setSearchField('repo: ')}>
+                        {`repo:`}
+                        <TypedSpan
+                          source={exampleNotifications}
+                          toString={n => n.repository.split('/')[1]}
+                        />
+                        <p>{'Search for specific repositories'}</p>
+                      </span>
+                      <span onMouseDown={() => setSearchField('score: ')}>
+                        {`score:`}
+                        <TypedSpan
+                          source={exampleNotifications}
+                          toString={(n, i) => {
+                            const comparator = ['>', '='][Math.floor(Math.random() * 2)];
+                            return `${comparator} ${n.score}`;
+                          }}
+                        />
+                        <p>{'Search for specific score ranges'}</p>
+                      </span>
+                      <h5>{'Not including a filter will search everything across all fields'}</h5>
+                    </React.Fragment>
+                  )}
+                </Dropdown>
+              )}
               {isSearching && <LoadingIcon size={36} style={{
                 transition: 'all 100ms ease',
                 position: 'absolute',

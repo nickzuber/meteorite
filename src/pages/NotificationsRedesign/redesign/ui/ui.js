@@ -305,7 +305,9 @@ export const SearchField = enhance(styled('div')(p => `
   &:hover {
     border: 1px solid ${p.dark ? DarkTheme.Secondary : '#bfc5d1aa'};
   }
-  &:focus-within {}
+  &:focus-within {
+    border: 1px solid ${p.dark ? DarkTheme.Secondary : '#bfc5d1aa'};
+  }
   i {
     color: #bfc5d1;
     height: 36px;
@@ -329,7 +331,10 @@ const SearchInput = enhance(styled('input')(p => `
   font-weight: 500;
   margin: 0px auto;
   background: none;
-  width: 240px;
+  width: 340px;
+  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+    width: 240px;
+  }
   padding: 0px;
   text-decoration: none;
   border-width: 0px;
@@ -352,7 +357,10 @@ const SearchInput = enhance(styled('input')(p => `
 
 export const Dropdown = enhance(styled('div')(p => `
   background: red;
-  width: 288px;
+  width: 388px;
+  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+    width: 288px;
+  }
   min-height: 40px;
   position: absolute;
   top: calc(100% - 1px);
@@ -384,12 +392,23 @@ export const Dropdown = enhance(styled('div')(p => `
     font-size: 13px;
     color: ${p.dark ? WHITE : 'inherit'};
     cursor: pointer;
-    user-select: none;
     transition: all 200ms ease;
     text-transform: lowercase;
 
     &:hover {
       background: ${p.dark ? '#273947' : '#eff0f2'};
+    }
+
+    span {
+      display: inline-block;
+      text-transform: initial;
+      // background: #ffeb3b66;
+      // border-radius: 4px;
+      // padding: 2px 6px;
+      padding: 0;
+      margin: 0;
+      font-weight: 500;
+      margin-left: 4px;
     }
 
     p {
