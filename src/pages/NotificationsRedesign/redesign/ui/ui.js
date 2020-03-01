@@ -5,7 +5,7 @@ import styled from '@emotion/styled';
 import {compose} from 'recompose';
 import {css, jsx, keyframes} from '@emotion/core';
 import {isMobile} from 'react-device-detect';
-import {navigate} from "@reach/router"
+import {navigate} from '@reach/router';
 import {routes} from '../../../../constants';
 import {withTooltip} from '../../../../enhance';
 import {withOnEnter, withOptimizedTouchEvents} from '../../../../enhance';
@@ -17,13 +17,9 @@ export const withTheme = C => p => (
   </ThemeContext.Consumer>
 );
 
-const enhance = compose(
-  withTheme,
-  withTooltip,
-  withOptimizedTouchEvents
-);
+const enhance = compose(withTheme, withTooltip, withOptimizedTouchEvents);
 
-export const ThemeColor = darkMode => darkMode ? '#E91356' : '#27B768';
+export const ThemeColor = darkMode => (darkMode ? '#E91356' : '#27B768');
 export const WHITE = 'rgb(255, 254, 252)';
 export const FOOTER_HEIGHT = '96px';
 export const COLLAPSED_WIDTH = '72px';
@@ -54,7 +50,9 @@ const loadingKeyframe = keyframes`
   }
 `;
 
-export const Title = enhance(styled('h1')(p => `
+export const Title = enhance(
+  styled('h1')(
+    p => `
   margin: 0;
   font-size: 32px;
   line-height: 46px;
@@ -68,7 +66,9 @@ export const Title = enhance(styled('h1')(p => `
   font-size: 36px;
   line-height: 52px;
   color: ${p.dark ? WHITE : 'inherit'};
-`));
+`
+  )
+);
 
 export const Container = enhance(styled('div')`
   position: relative;
@@ -93,12 +93,12 @@ export const Item = enhance(styled('div')`
 
 export const MenuHeaderItem = enhance(styled(Item)`
   height: ${COLLAPSED_WIDTH};
-  width: ${({expand}) => expand ? EXPANDED_WIDTH : COLLAPSED_WIDTH};
-  flex: ${({expand}) => expand ? `${EXPANDED_WIDTH} 0 0` : 1};
+  width: ${({expand}) => (expand ? EXPANDED_WIDTH : COLLAPSED_WIDTH)};
+  flex: ${({expand}) => (expand ? `${EXPANDED_WIDTH} 0 0` : 1)};
   transition: all 150ms ease;
-  border-bottom: 1px solid ${({dark}) => dark ? DarkTheme.Primary : '#292d35'};
-  border-right: 1px solid ${({dark}) => dark ? DarkTheme.Primary : '#292d35'};
-  background: ${({dark}) => dark ? DarkTheme.Primary : '#2f343e'};
+  border-bottom: 1px solid ${({dark}) => (dark ? DarkTheme.Primary : '#292d35')};
+  border-right: 1px solid ${({dark}) => (dark ? DarkTheme.Primary : '#292d35')};
+  background: ${({dark}) => (dark ? DarkTheme.Primary : '#2f343e')};
   z-index: 1;
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     display: none;
@@ -108,7 +108,7 @@ export const MenuHeaderItem = enhance(styled(Item)`
 export const ContentHeaderItem = enhance(styled(Item)`
   height: ${COLLAPSED_WIDTH};
   width: calc(100% - ${COLLAPSED_WIDTH});
-  border-bottom: 1px solid ${({dark}) => dark ? DarkTheme.Primary : '#E5E6EB'};
+  border-bottom: 1px solid ${({dark}) => (dark ? DarkTheme.Primary : '#E5E6EB')};
   z-index: 1;
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     width: 100%;
@@ -116,8 +116,8 @@ export const ContentHeaderItem = enhance(styled(Item)`
 `);
 
 export const MenuContainerItem = enhance(styled(Item)`
-  width: ${({expand}) => expand ? EXPANDED_WIDTH : COLLAPSED_WIDTH};
-  flex: ${({expand}) => expand ? `${EXPANDED_WIDTH} 0 0` : 1};
+  width: ${({expand}) => (expand ? EXPANDED_WIDTH : COLLAPSED_WIDTH)};
+  flex: ${({expand}) => (expand ? `${EXPANDED_WIDTH} 0 0` : 1)};
   height: 100%;
   transition: all 150ms ease;
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
@@ -131,8 +131,8 @@ export const ContentItem = enhance(styled(Item)`
   height: 100%;
   min-height: calc(100vh - ${COLLAPSED_WIDTH} - ${FOOTER_HEIGHT});
   width: calc(100% - ${COLLAPSED_WIDTH});
-  background: ${({dark}) => dark ? DarkTheme.Secondary : WHITE};
-  border-left: 1px solid ${({dark}) => dark ? DarkTheme.Primary : '#292d35'};
+  background: ${({dark}) => (dark ? DarkTheme.Secondary : WHITE)};
+  border-left: 1px solid ${({dark}) => (dark ? DarkTheme.Primary : '#292d35')};
   padding-bottom: 12px;
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     width: 100%;
@@ -157,27 +157,36 @@ export const Card = enhance(styled('div')`
   padding: 20px 24px;
   min-height: 100px;
   margin: 32px auto 0;
-  background: ${({dark}) => dark ? DarkTheme.SecondaryAlt : WHITE};
-  border: 1px solid ${({dark}) => dark ? DarkTheme.Secondary : '#E5E6EB'};
-  box-shadow: ${({dark}) => dark
-    ? 'rgba(0, 0, 0, 0) 0px 2px 8px, rgba(0, 0, 0, 0.25) 0px 2px 6px'
-    : 'rgba(84, 70, 35, 0) 0px 2px 8px, rgba(84, 70, 35, 0.15) 0px 1px 3px'};
+  background: ${({dark}) => (dark ? DarkTheme.SecondaryAlt : WHITE)};
+  border: 1px solid ${({dark}) => (dark ? DarkTheme.Secondary : '#E5E6EB')};
+  box-shadow: ${({dark}) =>
+    dark
+      ? 'rgba(0, 0, 0, 0) 0px 2px 8px, rgba(0, 0, 0, 0.25) 0px 2px 6px'
+      : 'rgba(84, 70, 35, 0) 0px 2px 8px, rgba(84, 70, 35, 0.15) 0px 1px 3px'};
   border-radius: 6px;
 `);
 
-export const CardTitle = enhance(styled(Title)(p => `
+export const CardTitle = enhance(
+  styled(Title)(
+    p => `
   color: ${p.dark ? WHITE : 'inherit'};
   letter-spacing: -0.25px;
   line-height: 1.25em;
   font-size: 1.75em;
-`));
+`
+  )
+);
 
-export const CardSubTitle = enhance(styled(CardTitle)(p => `
+export const CardSubTitle = enhance(
+  styled(CardTitle)(
+    p => `
   font-size: 16px;
   font-family: medium-content-sans-serif-font,Inter UI,system-ui,sans-serif;
   color: ${p.dark ? DarkTheme.Gray : '#6c757d'};
   margin-top: 0px;
-`));
+`
+  )
+);
 
 export const ScoreDiff = enhance(styled(CardTitle)`
   position: absolute;
@@ -188,8 +197,8 @@ export const ScoreDiff = enhance(styled(CardTitle)`
   letter-spacing: -0.75px;
   top: 30px;
   right: 24px;
-  opacity: ${props => props.show ? '1' : '0'};
-  color: ${props => props.under ? '#bfc5d1' : ThemeColor(props.dark)};
+  opacity: ${props => (props.show ? '1' : '0')};
+  color: ${props => (props.under ? '#bfc5d1' : ThemeColor(props.dark))};
 `);
 
 export const IconContainer = enhance(styled('div')`
@@ -197,21 +206,21 @@ export const IconContainer = enhance(styled('div')`
   height: 72px;
   display: flex;
   align-items: center;
-  justify-content: ${props => props.open ? 'space-between' : 'center'};
-  padding: ${props => props.open ? '0 28px' : 'inherit'};
+  justify-content: ${props => (props.open ? 'space-between' : 'center')};
+  padding: ${props => (props.open ? '0 28px' : 'inherit')};
   cursor: pointer;
   outline: none;
   user-select: none;
   transition: all 200ms ease;
   i {
     transition: all 200ms ease;
-    color: ${props => props.selected ? props.primary : '#bfc5d15e'}
+    color: ${props => (props.selected ? props.primary : '#bfc5d15e')};
   }
   span {
     transition: all 200ms ease;
-    display: ${props => props.open ? 'inline-block' : 'none'};
-    opacity: ${props => props.open ? 1 : 0};
-    color: ${props => props.selected ? WHITE : '#bfc5d15e'};
+    display: ${props => (props.open ? 'inline-block' : 'none')};
+    opacity: ${props => (props.open ? 1 : 0)};
+    color: ${props => (props.selected ? WHITE : '#bfc5d15e')};
     font-weight: 600;
     margin: 12px;
     font-size: 14px;
@@ -220,7 +229,8 @@ export const IconContainer = enhance(styled('div')`
     overflow: hidden;
   }
   &:hover {
-    background: ${props => props.selected ? 'rgba(255, 255, 255, 0)' : 'rgba(233, 233, 233, .1)'};
+    background: ${props =>
+      props.selected ? 'rgba(255, 255, 255, 0)' : 'rgba(233, 233, 233, .1)'};
   }
 `);
 
@@ -240,7 +250,9 @@ export const NotificationsSection = enhance(styled('div')`
   }
 `);
 
-export const TitleSection = enhance(styled('div')(p => `
+export const TitleSection = enhance(
+  styled('div')(
+    p => `
   display: flex;
   width: 100%;
   padding: 0;
@@ -250,9 +262,13 @@ export const TitleSection = enhance(styled('div')(p => `
   * {
     color: ${p.dark ? WHITE : 'inherit'};
   }
-`));
+`
+  )
+);
 
-export const SubTitleSection = enhance(styled('div')(p => `
+export const SubTitleSection = enhance(
+  styled('div')(
+    p => `
   display: flex;
   width: 100%;
   padding: 0;
@@ -268,7 +284,9 @@ export const SubTitleSection = enhance(styled('div')(p => `
     color: ${p.dark ? DarkTheme.Gray : '#9d9b97'};
     margin-top: 0px;
   }
-`));
+`
+  )
+);
 
 export const UnorderedList = enhance(styled('ul')`
   position: relative;
@@ -287,7 +305,9 @@ export const PageSelection = enhance(styled(UnorderedList)`
   flex-wrap: nowrap;
 `);
 
-export const SearchField = enhance(styled('div')(p => `
+export const SearchField = enhance(
+  styled('div')(
+    p => `
   position: relative;
   float: left;
   text-align: left;
@@ -317,9 +337,13 @@ export const SearchField = enhance(styled('div')(p => `
     justify-content: center;
     font-size: 14px;
   }
-`));
+`
+  )
+);
 
-const SearchInput = enhance(styled('input')(p => `
+const SearchInput = enhance(
+  styled('input')(
+    p => `
   position: relative;
   text-align: left;
   transition: all 200ms ease;
@@ -353,9 +377,13 @@ const SearchInput = enhance(styled('input')(p => `
       width: 184px;
     }
   }
-`));
+`
+  )
+);
 
-export const Dropdown = enhance(styled('div')(p => `
+export const Dropdown = enhance(
+  styled('div')(
+    p => `
   background: red;
   width: 388px;
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
@@ -370,9 +398,11 @@ export const Dropdown = enhance(styled('div')(p => `
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
   padding-bottom: 12px;
-  box-shadow: ${p.dark
-    ? 'rgba(0,0,0,0) 0px 2px 8px, rgba(0,0,0,0.25) 0px 2px 6px'
-    : 'rgba(84,70,35,0) 0px 2px 8px, rgba(84,70,35,0.15) 0px 1px 3px'};
+  box-shadow: ${
+    p.dark
+      ? 'rgba(0,0,0,0) 0px 2px 8px, rgba(0,0,0,0.25) 0px 2px 6px'
+      : 'rgba(84,70,35,0) 0px 2px 8px, rgba(84,70,35,0.15) 0px 1px 3px'
+  };
 
   h5 {
     border-top: 1px solid ${p.dark ? DarkTheme.Secondary : '#bfc5d155'};
@@ -421,11 +451,15 @@ export const Dropdown = enhance(styled('div')(p => `
       color: #8893a7cc;
     }
   }
-`));
+`
+  )
+);
 
 export const EnhancedSearchInput = withOnEnter(SearchInput);
 
-export const PageItemComponent = enhance(styled('li')(p => `
+export const PageItemComponent = enhance(
+  styled('li')(
+    p => `
   font-size: 14px;
   padding: 0 32px 0 8px;
   width: 98px;
@@ -457,7 +491,9 @@ export const PageItemComponent = enhance(styled('li')(p => `
     left: 0;
     height: 3px;
   }
-`));
+`
+  )
+);
 
 export const InteractionSection = enhance(styled('ul')`
   position: relative;
@@ -485,8 +521,10 @@ export const InteractionSection = enhance(styled('ul')`
   }
 `);
 
-export const InteractionMenu = enhance(styled('div')(p => `
-  height: ${p.show ? (5 * 85 + 5) : 0}px;
+export const InteractionMenu = enhance(
+  styled('div')(
+    p => `
+  height: ${p.show ? 5 * 85 + 5 : 0}px;
   opacity: ${p.show ? 1 : 0};
   top: 32px;
   left: 72px;
@@ -507,10 +545,14 @@ export const InteractionMenu = enhance(styled('div')(p => `
       user-select: none;
       transition: all 200ms ease;
       &:hover {
-        background: ${p.dark ? DarkTheme.Alpha.Light : 'rgba(233, 233, 233, .25)'};
+        background: ${
+          p.dark ? DarkTheme.Alpha.Light : 'rgba(233, 233, 233, .25)'
+        };
       }
       &:active {
-        background: ${p.dark ? DarkTheme.Alpha.Dark : 'rgba(233, 233, 233, .5)'};
+        background: ${
+          p.dark ? DarkTheme.Alpha.Dark : 'rgba(233, 233, 233, .5)'
+        };
       }
       a, h2 {
         text-decoration: none;
@@ -529,7 +571,9 @@ export const InteractionMenu = enhance(styled('div')(p => `
     left: -178px;
     top: 24px;
   }
-`));
+`
+  )
+);
 
 export const SortingItemComponent = enhance(styled('div')`
   display: flex;
@@ -543,7 +587,7 @@ export const SortingItemComponent = enhance(styled('div')`
     font-size: 11px;
     margin-right: 8px;
     font-weight: 600;
-    color: ${props => props.selected ? '#8c93a5' : '#8c93a5a1'};
+    color: ${props => (props.selected ? '#8c93a5' : '#8c93a5a1')};
   }
   &:hover {
     span {
@@ -556,7 +600,7 @@ export const SortingItemComponent = enhance(styled('div')`
   i {
     font-size: 13px;
     line-height: 15px;
-    color: ${props => props.selected ? '#8c93a5' : '#8c93a5a1'};
+    color: ${props => (props.selected ? '#8c93a5' : '#8c93a5a1')};
   }
 `);
 
@@ -577,7 +621,9 @@ export const NotificationRowHeader = enhance(styled('tr')`
   box-sizing: border-box;
 `);
 
-export const NotificationRow = enhance(styled(NotificationRowHeader)(p => `
+export const NotificationRow = enhance(
+  styled(NotificationRowHeader)(
+    p => `
   position: relative;
   z-index: 1;
   border-radius: 4px;
@@ -599,7 +645,9 @@ export const NotificationRow = enhance(styled(NotificationRowHeader)(p => `
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     padding: 6px 2px;
   }
-`));
+`
+  )
+);
 
 export const LoadingNotificationRow = enhance(styled(NotificationRowHeader)`
   position: relative;
@@ -616,9 +664,14 @@ export const LoadingNotificationRow = enhance(styled(NotificationRowHeader)`
   transition: all 200ms ease;
   opacity: 0.75;
   &:after {
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0), #bfc5d133, rgba(255, 255, 255, 0));
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0),
+      #bfc5d133,
+      rgba(255, 255, 255, 0)
+    );
     display: block;
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -633,7 +686,9 @@ export const NotificationBlock = enhance(styled('tbody')`
   transition: all 200ms ease;
 `);
 
-export const ErrorContainer = enhance(styled('div')(p => `
+export const ErrorContainer = enhance(
+  styled('div')(
+    p => `
   display: flex;
   justify-content: center;
   align-items: center;
@@ -657,7 +712,9 @@ export const ErrorContainer = enhance(styled('div')(p => `
     opacity: 0.5;
     color: ${p.dark ? WHITE : 'inherit'};
   }
-`));
+`
+  )
+);
 
 export const NotificationCell = enhance(styled('td')`
   white-space: nowrap;
@@ -672,14 +729,18 @@ export const NotificationCell = enhance(styled('td')`
   }};
 `);
 
-export const NotificationTitle = enhance(styled('span')(p => `
+export const NotificationTitle = enhance(
+  styled('span')(
+    p => `
   font-size: 14px;
   position: relative;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   color: ${p.dark ? '#FFFEFC' : 'inherit'};
-`));
+`
+  )
+);
 export const NotificationByline = enhance(styled('span')`
   display: flex;
   align-items: center;
@@ -707,7 +768,9 @@ export const NotificationByline = enhance(styled('span')`
   }
 `);
 
-export const ProfileContainer = enhance(styled('div')(p => `
+export const ProfileContainer = enhance(
+  styled('div')(
+    p => `
   display: flex;
   height: 100%;
   width: 188px;
@@ -741,9 +804,13 @@ export const ProfileContainer = enhance(styled('div')(p => `
   @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
     width: 48px;
   }
-`));
+`
+  )
+);
 
-export const ProfileName = enhance(styled('span')(p => `
+export const ProfileName = enhance(
+  styled('span')(
+    p => `
   font-size: 14px;
   font-weight: 500;
   margin: 0 12px;
@@ -755,17 +822,19 @@ export const ProfileName = enhance(styled('span')(p => `
   @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
     display: none;
   }
-`));
+`
+  )
+);
 
 export const ProfilePicture = enhance(styled('img')`
   height: 36px;
   width: 36px;
   border-radius: 4px;
   background: silver;
-  opacity: ${props => props.src ? 1 : 0.25};
+  opacity: ${props => (props.src ? 1 : 0.25)};
 `);
 
-export function ProfileSection ({dark, user, onLogout}) {
+export function ProfileSection({dark, user, onLogout}) {
   const [menuShow, setMenuShow] = React.useState(false);
   React.useEffect(() => {
     const body = window.document.querySelector('body');
@@ -781,87 +850,109 @@ export function ProfileSection ({dark, user, onLogout}) {
         {user && user.avatar_url ? (
           <ProfilePicture src={user.avatar_url} />
         ) : (
-          <i css={css`font-size: 20px;`} className="fas fa-cog"></i>
+          <i
+            css={css`
+              font-size: 20px;
+            `}
+            className="fas fa-cog"
+          ></i>
         )}
         <ProfileName>{user && user.name ? user.name : 'Settings'}</ProfileName>
-        <i className="fas fa-caret-down" css={css`
-          transform: ${menuShow ? 'rotate(180deg)' : 'rotate(0deg)'};
-        `}></i>
+        <i
+          className="fas fa-caret-down"
+          css={css`
+            transform: ${menuShow ? 'rotate(180deg)' : 'rotate(0deg)'};
+          `}
+        ></i>
       </ProfileContainer>
-      <InteractionMenu show={menuShow} css={css`
-        top: calc(${COLLAPSED_WIDTH} + 1px);
-        height: ${menuShow ? 'auto' : '0px'};
-        border-bottom-right-radius: 4px;
-        border-bottom-left-radius: 4px;
-        right: 0;
-        left: auto;
-        background: ${dark ? DarkTheme.SecondaryAlt : WHITE};
-        border: ${menuShow ? '1px' : '0px'} solid ${dark ? DarkTheme.Secondary : '#edeef0'};
-        border-top: 0;
-        width: ${22 + 187 + 22}px;
-        cursor: pointer;
-        outline: none;
-        user-select: none;
-        box-shadow: ${dark
-          ? 'rgba(0, 0, 0, 0) 0px 2px 8px, rgba(0, 0, 0, 0.25) 0px 2px 6px'
-          : 'rgba(84, 70, 35, 0) 0px 2px 8px, rgba(84, 70, 35, 0.15) 0px 1px 3px'};
-        transition: height 200ms ease, opacity 200ms ease;
-        @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+      <InteractionMenu
+        show={menuShow}
+        css={css`
+          top: calc(${COLLAPSED_WIDTH} + 1px);
+          height: ${menuShow ? 'auto' : '0px'};
+          border-bottom-right-radius: 4px;
+          border-bottom-left-radius: 4px;
+          right: 0;
           left: auto;
-        }
-        div {
-          margin: 0;
-          padding: 12px 16px;
+          background: ${dark ? DarkTheme.SecondaryAlt : WHITE};
+          border: ${menuShow ? '1px' : '0px'} solid
+            ${dark ? DarkTheme.Secondary : '#edeef0'};
+          border-top: 0;
+          width: ${22 + 187 + 22}px;
           cursor: pointer;
           outline: none;
           user-select: none;
-          transition: all 200ms ease;
-          &:hover {
-            background: ${dark ? DarkTheme.Alpha.Light : 'rgba(233, 233, 233, .25)'};
+          box-shadow: ${dark
+            ? 'rgba(0, 0, 0, 0) 0px 2px 8px, rgba(0, 0, 0, 0.25) 0px 2px 6px'
+            : 'rgba(84, 70, 35, 0) 0px 2px 8px, rgba(84, 70, 35, 0.15) 0px 1px 3px'};
+          transition: height 200ms ease, opacity 200ms ease;
+          @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+            left: auto;
           }
-          &:active {
-            background: ${dark ? DarkTheme.Alpha.Dark : 'rgba(233, 233, 233, .5)'};
+          div {
+            margin: 0;
+            padding: 12px 16px;
+            cursor: pointer;
+            outline: none;
+            user-select: none;
+            transition: all 200ms ease;
+            &:hover {
+              background: ${dark
+                ? DarkTheme.Alpha.Light
+                : 'rgba(233, 233, 233, .25)'};
+            }
+            &:active {
+              background: ${dark
+                ? DarkTheme.Alpha.Dark
+                : 'rgba(233, 233, 233, .5)'};
+            }
           }
-        }
-        h2 {
-          color: ${dark ? WHITE : 'inherit'};
-          margin: 0 0 4px;
-          font-size: 15px;
-        }
-        p {
-          color: ${dark ? WHITE : 'inherit'};
-          margin: 0;
-          font-size: 13px;
-          opacity: 0.7;
-        }
-        @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
-          transform: scale(1);
-          right: 0;
-          left: auto;
-          top: ${COLLAPSED_WIDTH};
-        }
-      `}>
-        <optimized.div onClick={event => {
-          event.stopPropagation();
-          navigate(routes.HOME);
-          setMenuShow(false);
-        }}>
+          h2 {
+            color: ${dark ? WHITE : 'inherit'};
+            margin: 0 0 4px;
+            font-size: 15px;
+          }
+          p {
+            color: ${dark ? WHITE : 'inherit'};
+            margin: 0;
+            font-size: 13px;
+            opacity: 0.7;
+          }
+          @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+            transform: scale(1);
+            right: 0;
+            left: auto;
+            top: ${COLLAPSED_WIDTH};
+          }
+        `}
+      >
+        <optimized.div
+          onClick={event => {
+            event.stopPropagation();
+            navigate(routes.HOME);
+            setMenuShow(false);
+          }}
+        >
           <h2>Go home</h2>
           <p>Head over back to the home page</p>
         </optimized.div>
-        <optimized.div onClick={event => {
-          event.stopPropagation();
-          navigate(routes.GUIDE);
-          setMenuShow(false);
-        }}>
+        <optimized.div
+          onClick={event => {
+            event.stopPropagation();
+            navigate(routes.GUIDE);
+            setMenuShow(false);
+          }}
+        >
           <h2>Read guide</h2>
           <p>Check out the guide for how to use Meteorite</p>
         </optimized.div>
-        <optimized.div onClick={event => {
-          event.stopPropagation();
-          onLogout();
-          setMenuShow(false);
-        }}>
+        <optimized.div
+          onClick={event => {
+            event.stopPropagation();
+            onLogout();
+            setMenuShow(false);
+          }}
+        >
           <h2>Logout</h2>
           <p>Log off your account and return to home page</p>
         </optimized.div>
@@ -877,11 +968,13 @@ export const NotificationIconWrapper = enhance(styled('div')`
   justify-content: center;
   align-items: center;
   border-radius: 100%;
-  transform: scale(.65);
+  transform: scale(0.65);
   transition: all 100ms ease;
 `);
 
-export const IconLink = enhance(styled('span')(p => `
+export const IconLink = enhance(
+  styled('span')(
+    p => `
   position: relative;
   cursor: ${p.disabled ? 'default' : 'pointer'};
   display: inline-flex;
@@ -893,9 +986,14 @@ export const IconLink = enhance(styled('span')(p => `
   width: 40px;
   transition: all 150ms ease;
   i {
-    color: ${p.disabled
-      ? p.dark ? DarkTheme.Gray : '#bfc5d1'
-      : p.dark ? WHITE : 'inherit'
+    color: ${
+      p.disabled
+        ? p.dark
+          ? DarkTheme.Gray
+          : '#bfc5d1'
+        : p.dark
+        ? WHITE
+        : 'inherit'
     };
   }
   &:before {
@@ -917,9 +1015,13 @@ export const IconLink = enhance(styled('span')(p => `
   &:active:before {
     background: ${p.disabled ? '#BFC5D122' : '#BFC5D144'};
   }
-`));
+`
+  )
+);
 
-export const Divider = enhance(styled('div')(p => `
+export const Divider = enhance(
+  styled('div')(
+    p => `
   position: relative;
   display: inline-block;
   background: ${p.dark ? '#bfc5d150' : '#e5e6eb'};
@@ -929,9 +1031,13 @@ export const Divider = enhance(styled('div')(p => `
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     display: none;
   }
-`));
+`
+  )
+);
 
-export const Connector = enhance(styled('div')(p => `
+export const Connector = enhance(
+  styled('div')(
+    p => `
   position: absolute;
   display: block;
   background: ${p.dark ? '#2E3D4B' : '#e5e6eb'};
@@ -946,9 +1052,13 @@ export const Connector = enhance(styled('div')(p => `
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     left: 18px;
   }
-`));
+`
+  )
+);
 
-export const RepoBarContainer = enhance(styled('div')(p => `
+export const RepoBarContainer = enhance(
+  styled('div')(
+    p => `
   position: relative;
   width: 100%;
   margin-bottom: 28px;
@@ -974,9 +1084,13 @@ export const RepoBarContainer = enhance(styled('div')(p => `
     width: 100%;
     display: block;
   }
-`));
+`
+  )
+);
 
-export const LinkText = enhance(styled('div')(p => `
+export const LinkText = enhance(
+  styled('div')(
+    p => `
   text-decoration: underline;
   font-size: 12px;
   color: ${p.dark ? DarkTheme.Gray : '#37352f59'};
@@ -987,9 +1101,13 @@ export const LinkText = enhance(styled('div')(p => `
   &:hover {
     color: ${p.dark ? DarkTheme.Gray + 'aa' : '#37352faa'};
   }
-`));
+`
+  )
+);
 
-export const JiraTag = enhance(styled('span')(p => `
+export const JiraTag = enhance(
+  styled('span')(
+    p => `
   background: ${p.color || '#e2e2e2'}28;
   color: ${p.color || '#e2e2e2'};
   vertical-align: bottom;
@@ -1000,9 +1118,13 @@ export const JiraTag = enhance(styled('span')(p => `
   margin-bottom: 0px;
   display: inline-block;
   padding: 2px 4px;
-`));
+`
+  )
+);
 
-export const Bar = enhance(styled('div')(p => `
+export const Bar = enhance(
+  styled('div')(
+    p => `
   position: relative;
   width: 100%;
   height: 5px;
@@ -1011,11 +1133,13 @@ export const Bar = enhance(styled('div')(p => `
   &:after {
     content: "";
     position: absolute;
-    width: ${Math.max(Math.min((p.value * 100), 100), 0)}%;
+    width: ${Math.max(Math.min(p.value * 100, 100), 0)}%;
     border-radius: 8px;
     background: ${ThemeColor(p.dark)}d1;
     left: 0;
     top: 0;
     bottom: 0;
   }
-`));
+`
+  )
+);

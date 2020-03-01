@@ -8,32 +8,35 @@ import {Filters} from '../../../constants/filters';
 import {Mode} from '../index';
 import {NotificationIconWrapper, ThemeColor} from './ui/ui';
 
-export const Colors = [
-  '#1c7ed6',
-  '#ae3ec9',
-  '#e67700',
-  '#2f9e44'
-];
+export const Colors = ['#1c7ed6', '#ae3ec9', '#e67700', '#2f9e44'];
 
 const BadgeColors = {
   RED: '#e91e63',
   YELLOW: '#ecc962',
   BLUE: '#4C84FF'
-}
+};
 
-export function colorOfString (str = '') {
-  let i = str.split('').reduce((n, c) => (n + c.charCodeAt()) % Colors.length, 0);
+export function colorOfString(str = '', seed) {
+  if (typeof seed === 'number') {
+    return Colors[seed % Colors.length];
+  }
+
+  let i = str
+    .split('')
+    .reduce((n, c) => (n + c.charCodeAt()) % Colors.length, 0);
   return Colors[i];
 }
 
-export function colorOfTag (tag = '') {
+export function colorOfTag(tag = '') {
   const base = tag.split('-')[0];
   return colorOfString(base);
 }
 
-export function extractJiraTags (str) {
+export function extractJiraTags(str, cleanTitleString = true) {
   // Remove any surrounding whitespace.
-  str = str.trim();
+  if (cleanTitleString) {
+    str = str.trim();
+  }
 
   const State = {
     OPEN_TAG: 0,
@@ -41,8 +44,8 @@ export function extractJiraTags (str) {
     CLOSE_TAG: 2,
     TEXT: 3
   };
-  const tags = [];
-  let curTag = ''
+  let tags = [];
+  let curTag = '';
   let title = '';
   let state = State.TEXT;
 
@@ -61,6 +64,10 @@ export function extractJiraTags (str) {
       case State.TAG:
         if (char === ']') {
           state = State.CLOSE_TAG;
+          // Subtract 1 from the index because the character we're looking at
+          // right now is the character that's after the closing bracket.
+          // We still want to process that one fairly.
+          i = i - 1;
         } else if (char === ',') {
           state = State.OPEN_TAG;
           tags.push(curTag.trim());
@@ -73,10 +80,6 @@ export function extractJiraTags (str) {
         state = State.TEXT;
         tags.push(curTag.trim());
         curTag = '';
-        // Subtract 1 from the index because the character we're looking at
-        // right now is the character that's after the closing bracket.
-        // We still want to process that one fairly.
-        i = i - 1;
         break;
     }
   }
@@ -84,12 +87,20 @@ export function extractJiraTags (str) {
   // Clean the title by normalizing any inconsistent spacing.
   // Basically convert 'a   b  c' -> 'a b c'.
   // This also trims the string for free.
-  title = title.split(' ').filter(Boolean).join(' ');
+  if (cleanTitleString) {
+    title = title
+      .split(' ')
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  // Remove any tags that are empty strings.
+  tags = tags.filter(Boolean);
 
   return {tags, title};
 }
 
-export function stringOfError (errorText) {
+export function stringOfError(errorText) {
   switch (errorText) {
     case 'Unauthorized':
       return 'Your credentials have expired. You probably need to log out and back in to fix this.';
@@ -99,14 +110,21 @@ export function stringOfError (errorText) {
 }
 
 const PinnedColor = '#fab005';
-export function getPRIssueIcon ({type, reasons, dark, pinned}) {
+export function getPRIssueIcon({type, reasons, dark, pinned}) {
   if (pinned) {
     return (
-      <NotificationIconWrapper css={css`background: ${PinnedColor}29;`}>
-        <i className="fas fa-map-pin" css={css`
-          color: ${PinnedColor};
-          font-size: 18px;
-        `}></i>
+      <NotificationIconWrapper
+        css={css`
+          background: ${PinnedColor}29;
+        `}
+      >
+        <i
+          className="fas fa-map-pin"
+          css={css`
+            color: ${PinnedColor};
+            font-size: 18px;
+          `}
+        ></i>
       </NotificationIconWrapper>
     );
   }
@@ -114,49 +132,57 @@ export function getPRIssueIcon ({type, reasons, dark, pinned}) {
   switch (type) {
     case 'PullRequest':
       return (
-        <NotificationIconWrapper css={css`background: ${ThemeColor(dark)}29;`}>
-          <i className="fas fa-code-branch" css={css`
-            color: ${ThemeColor(dark)};
-            font-size: 18px;
-          `}></i>
+        <NotificationIconWrapper
+          css={css`
+            background: ${ThemeColor(dark)}29;
+          `}
+        >
+          <i
+            className="fas fa-code-branch"
+            css={css`
+              color: ${ThemeColor(dark)};
+              font-size: 18px;
+            `}
+          ></i>
         </NotificationIconWrapper>
       );
     case 'Issue':
       return (
-        <NotificationIconWrapper css={css`background: ${ThemeColor(dark)}29;`}>
-          <i className="fas fa-exclamation" css={css`
-            color: ${ThemeColor(dark)};
-            font-size: 18px;
-          `}></i>
+        <NotificationIconWrapper
+          css={css`
+            background: ${ThemeColor(dark)}29;
+          `}
+        >
+          <i
+            className="fas fa-exclamation"
+            css={css`
+              color: ${ThemeColor(dark)};
+              font-size: 18px;
+            `}
+          ></i>
         </NotificationIconWrapper>
       );
     default:
       return null;
   }
 }
-export function getRelativeTime (time) {
+export function getRelativeTime(time) {
   const currentTime = moment();
   const targetTime = moment(time);
   const diffMinutes = currentTime.diff(targetTime, 'minutes');
-  if (diffMinutes < 1)
-    return 'Just now';
-  if (diffMinutes < 5)
-    return 'Few minutes ago';
-  if (diffMinutes < 60)
-    return diffMinutes + ' minutes ago';
-  if (diffMinutes < 60 * 24)
-    return Math.floor(diffMinutes / 60) + ' hours ago';
+  if (diffMinutes < 1) return 'Just now';
+  if (diffMinutes < 5) return 'Few minutes ago';
+  if (diffMinutes < 60) return diffMinutes + ' minutes ago';
+  if (diffMinutes < 60 * 24) return Math.floor(diffMinutes / 60) + ' hours ago';
 
   const diffDays = currentTime.diff(targetTime, 'days');
-  if (diffDays === 1)
-    return 'Yesterday';
-  if (diffDays <= 7)
-    return 'Last ' + targetTime.format('dddd');
+  if (diffDays === 1) return 'Yesterday';
+  if (diffDays <= 7) return 'Last ' + targetTime.format('dddd');
   // @TODO implement longer diffs
   return 'Over a week ago';
 }
 
-export function getMessageFromReasons (reasons, type) {
+export function getMessageFromReasons(reasons, type) {
   switch (reasons[reasons.length - 1].reason) {
     case Reasons.ASSIGN:
       return 'You were assigned';
@@ -169,55 +195,78 @@ export function getMessageFromReasons (reasons, type) {
     case Reasons.REVIEW_REQUESTED:
       return 'Your review was requested';
     case Reasons.SUBSCRIBED:
-      return 'There was an update and you\'re subscribed';
+      return "There was an update and you're subscribed";
     case Reasons.OTHER:
     default:
       return 'Something was updated';
   }
 }
 
-export function iconsOfBadges (badges) {
-  return badges.map(badge => {
-    switch (badge) {
-      case Badges.HOT:
-        return <i className="fas fa-fire" css={css`color: ${BadgeColors.RED}`}></i>;
-      case Badges.COMMENTS:
-        return <i className="fas fa-user-friends" css={css`color: ${BadgeColors.BLUE}`}></i>;
-      case Badges.OLD:
-        return <i className="fas fa-stopwatch" css={css`color: ${BadgeColors.YELLOW}`}></i>;
-      default:
-        return null;
-    }
-  }).filter(Boolean);
+export function iconsOfBadges(badges) {
+  return badges
+    .map(badge => {
+      switch (badge) {
+        case Badges.HOT:
+          return (
+            <i
+              className="fas fa-fire"
+              css={css`
+                color: ${BadgeColors.RED};
+              `}
+            ></i>
+          );
+        case Badges.COMMENTS:
+          return (
+            <i
+              className="fas fa-user-friends"
+              css={css`
+                color: ${BadgeColors.BLUE};
+              `}
+            ></i>
+          );
+        case Badges.OLD:
+          return (
+            <i
+              className="fas fa-stopwatch"
+              css={css`
+                color: ${BadgeColors.YELLOW};
+              `}
+            ></i>
+          );
+        default:
+          return null;
+      }
+    })
+    .filter(Boolean);
 }
 
-export function createColorOfScore (min, max) {
-  return function (score) {
+export function createColorOfScore(min, max) {
+  return function(score) {
     const ratio = (score - min) / (max - min);
-    if (ratio > .9) return '#ec1461';
-    if (ratio > .8) return '#ec5314';
-    if (ratio > .7) return '#ec5314';
-    if (ratio > .6) return '#ec7b14';
-    if (ratio > .5) return '#ec7b14';
-    if (ratio > .4) return '#ec9914';
-    if (ratio > .3) return '#ec9914';
-    if (ratio > .2) return '#ecad14';
-    if (ratio > .1) return '#ecad14';
+    if (ratio > 0.9) return '#ec1461';
+    if (ratio > 0.8) return '#ec5314';
+    if (ratio > 0.7) return '#ec5314';
+    if (ratio > 0.6) return '#ec7b14';
+    if (ratio > 0.5) return '#ec7b14';
+    if (ratio > 0.4) return '#ec9914';
+    if (ratio > 0.3) return '#ec9914';
+    if (ratio > 0.2) return '#ecad14';
+    if (ratio > 0.1) return '#ecad14';
     return '#ecc114';
-  }
+  };
 }
 
-export function getPercentageDelta (n, o) {
+export function getPercentageDelta(n, o) {
   if (n === o) {
     return 0;
   } else if (n > o) {
-    return (n - o) / o * 100;
+    return ((n - o) / o) * 100;
   } else {
-    return (o - n) / o * 100;
+    return ((o - n) / o) * 100;
   }
 }
 
-export function prettify (n) {
+export function prettify(n) {
   if (Math.floor(n) === n) {
     return n.toString();
   } else {
@@ -225,7 +274,7 @@ export function prettify (n) {
   }
 }
 
-export function titleOfMode (mode) {
+export function titleOfMode(mode) {
   switch (mode) {
     case Mode.ALL:
       return 'All Relevent Threads';
@@ -240,7 +289,7 @@ export function titleOfMode (mode) {
   }
 }
 
-export function titleOfFilter (filter) {
+export function titleOfFilter(filter) {
   switch (filter) {
     case Filters.PARTICIPATING:
       return 'All Relevent';
@@ -257,7 +306,7 @@ export function titleOfFilter (filter) {
   }
 }
 
-export function subtitleOfMode (mode) {
+export function subtitleOfMode(mode) {
   switch (mode) {
     case Mode.ALL:
       return 'All of the notifications that matter to you';

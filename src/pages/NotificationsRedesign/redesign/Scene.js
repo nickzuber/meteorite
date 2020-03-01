@@ -3,14 +3,14 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import Typed from 'typed.js';
-import {animated} from 'react-spring'
+import {animated} from 'react-spring';
 import {css, jsx} from '@emotion/core';
-import { compose } from 'recompose';
-import {useSpring} from 'react-spring'
+import {compose} from 'recompose';
+import {useSpring} from 'react-spring';
 import {AreaChart, Area, XAxis, Tooltip} from 'recharts';
-import {ReactComponent as BlankCanvasSvg} from '../../../images/svg/blank.svg'
+import {ReactComponent as BlankCanvasSvg} from '../../../images/svg/blank.svg';
 import Logo from '../../../components/Logo';
-import LoadingIcon from '../../../components/LoadingIcon'
+import LoadingIcon from '../../../components/LoadingIcon';
 import {getFact} from '../../../utils/facts';
 import {Mode, Sort, View} from '../index';
 import {withTooltip} from '../../../enhance';
@@ -26,6 +26,7 @@ import {
   prettify,
   titleOfFilter,
   subtitleOfMode,
+  colorOfString,
   colorOfTag,
   extractJiraTags
 } from './utils';
@@ -84,9 +85,14 @@ import {
 import {ToastProvider, useToasts} from 'react-toast-notifications';
 import {Status} from '../../../constants/status';
 import {Filters} from '../../../constants/filters';
+import {FilterSearch} from './FilterSearch';
 export const AnimatedNotificationRow = animated(NotificationRow);
 
-const hash = process.localEnv.GIT_HASH ? `#${process.localEnv.GIT_HASH}` : '';
+const hash = process.localEnv
+  ? process.localEnv.GIT_HASH
+    ? `#${process.localEnv.GIT_HASH}`
+    : ''
+  : '';
 const version = require('../../../../package.json').version + hash;
 
 const snackStates = {
@@ -107,11 +113,11 @@ const useTabFocused = () => {
     return () => {
       window.removeEventListener('focus', onFocus);
       window.removeEventListener('blur', onBlur);
-    }
+    };
   }, []);
 
   return focused;
-}
+};
 
 const Snack = ({
   children,
@@ -144,7 +150,7 @@ const Snack = ({
     }
 
     timer.current = setTimeout(() => {
-      setCountdown(countdown => countdown -= interval);
+      setCountdown(countdown => (countdown -= interval));
       if (countdown <= 0) {
         setCompleted(true);
       }
@@ -162,7 +168,8 @@ const Snack = ({
         justify-content: space-between;
         background: ${dark ? DarkTheme.SecondaryAlt : WHITE};
         border: 1px solid ${dark ? DarkTheme.Secondary : '#ebecee'};
-        box-shadow: rgba(0,0,0,0) 0px 2px 8px, rgba(0,0,0,0.25) 0px 2px 6px;
+        box-shadow: rgba(0, 0, 0, 0) 0px 2px 8px,
+          rgba(0, 0, 0, 0.25) 0px 2px 6px;
         border-radius: 6px;
         margin: 8px;
         overflow: hidden;
@@ -183,85 +190,99 @@ const Snack = ({
         }
       `}
     >
-      <div css={css`
-        background: ${ThemeColor(dark)}29;
-        border-radius: 100%;
-        height: 30px;
-        width: 30px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-        position: relative;
-        i {
-          color: ${ThemeColor(dark)};
-        }
-      `}>
+      <div
+        css={css`
+          background: ${ThemeColor(dark)}29;
+          border-radius: 100%;
+          height: 30px;
+          width: 30px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          overflow: hidden;
+          position: relative;
+          i {
+            color: ${ThemeColor(dark)};
+          }
+        `}
+      >
         {action === 'read' ? (
           <i className="fas fa-check"></i>
         ) : (
           <i className="fas fa-times"></i>
         )}
-        <div css={css`
-          background: ${ThemeColor(dark)}29;
-          height: 35px;
-          width: 35px;
-          position: absolute;
-          z-index: -1;
-          transform: translateY(${35 - ((countdown / autoDismissTimeout) * 35)}px);
-        `} />
+        <div
+          css={css`
+            background: ${ThemeColor(dark)}29;
+            height: 35px;
+            width: 35px;
+            position: absolute;
+            z-index: -1;
+            transform: translateY(
+              ${35 - (countdown / autoDismissTimeout) * 35}px
+            );
+          `}
+        />
       </div>
-      <div css={css`
-        margin: 8px 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: end;
+      <div
+        css={css`
+          margin: 8px 20px;
+          display: flex;
+          flex-direction: column;
+          align-items: end;
 
-        span {
-          overflow: hidden;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-          max-width: 400px;
-        }
-      `} onClick={onDismiss}>
+          span {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            max-width: 400px;
+          }
+        `}
+        onClick={onDismiss}
+      >
         {children}
       </div>
-      <div css={css`
-        user-select: none;
-        cursor: pointer;
-        height: 100%;
-        position: relative;
-        flex: 1;
-        text-align: right;
-        min-width: 40px;
-      `}>
-        <span css={css`
-          font-size: 13px;
-          font-weight: 500;
-          color: ${dark ? WHITE : 'inherit'};
-          transition: all 150ms ease;
+      <div
+        css={css`
+          user-select: none;
+          cursor: pointer;
           height: 100%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          position: absolute;
-          right: 0;
-          &:hover {
-            opacity: 0.6;
-          }
-          &:active {
-            opacity: 0.4;
-          }
-        `} onClick={() => {
-          onDismiss();
-          onUndo();
-        }}>
+          position: relative;
+          flex: 1;
+          text-align: right;
+          min-width: 40px;
+        `}
+      >
+        <span
+          css={css`
+            font-size: 13px;
+            font-weight: 500;
+            color: ${dark ? WHITE : 'inherit'};
+            transition: all 150ms ease;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            right: 0;
+            &:hover {
+              opacity: 0.6;
+            }
+            &:active {
+              opacity: 0.4;
+            }
+          `}
+          onClick={() => {
+            onDismiss();
+            onUndo();
+          }}
+        >
           {'Undo'}
         </span>
       </div>
     </div>
   );
-}
+};
 
 const withToastProvider = WrappedComponent => props => (
   <ToastProvider
@@ -275,17 +296,12 @@ const withToastProvider = WrappedComponent => props => (
 
 const withToasts = WrappedComponent => props => {
   const {addToast} = useToasts();
-  return (
-    <WrappedComponent addToast={addToast} {...props} />
-  );
+  return <WrappedComponent addToast={addToast} {...props} />;
 };
 
-function BasePageItem ({children, onChange, ...props}) {
+function BasePageItem({children, onChange, ...props}) {
   return (
-    <PageItemComponent
-      onClick={() => onChange(props.view)}
-      {...props}
-    >
+    <PageItemComponent onClick={() => onChange(props.view)} {...props}>
       {children}
     </PageItemComponent>
   );
@@ -293,12 +309,14 @@ function BasePageItem ({children, onChange, ...props}) {
 
 const PageItem = withTooltip(BasePageItem);
 
-const ToastTitle = styled('div')(p => `
+const ToastTitle = styled('div')(
+  p => `
   font-size: 13px;
   font-weight: 500;
   margin: 2px 0;
   color: ${p.dark ? WHITE : 'inherit'};
-`);
+`
+);
 
 const ToastByline = styled('div')`
   font-size: 12px;
@@ -307,7 +325,14 @@ const ToastByline = styled('div')`
   margin: 2px 0;
 `;
 
-function BaseMenuIconItem ({children, onChange, selected, alwaysActive, noBorder, ...props}) {
+function BaseMenuIconItem({
+  children,
+  onChange,
+  selected,
+  alwaysActive,
+  noBorder,
+  ...props
+}) {
   return (
     <IconContainer
       onClick={() => onChange(props.mode)}
@@ -322,7 +347,14 @@ function BaseMenuIconItem ({children, onChange, selected, alwaysActive, noBorder
 
 const MenuIconItem = withTooltip(BaseMenuIconItem);
 
-function SortingItem ({children, selected, onChange, descending, setDescending, ...props}) {
+function SortingItem({
+  children,
+  selected,
+  onChange,
+  descending,
+  setDescending,
+  ...props
+}) {
   return (
     <SortingItemComponent
       selected={selected}
@@ -332,23 +364,24 @@ function SortingItem ({children, selected, onChange, descending, setDescending, 
         } else {
           setDescending(false);
         }
-        onChange(props.sort)
+        onChange(props.sort);
       }}
       {...props}
     >
-      <span>
-        {children}
-      </span>
-      <i css={css`
-        transition: all 200ms ease;
-        opacity: ${selected ? 1 : 0};
-        transform: ${descending ? 'rotate(180deg)' : 'rotate(0deg)'};
-      `} className="fas fa-caret-up"></i>
+      <span>{children}</span>
+      <i
+        css={css`
+          transition: all 200ms ease;
+          opacity: ${selected ? 1 : 0};
+          transform: ${descending ? 'rotate(180deg)' : 'rotate(0deg)'};
+        `}
+        className="fas fa-caret-up"
+      ></i>
     </SortingItemComponent>
   );
 }
 
-function CustomTick ({x, y, payload}) {
+function CustomTick({x, y, payload}) {
   if (!payload) return null;
   return (
     <g transform={`translate(${x},${y})`}>
@@ -367,15 +400,24 @@ function CustomTick ({x, y, payload}) {
   );
 }
 
-function RepoBarGroup ({reposReadCounts, highestRepoReadCount, colorOfRepoCount}) {
+function RepoBarGroup({
+  reposReadCounts,
+  highestRepoReadCount,
+  colorOfRepoCount
+}) {
   const numReposToShow = 3;
   const [show, setShow] = React.useState(false);
-  const repos = Object.keys(reposReadCounts).sort((a, b) => reposReadCounts[b] - reposReadCounts[a]);
+  const repos = Object.keys(reposReadCounts).sort(
+    (a, b) => reposReadCounts[b] - reposReadCounts[a]
+  );
 
   const shownRepos = repos.slice(0, numReposToShow);
   const hiddenRepos = repos.slice(numReposToShow);
 
-  const totalCounts = Object.values(reposReadCounts).reduce((acc, c) => acc + c, 0)
+  const totalCounts = Object.values(reposReadCounts).reduce(
+    (acc, c) => acc + c,
+    0
+  );
 
   return (
     <>
@@ -388,8 +430,8 @@ function RepoBarGroup ({reposReadCounts, highestRepoReadCount, colorOfRepoCount}
           colorOfValue={colorOfRepoCount}
         />
       ))}
-      {hiddenRepos.length > 0 && (
-        show ? (
+      {hiddenRepos.length > 0 &&
+        (show ? (
           <>
             {hiddenRepos.map(repo => (
               <RepoBar
@@ -404,26 +446,22 @@ function RepoBarGroup ({reposReadCounts, highestRepoReadCount, colorOfRepoCount}
           </>
         ) : (
           <LinkText onClick={() => setShow(true)}>Show more</LinkText>
-        )
-      )}
+        ))}
     </>
   );
 }
 
-function RepoBar ({name, value, max}) {
+function RepoBar({name, value, max}) {
   return (
     <RepoBarContainer>
       <p>{name.split('/')[1]}</p>
       <span>{name.split('/')[0]}</span>
-      <Bar
-        title={`${value} out of ${max}`}
-        value={value / max}
-      />
+      <Bar title={`${value} out of ${max}`} value={value / max} />
     </RepoBarContainer>
   );
 }
 
-function ReadCountGraph ({data, onHover, onExit, dark}) {
+function ReadCountGraph({data, onHover, onExit, dark}) {
   return (
     <AreaChart
       width={250}
@@ -435,12 +473,12 @@ function ReadCountGraph ({data, onHover, onExit, dark}) {
     >
       <defs>
         <linearGradient id="curGradient" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="10%" stopColor={ThemeColor(dark)} stopOpacity={0.2}/>
+          <stop offset="10%" stopColor={ThemeColor(dark)} stopOpacity={0.2} />
           <stop offset="90%" stopColor={ThemeColor(dark)} stopOpacity={0} />
         </linearGradient>
         <linearGradient id="prevGradient" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="5%" stopColor="BFC5D166" stopOpacity={0}/>
-          <stop offset="95%" stopColor="BFC5D166" stopOpacity={0}/>
+          <stop offset="5%" stopColor="BFC5D166" stopOpacity={0} />
+          <stop offset="95%" stopColor="BFC5D166" stopOpacity={0} />
         </linearGradient>
       </defs>
       <XAxis
@@ -459,7 +497,8 @@ function ReadCountGraph ({data, onHover, onExit, dark}) {
           background: 'rgb(255,254,252)',
           border: '1px solid #E5E6EB',
           borderRadius: 6,
-          boxShadow: 'rgba(84,70,35,0) 0px 2px 8px, rgba(84,70,35,0.15) 0px 1px 3px',
+          boxShadow:
+            'rgba(84,70,35,0) 0px 2px 8px, rgba(84,70,35,0.15) 0px 1px 3px',
           minWidth: 100,
           padding: '6px 12px 8px'
         }}
@@ -467,7 +506,7 @@ function ReadCountGraph ({data, onHover, onExit, dark}) {
           transform: 'scale(0.85) translate(-10px, 1px)',
           fontWeight: '500',
           padding: 0,
-          opacity: .75
+          opacity: 0.75
         }}
         labelStyle={{
           color: 'rgb(55, 53, 47)',
@@ -499,8 +538,8 @@ function ReadCountGraph ({data, onHover, onExit, dark}) {
         fill="url(#prevGradient)"
         strokeWidth="2"
         animationDuration={0}
-        dot={{ stroke: '#00000000', fill: '#00000000', r: 0 }}
-        activeDot={{ stroke: '#BFC5D166', fill: '#BFC5D166', r: 2 }}
+        dot={{stroke: '#00000000', fill: '#00000000', r: 0}}
+        activeDot={{stroke: '#BFC5D166', fill: '#BFC5D166', r: 2}}
       />
       <Area
         type="monotone"
@@ -509,46 +548,14 @@ function ReadCountGraph ({data, onHover, onExit, dark}) {
         fill="url(#curGradient)"
         strokeWidth="2"
         animationDuration={0}
-        dot={{ stroke: '#00000000', fill: '#00000000', r: 0 }}
-        activeDot={{ stroke: ThemeColor(dark), fill: ThemeColor(dark), r: 2 }}
+        dot={{stroke: '#00000000', fill: '#00000000', r: 0}}
+        activeDot={{stroke: ThemeColor(dark), fill: ThemeColor(dark), r: 2}}
       />
     </AreaChart>
   );
 }
 
-function pickRandom (collection) {
-  return collection[Math.floor(Math.random() * collection.length)];
-}
-
-function TypedSpan ({source, toString, options = {}}) {
-  const spanRef = React.useRef();
-  const typed = React.useRef();
-
-  function clean (string) {
-    const illegalChars = new Set(['-']);
-    return string.split(' ').filter(char => !illegalChars.has(char)).join(' ')
-  }
-
-  // return <span>{clean(toString(source[0]))}</span>
-
-  React.useEffect(() => {
-    const defaultOptions = {
-      strings: source.map(toString).map(clean),
-      startDelay: 100,
-      typeSpeed: 50,
-      backSpeed: 15,
-      backDelay: 3000,
-      loop: true,
-      ...options
-    };
-    typed.current = new Typed(spanRef.current, defaultOptions);
-    return () => typed.current.destroy();
-  }, [source]);
-
-  return <span ref={spanRef} />;
-}
-
-function Scene ({
+function Scene({
   notifications,
   notificationsPermission,
   currentTime,
@@ -598,24 +605,10 @@ function Scene ({
   addToast
 }) {
   const hasNotificationsOn = notificationsPermission === 'granted';
-  const searchRef = React.useRef();
-  const [exampleNotifications, setExampleNotifications] = React.useState([{
-    name: 'Update README',
-    repository: 'nickzuber/meteorite',
-    score: 53
-  }, {
-    name: 'Update innerRef to allow React.createRef and React.forwardRef api usage    ',
-    repository: 'robinpowered/glamorous-native',
-    score: 78
-  }, {
-    name: 'Refactor and test updated logic',
-    repository: 'nickzuber/infrared',
-    score: 35
-  }]);
-  const [darkMode, setDarkMode] = React.useState(getUserItem('dark-mode-enabled'));
+  const [darkMode, setDarkMode] = React.useState(
+    getUserItem('dark-mode-enabled')
+  );
   const [fact, setFact] = React.useState(null);
-  const [searchMenuOpened, setSearchMenuOpened] = React.useState(false);
-  const [hasSearchInput, setHasSearchInput] = React.useState(false);
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [counts, setCounts] = React.useState({
@@ -627,53 +620,63 @@ function Scene ({
     const notification = notifications.find(({id}) => id === thread_id);
     const {title, tags} = extractJiraTags(notification.name);
 
-    addToast((
+    addToast(
       <React.Fragment>
         <ToastTitle dark={darkMode}>
           {tags.map(tag => (
-            <JiraTag key={tag} css={css`vertical-align: middle;`} color={colorOfTag(tag)}>
+            <JiraTag
+              key={tag}
+              css={css`
+                vertical-align: middle;
+              `}
+              color={colorOfTag(tag)}
+            >
               {tag}
             </JiraTag>
           ))}
           {title}
         </ToastTitle>
-        <ToastByline>
-          {'Notification was marked as read'}
-        </ToastByline>
-      </React.Fragment>
-    ), {
-      dark: darkMode,
-      action: 'read',
-      onUndo: () => onRestoreThread(thread_id)
-    });
+        <ToastByline>{'Notification was marked as read'}</ToastByline>
+      </React.Fragment>,
+      {
+        dark: darkMode,
+        action: 'read',
+        onUndo: () => onRestoreThread(thread_id)
+      }
+    );
     onStageThread(thread_id, repository);
-  }
+  };
 
   const onArchiveThreadWithToast = (thread_id, repository) => {
     const notification = notifications.find(({id}) => id === thread_id);
     const {title, tags} = extractJiraTags(notification.name);
 
-    addToast((
+    addToast(
       <React.Fragment>
         <ToastTitle dark={darkMode}>
           {tags.map(tag => (
-            <JiraTag key={tag} css={css`vertical-align: middle;`} color={colorOfTag(tag)}>
+            <JiraTag
+              key={tag}
+              css={css`
+                vertical-align: middle;
+              `}
+              color={colorOfTag(tag)}
+            >
               {tag}
             </JiraTag>
           ))}
           {title}
         </ToastTitle>
-        <ToastByline>
-          {'Notification was marked as archived'}
-        </ToastByline>
-      </React.Fragment>
-    ), {
-      dark: darkMode,
-      action: 'archive',
-      onUndo: () => onStageThread(thread_id, repository)
-    });
+        <ToastByline>{'Notification was marked as archived'}</ToastByline>
+      </React.Fragment>,
+      {
+        dark: darkMode,
+        action: 'archive',
+        onUndo: () => onStageThread(thread_id, repository)
+      }
+    );
     onArchiveThread(thread_id, repository);
-  }
+  };
 
   readStatistics = readStatistics.map(n => parseInt(n, 10));
   const lastWeekStats = readStatistics.slice(0, 7);
@@ -684,7 +687,10 @@ function Scene ({
   // const thisWeekStats = [7, 8, 5, 6, 4, 9, 12];
 
   const percentageDeltaToday = getPercentageDelta(counts.cur, counts.prev);
-  const highestRepoReadCount = Object.values(reposReadCounts).reduce((h, c) => Math.max(h, c), 0);
+  const highestRepoReadCount = Object.values(reposReadCounts).reduce(
+    (h, c) => Math.max(h, c),
+    0
+  );
   const colorOfRepoCount = createColorOfScore(0, highestRepoReadCount);
 
   const data = [
@@ -693,7 +699,7 @@ function Scene ({
     {name: 'Tuesday', cur: thisWeekStats[2], prev: lastWeekStats[2]},
     {name: 'Wednesday', cur: thisWeekStats[3], prev: lastWeekStats[3]},
     {name: 'Thursday', cur: thisWeekStats[4], prev: lastWeekStats[4]},
-    {name: 'Friday', cur: thisWeekStats[5], prev: lastWeekStats[5]},
+    {name: 'Friday', cur: thisWeekStats[5], prev: lastWeekStats[5]}
     // {name: 'Saturday', cur: thisWeekStats[6], prev: lastWeekStats[6]},
   ];
 
@@ -702,14 +708,9 @@ function Scene ({
     window.scrollTo(0, 0);
     const body = window.document.querySelector('body');
     const hideDropdownMenu = () => setDropdownOpen(false);
-    const hideSearchFocused = () => setSearchMenuOpened(false);
     const eventType = 'click'; // isMobile ? 'touchend' : 'click';
     body.addEventListener(eventType, hideDropdownMenu);
-    body.addEventListener(eventType, hideSearchFocused);
-    return () => {
-      body.removeEventListener(eventType, hideDropdownMenu);
-      body.removeEventListener(eventType, hideSearchFocused);
-    }
+    return () => body.removeEventListener(eventType, hideDropdownMenu);
   }, []);
 
   // Updating the counts when new stats come in.
@@ -730,31 +731,20 @@ function Scene ({
     setUserItem('dark-mode-enabled', darkMode);
   }, [darkMode]);
 
-  React.useEffect(() => {
-    if (notifications.length > 3) {
-      const examples = notifications.slice(0, 5);
-      setExampleNotifications(examples);
-    }
-  }, [view]);
-
-  const setSearchField = text => {
-    searchRef.current.value = text;
-    searchRef.current.focus();
-    setHasSearchInput(true);
-  };
-
   return (
     <ThemeContext.Provider value={darkMode}>
       <Container>
         {/* Top search & profile bar */}
-        <Row css={css`
-          position: fixed;
-          top: 0;
-          height: ${COLLAPSED_WIDTH};
-          background: ${darkMode ? DarkTheme.Primary : WHITE};
-          z-index: 10;
-          width: 100%;
-        `}>
+        <Row
+          css={css`
+            position: fixed;
+            top: 0;
+            height: ${COLLAPSED_WIDTH};
+            background: ${darkMode ? DarkTheme.Primary : WHITE};
+            z-index: 10;
+            width: 100%;
+          `}
+        >
           <MenuHeaderItem expand={menuOpen}>
             <MenuIconItem
               alwaysActive
@@ -767,86 +757,19 @@ function Scene ({
               <i className="fas fa-bars"></i>
             </MenuIconItem>
           </MenuHeaderItem>
-          <ContentHeaderItem css={css`
+          <ContentHeaderItem
+            css={css`
               display: inline-flex;
               align-items: center;
-          `}>
-            <SearchField>
-              <i className="fas fa-search"></i>
-              <EnhancedSearchInput
-                innerRef={searchRef}
-                disabled={loading}
-                // onClick={event => event.target.select()}
-                type="text"
-                onClick={() => setSearchMenuOpened(true)}
-                onChange={(e) => {
-                  if (e.target.value === '' && hasSearchInput) {
-                    setHasSearchInput(false);
-                  } else if (e.target.value !== '' && !hasSearchInput) {
-                    setHasSearchInput(true);
-                  }
-                }}
-                placeholder="Search for notifications"
-                onEnter={onSearch}
-              />
-              {searchMenuOpened && (
-                <Dropdown>
-                  {hasSearchInput ? (
-                    // Previews
-                    <span>{'previews using filter logic on `notifications`'}</span>
-                  ) : (
-                    // Filter Suggestion Menu
-                    <React.Fragment>
-                      <span onMouseDown={() => setSearchField('title: ')}>
-                        {`title:`}
-                        <TypedSpan
-                          source={exampleNotifications}
-                          toString={n => {
-                            const parts = n.name.split(' ');
-                            const length = parts.length;
-                            if (length > 2) {
-                              return parts.slice(
-                                Math.floor(length / 2),
-                                length
-                              ).join(' ');
-                            }
-                            return parts.slice(0, length).join(' ');
-                          }}
-                        />
-                        <p>{'Search for specific titles'}</p>
-                      </span>
-                      <span onMouseDown={() => setSearchField('repo: ')}>
-                        {`repo:`}
-                        <TypedSpan
-                          source={exampleNotifications}
-                          toString={n => n.repository.split('/')[1]}
-                        />
-                        <p>{'Search for specific repositories'}</p>
-                      </span>
-                      <span onMouseDown={() => setSearchField('score: ')}>
-                        {`score:`}
-                        <TypedSpan
-                          source={exampleNotifications}
-                          toString={(n, i) => {
-                            const comparator = ['>', '='][Math.floor(Math.random() * 2)];
-                            return `${comparator} ${n.score}`;
-                          }}
-                        />
-                        <p>{'Search for specific score ranges'}</p>
-                      </span>
-                      <h5>{'Not including a filter will search everything across all fields'}</h5>
-                    </React.Fragment>
-                  )}
-                </Dropdown>
-              )}
-              {isSearching && <LoadingIcon size={36} style={{
-                transition: 'all 100ms ease',
-                position: 'absolute',
-                right: 0,
-                transform: 'scale(0.8)',
-                backgroundColor: 'transparent'
-              }} />}
-            </SearchField>
+            `}
+          >
+            <FilterSearch
+              notifications={notifications}
+              view={view}
+              loading={loading}
+              onSearch={onSearch}
+              isSearching={isSearching}
+            />
             <Logo
               css={css`
                 position: absolute !important;
@@ -871,14 +794,16 @@ function Scene ({
           </ContentHeaderItem>
         </Row>
         {/* Sidebar options & notifications content */}
-        <Row css={css`
-          height: calc(100% - ${COLLAPSED_WIDTH});
-          margin-top: ${COLLAPSED_WIDTH};
-          background: ${darkMode ? DarkTheme.Primary : '#2f343e'};
-          @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
-            background: ${WHITE};
-          }
-        `}>
+        <Row
+          css={css`
+            height: calc(100% - ${COLLAPSED_WIDTH});
+            margin-top: ${COLLAPSED_WIDTH};
+            background: ${darkMode ? DarkTheme.Primary : '#2f343e'};
+            @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+              background: ${WHITE};
+            }
+          `}
+        >
           <MenuContainerItem expand={menuOpen}>
             <MenuIconItem
               mode={Filters.PARTICIPATING}
@@ -941,8 +866,13 @@ function Scene ({
             <CardSection>
               <Card>
                 <CardTitle>{currentTime.format('dddd')}</CardTitle>
-                <CardSubTitle>{currentTime.format('MMMM Do, YYYY')}</CardSubTitle>
-                <ScoreDiff under={counts.prev > counts.cur} show={counts.prev > 0 && counts.cur > 0}>
+                <CardSubTitle>
+                  {currentTime.format('MMMM Do, YYYY')}
+                </CardSubTitle>
+                <ScoreDiff
+                  under={counts.prev > counts.cur}
+                  show={counts.prev > 0 && counts.cur > 0}
+                >
                   {counts.prev > counts.cur ? '-' : '+'}
                   {prettify(percentageDeltaToday)}
                   {'%'}
@@ -959,7 +889,10 @@ function Scene ({
                   onHover={payloads => {
                     if (payloads && payloads.length > 0) {
                       const [prev, cur] = payloads;
-                      if (counts.prev !== prev.value || counts.cur !== cur.value) {
+                      if (
+                        counts.prev !== prev.value ||
+                        counts.cur !== cur.value
+                      ) {
                         setCounts({
                           cur: cur.value,
                           prev: prev.value
@@ -971,7 +904,13 @@ function Scene ({
               </Card>
               <Card>
                 <CardTitle>{'Activity'}</CardTitle>
-                <CardSubTitle css={css`margin-bottom: 22px;`}>{'Interactions by repository'}</CardSubTitle>
+                <CardSubTitle
+                  css={css`
+                    margin-bottom: 22px;
+                  `}
+                >
+                  {'Interactions by repository'}
+                </CardSubTitle>
                 <RepoBarGroup
                   reposReadCounts={reposReadCounts}
                   highestRepoReadCount={highestRepoReadCount}
@@ -991,7 +930,7 @@ function Scene ({
                     `}
                     onClick={event => {
                       event.stopPropagation();
-                      switch(notificationsPermission) {
+                      switch (notificationsPermission) {
                         case 'granted':
                           return setNotificationsPermission('denied');
                         case 'denied':
@@ -1004,11 +943,15 @@ function Scene ({
                       setDropdownOpen(false);
                     }}
                   >
-                    <IconLink tooltip={`${hasNotificationsOn ? 'Disable' : 'Enable'} notifications`}>
+                    <IconLink
+                      tooltip={`${
+                        hasNotificationsOn ? 'Disable' : 'Enable'
+                      } notifications`}
+                    >
                       {hasNotificationsOn ? (
-                          <i className="fas fa-bell"></i>
-                        ) : (
-                          <i className="fas fa-bell-slash"></i>
+                        <i className="fas fa-bell"></i>
+                      ) : (
+                        <i className="fas fa-bell-slash"></i>
                       )}
                     </IconLink>
                   </optimized.li>
@@ -1024,70 +967,108 @@ function Scene ({
                       setDarkMode(m => !m);
                     }}
                   >
-                    <IconLink tooltip={`${darkMode ? 'Disable' : 'Enable'} dark mode`}>
+                    <IconLink
+                      tooltip={`${darkMode ? 'Disable' : 'Enable'} dark mode`}
+                    >
                       <i className="fas fa-moon"></i>
                     </IconLink>
                   </optimized.li>
                   <optimized.li>
-                    <IconLink tooltip="View more options" onClick={() => setDropdownOpen(true)}>
+                    <IconLink
+                      tooltip="View more options"
+                      onClick={() => setDropdownOpen(true)}
+                    >
                       <i className="fas fa-ellipsis-v"></i>
                     </IconLink>
                     <InteractionMenu show={dropdownOpen}>
-                      <Card css={css`padding: 0;`}>
-                        <optimized.div onClick={event => {
-                          event.stopPropagation();
-                          onFetchNotifications();
-                          setDropdownOpen(false);
-                        }}>
+                      <Card
+                        css={css`
+                          padding: 0;
+                        `}
+                      >
+                        <optimized.div
+                          onClick={event => {
+                            event.stopPropagation();
+                            onFetchNotifications();
+                            setDropdownOpen(false);
+                          }}
+                        >
                           <h2>Reload notifications</h2>
-                          <p>Manually fetch new notifications instead of waiting for the sync</p>
+                          <p>
+                            Manually fetch new notifications instead of waiting
+                            for the sync
+                          </p>
                         </optimized.div>
-                        <optimized.div onClick={event => {
-                          event.stopPropagation();
-                          setDarkMode(mode => !mode);
-                          setDropdownOpen(false);
-                        }}>
+                        <optimized.div
+                          onClick={event => {
+                            event.stopPropagation();
+                            setDarkMode(mode => !mode);
+                            setDropdownOpen(false);
+                          }}
+                        >
                           <h2>{darkMode ? 'Disable' : 'Enable'} dark mode</h2>
-                          <p>Turn {darkMode ? 'on' : 'off'} the dark mode theme for this page</p>
+                          <p>
+                            Turn {darkMode ? 'on' : 'off'} the dark mode theme
+                            for this page
+                          </p>
                         </optimized.div>
-                        <optimized.div onClick={event => {
-                          event.stopPropagation();
-                          const response = window.confirm('Are you sure you want to mark all your notifications as read?');
-                          void (response && onMarkAllAsStaged());
-                          setDropdownOpen(false);
-                        }}>
+                        <optimized.div
+                          onClick={event => {
+                            event.stopPropagation();
+                            const response = window.confirm(
+                              'Are you sure you want to mark all your notifications as read?'
+                            );
+                            void (response && onMarkAllAsStaged());
+                            setDropdownOpen(false);
+                          }}
+                        >
                           <h2>Mark all as read</h2>
-                          <p>Move all your unread notifications to the read tab</p>
+                          <p>
+                            Move all your unread notifications to the read tab
+                          </p>
                         </optimized.div>
-                        <optimized.div onClick={event => {
-                          event.stopPropagation();
-                          const response = window.confirm('Are you sure you want to clear the cache?');
-                          void (response && onClearCache());
-                          setDropdownOpen(false);
-                        }}>
+                        <optimized.div
+                          onClick={event => {
+                            event.stopPropagation();
+                            const response = window.confirm(
+                              'Are you sure you want to clear the cache?'
+                            );
+                            void (response && onClearCache());
+                            setDropdownOpen(false);
+                          }}
+                        >
                           <h2>Empty cache</h2>
-                          <p>Delete all the archived notifications tracked in your local storage</p>
+                          <p>
+                            Delete all the archived notifications tracked in
+                            your local storage
+                          </p>
                         </optimized.div>
-                        <optimized.div onClick={event => {
-                          event.stopPropagation();
-                          switch(notificationsPermission) {
-                            case 'granted':
-                              return setNotificationsPermission('denied');
-                            case 'denied':
-                            case 'default':
-                            default:
-                              Notification.requestPermission().then(result => {
-                                return setNotificationsPermission(result);
-                              });
-                          }
-                          setDropdownOpen(false);
-                        }}>
-                          <h2>Turn {hasNotificationsOn ? 'off' : 'on'} notifications</h2>
+                        <optimized.div
+                          onClick={event => {
+                            event.stopPropagation();
+                            switch (notificationsPermission) {
+                              case 'granted':
+                                return setNotificationsPermission('denied');
+                              case 'denied':
+                              case 'default':
+                              default:
+                                Notification.requestPermission().then(
+                                  result => {
+                                    return setNotificationsPermission(result);
+                                  }
+                                );
+                            }
+                            setDropdownOpen(false);
+                          }}
+                        >
+                          <h2>
+                            Turn {hasNotificationsOn ? 'off' : 'on'}{' '}
+                            notifications
+                          </h2>
                           <p>
                             {hasNotificationsOn
                               ? 'Stop receiving web notifications when you get a new update'
-                              : 'Receive web notifications whenever you get a new update'
-                            }
+                              : 'Receive web notifications whenever you get a new update'}
                           </p>
                         </optimized.div>
                       </Card>
@@ -1111,21 +1092,24 @@ function Scene ({
                 >
                   {'Unread'}
                   {unreadCount > 0 && (
-                    <span css={css`
-                      transition: all 200ms ease;
-                      background: ${view === View.UNREAD
-                        ? ThemeColor(darkMode)
-                        : darkMode ? DarkTheme.Gray : '#bfc5d1'
-                      };
-                      color: ${WHITE};
-                      transition: background 200ms ease;
-                      font-size: 9px;
-                      margin: 0 6px;
-                      padding: 2px 6px;
-                      border-radius: 4px;
-                      font-weight: 600;
-                      vertical-align: middle;
-                    `}>
+                    <span
+                      css={css`
+                        transition: all 200ms ease;
+                        background: ${view === View.UNREAD
+                          ? ThemeColor(darkMode)
+                          : darkMode
+                          ? DarkTheme.Gray
+                          : '#bfc5d1'};
+                        color: ${WHITE};
+                        transition: background 200ms ease;
+                        font-size: 9px;
+                        margin: 0 6px;
+                        padding: 2px 6px;
+                        border-radius: 4px;
+                        font-weight: 600;
+                        vertical-align: middle;
+                      `}
+                    >
                       {unreadCount}
                     </span>
                   )}
@@ -1141,21 +1125,24 @@ function Scene ({
                 >
                   {'Read'}
                   {readCount > 0 && (
-                    <span css={css`
-                      transition: all 200ms ease;
-                      background: ${view === View.READ
-                        ? ThemeColor(darkMode)
-                        : darkMode ? DarkTheme.Gray : '#bfc5d1'
-                      };
-                      color: ${WHITE};
-                      transition: background 200ms ease;
-                      font-size: 9px;
-                      margin: 0 6px;
-                      padding: 2px 6px;
-                      border-radius: 4px;
-                      font-weight: 600;
-                      vertical-align: middle;
-                    `}>
+                    <span
+                      css={css`
+                        transition: all 200ms ease;
+                        background: ${view === View.READ
+                          ? ThemeColor(darkMode)
+                          : darkMode
+                          ? DarkTheme.Gray
+                          : '#bfc5d1'};
+                        color: ${WHITE};
+                        transition: background 200ms ease;
+                        font-size: 9px;
+                        margin: 0 6px;
+                        padding: 2px 6px;
+                        border-radius: 4px;
+                        font-weight: 600;
+                        vertical-align: middle;
+                      `}
+                    >
                       {readCount}
                     </span>
                   )}
@@ -1171,61 +1158,68 @@ function Scene ({
                 >
                   {'Archived'}
                   {archivedCount > 0 && (
-                    <span css={css`
-                      transition: all 200ms ease;
-                      background: ${view === View.ARCHIVED
-                        ? ThemeColor(darkMode)
-                        : darkMode ? DarkTheme.Gray : '#bfc5d1'
-                      };
-                      color: ${WHITE};
-                      transition: background 200ms ease;
-                      font-size: 9px;
-                      margin: 0 6px;
-                      padding: 2px 6px;
-                      border-radius: 4px;
-                      font-weight: 600;
-                      vertical-align: middle;
-                    `}>
+                    <span
+                      css={css`
+                        transition: all 200ms ease;
+                        background: ${view === View.ARCHIVED
+                          ? ThemeColor(darkMode)
+                          : darkMode
+                          ? DarkTheme.Gray
+                          : '#bfc5d1'};
+                        color: ${WHITE};
+                        transition: background 200ms ease;
+                        font-size: 9px;
+                        margin: 0 6px;
+                        padding: 2px 6px;
+                        border-radius: 4px;
+                        font-weight: 600;
+                        vertical-align: middle;
+                      `}
+                    >
                       {archivedCount}
                     </span>
                   )}
                 </PageItem>
-                <div css={css`
-                  height: auto;
-                  position: absolute;
-                  display: flex;
-                  right: 0;
-                  justify-content: center;
-                  align-items: center;
-                  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
-                    padding: ${query ? '4px 16px' : 0};
+                <div
+                  css={css`
+                    height: auto;
                     position: absolute;
-                    background: #f0f0ee;
-                    left: 0;
-                    border-top-left-radius: 4px;
-                    border-top-right-radius: 4px;
-                  }
-                `}>
+                    display: flex;
+                    right: 0;
+                    justify-content: center;
+                    align-items: center;
+                    @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+                      padding: ${query ? '4px 16px' : 0};
+                      position: absolute;
+                      background: #f0f0ee;
+                      left: 0;
+                      border-top-left-radius: 4px;
+                      border-top-right-radius: 4px;
+                    }
+                  `}
+                >
                   {query && (
                     <>
-                      <span css={css`
-                        font-size: 13px;
-                        color: ${darkMode ? DarkTheme.Gray : '#797d8c'};
-                        font-weight: 500;
-                        vertical-align: text-top;
-                        margin-right: 8px;
-                        span {
+                      <span
+                        css={css`
                           font-size: 13px;
-                          color: ${darkMode ? WHITE : '#37352f'};
-                          font-weight: 600;
+                          color: ${darkMode ? DarkTheme.Gray : '#797d8c'};
+                          font-weight: 500;
                           vertical-align: text-top;
-                        }
-                      `}>
+                          margin-right: 8px;
+                          span {
+                            font-size: 13px;
+                            color: ${darkMode ? WHITE : '#37352f'};
+                            font-weight: 600;
+                            vertical-align: text-top;
+                          }
+                        `}
+                      >
                         {'Showing results for '}
                         <span>{query}</span>
                       </span>
                       <IconLink
-                        onClick={!loading ? (() => onClearQuery()) : undefined}
+                        onClick={!loading ? () => onClearQuery() : undefined}
                       >
                         <i className="fas fa-times"></i>
                       </IconLink>
@@ -1233,16 +1227,32 @@ function Scene ({
                     </>
                   )}
                   <IconLink
-                    css={css`@media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) { display: none; }`}
+                    css={css`
+                      @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+                        display: none;
+                      }
+                    `}
                     disabled={loading || isFirstPage}
-                    onClick={!loading && !isFirstPage ? (() => onChangePage(page - 1)) : undefined}
+                    onClick={
+                      !loading && !isFirstPage
+                        ? () => onChangePage(page - 1)
+                        : undefined
+                    }
                   >
                     <i className="fas fa-chevron-left"></i>
                   </IconLink>
                   <IconLink
-                    css={css`@media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) { display: none; }`}
+                    css={css`
+                      @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+                        display: none;
+                      }
+                    `}
                     disabled={loading || isLastPage}
-                    onClick={!loading && !isLastPage ? (() => onChangePage(page + 1)) : undefined}
+                    onClick={
+                      !loading && !isLastPage
+                        ? () => onChangePage(page + 1)
+                        : undefined
+                    }
                   >
                     <i className="fas fa-chevron-right"></i>
                   </IconLink>
@@ -1276,7 +1286,14 @@ function Scene ({
                       </SortingItem>
                     </NotificationCell>
                     {/* Repository */}
-                    <NotificationCell flex={1.5} css={css`@media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) { display: none; }`}>
+                    <NotificationCell
+                      flex={1.5}
+                      css={css`
+                        @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+                          display: none;
+                        }
+                      `}
+                    >
                       <SortingItem
                         sort={Sort.REPOSITORY}
                         descending={descending}
@@ -1300,14 +1317,23 @@ function Scene ({
                       </SortingItem>
                     </NotificationCell>
                     {/* Actions */}
-                    <NotificationCell width={70} css={css`@media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) { display: none; }`}>
+                    <NotificationCell
+                      width={70}
+                      css={css`
+                        @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+                          display: none;
+                        }
+                      `}
+                    >
                       <SortingItem
                         sort={Sort.DATE}
                         descending={descending}
                         setDescending={setDescending}
                         selected={sort === Sort.DATE}
                         onChange={setSort}
-                        css={css`justify-content: center;`}
+                        css={css`
+                          justify-content: center;
+                        `}
                       >
                         {'Date'}
                       </SortingItem>
@@ -1327,7 +1353,9 @@ function Scene ({
                     <BlankCanvasSvg height={136} width={224} />
                     <h3>{'Something went wrong'}</h3>
                     <p>{stringOfError(error.text)}</p>
-                    <span onClick={() => onFetchNotifications()}>{'Try loading again'}</span>
+                    <span onClick={() => onFetchNotifications()}>
+                      {'Try loading again'}
+                    </span>
                   </ErrorContainer>
                 ) : (
                   <NotificationCollection
@@ -1351,46 +1379,74 @@ function Scene ({
           </ContentItem>
         </Row>
         {/* Footer links */}
-        <Row css={css`
-          height: calc(100% - ${COLLAPSED_WIDTH});
-          background: ${darkMode ? DarkTheme.Primary : '#2f343e'};
-        `}>
-          <MenuContainerItem expand={menuOpen}>
-          </MenuContainerItem>
-          <ContentItem css={css`
-            min-height: ${FOOTER_HEIGHT};
-            height: ${FOOTER_HEIGHT};
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            span {
-              display: inline-block;
-              font-size: 11px;
-              color: ${darkMode ? DarkTheme.Gray : '#37352f52'};
-              margin: 0 12px;
-              font-weight: 500;
-            }
-            a {
-              display: inline-block;
-              text-decoration: underline;
-              font-size: 11px;
-              color: ${darkMode ? DarkTheme.Gray : '#37352f52'};
-              margin: 0 12px;
-              font-weight: 500;
-              cursor: pointer;
-              text-underline-position: under;
-              transition: all 200ms ease;
-              &:hover {
-                color: ${darkMode ? DarkTheme.Gray + 'aa' : '#37352f52'};
+        <Row
+          css={css`
+            height: calc(100% - ${COLLAPSED_WIDTH});
+            background: ${darkMode ? DarkTheme.Primary : '#2f343e'};
+          `}
+        >
+          <MenuContainerItem expand={menuOpen}></MenuContainerItem>
+          <ContentItem
+            css={css`
+              min-height: ${FOOTER_HEIGHT};
+              height: ${FOOTER_HEIGHT};
+              display: flex;
+              justify-content: flex-end;
+              align-items: center;
+              span {
+                display: inline-block;
+                font-size: 11px;
+                color: ${darkMode ? DarkTheme.Gray : '#37352f52'};
+                margin: 0 12px;
+                font-weight: 500;
               }
-            }
-          `}>
-            <a target="_blank" href="https://github.com/nickzuber/meteorite/issues">Submit bugs</a>
-            <a target="_blank" href="https://github.com/nickzuber/meteorite/pulls">Make changes</a>
-            <a target="_blank" href="https://github.com/nickzuber/meteorite/issues">Leave feedback</a>
-            <a target="_blank" href="https://github.com/nickzuber/meteorite">See source code</a>
-            <a target="_blank" href="https://twitter.com/nick_zuber">Follow me on twitter</a>
-            <span css={css`margin-right: 76px !important;`}>v{version}</span>
+              a {
+                display: inline-block;
+                text-decoration: underline;
+                font-size: 11px;
+                color: ${darkMode ? DarkTheme.Gray : '#37352f52'};
+                margin: 0 12px;
+                font-weight: 500;
+                cursor: pointer;
+                text-underline-position: under;
+                transition: all 200ms ease;
+                &:hover {
+                  color: ${darkMode ? DarkTheme.Gray + 'aa' : '#37352f52'};
+                }
+              }
+            `}
+          >
+            <a
+              target="_blank"
+              href="https://github.com/nickzuber/meteorite/issues"
+            >
+              Submit bugs
+            </a>
+            <a
+              target="_blank"
+              href="https://github.com/nickzuber/meteorite/pulls"
+            >
+              Make changes
+            </a>
+            <a
+              target="_blank"
+              href="https://github.com/nickzuber/meteorite/issues"
+            >
+              Leave feedback
+            </a>
+            <a target="_blank" href="https://github.com/nickzuber/meteorite">
+              See source code
+            </a>
+            <a target="_blank" href="https://twitter.com/nick_zuber">
+              Follow me on twitter
+            </a>
+            <span
+              css={css`
+                margin-right: 76px !important;
+              `}
+            >
+              v{version}
+            </span>
           </ContentItem>
         </Row>
       </Container>
@@ -1398,7 +1454,7 @@ function Scene ({
   );
 }
 
-function NotificationCollection ({
+function NotificationCollection({
   dark,
   isLastPage,
   page,
@@ -1415,52 +1471,75 @@ function NotificationCollection ({
 }) {
   const props = useSpring({
     opacity: 1,
-    from: { opacity: 0 },
+    from: {opacity: 0}
   });
 
   if (notifications.length === 0) {
-    return (
-      <EmptyState dark={dark} />
-    );
+    return <EmptyState dark={dark} />;
   }
 
   return (
     <animated.tbody style={props} page={page}>
       {notifications.map((item, xid) => {
-        const pinned = item.status === Status.Pinned || item.status === Status.PinnedRead;
+        const pinned =
+          item.status === Status.Pinned || item.status === Status.PinnedRead;
         const name = item.name;
         const {title, tags} = extractJiraTags(name);
 
         return (
-          <div css={css`position: relative;`}>
+          <div
+            css={css`
+              position: relative;
+            `}
+          >
             <AnimatedNotificationRow
               readPinned={item.status === Status.PinnedRead}
               key={notifications.id || xid}
             >
               {/* Type */}
-              <NotificationCell width={60} css={css`@media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) { flex: 50px 0 0; }`}>
-                {getPRIssueIcon({type: item.type, reasons: item.reasons, dark, pinned})}
+              <NotificationCell
+                width={60}
+                css={css`
+                  @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
+                    flex: 50px 0 0;
+                  }
+                `}
+              >
+                {getPRIssueIcon({
+                  type: item.type,
+                  reasons: item.reasons,
+                  dark,
+                  pinned
+                })}
               </NotificationCell>
               {/* Title */}
               <NotificationCell
                 flex={4}
                 onClick={() => {
                   window.open(item.url);
-                  if (item.status === Status.Pinned || item.status === Status.PinnedRead) {
+                  if (
+                    item.status === Status.Pinned ||
+                    item.status === Status.PinnedRead
+                  ) {
                     markAsReadPinned(item.id, item.repository);
                   } else {
                     markAsRead(item.id, item.repository);
                   }
                 }}
-                css={css`font-weight: 500;`}>
-                <NotificationTitle css={css`
-                  display: block;
-                  transition: all 200ms ease;
-                  i {
-                    font-size: 10px;
-                    margin-right: 6px;
-                  }
-                `}>
+                css={css`
+                  font-weight: 500;
+                `}
+              >
+                <NotificationTitle
+                  css={css`
+                    display: block;
+                    transition: all 200ms ease;
+                    i {
+                      font-size: 10px;
+                      margin-right: 6px;
+                    }
+                  `}
+                >
                   {view === View.UNREAD && iconsOfBadges(item.badges)}
                   {tags.map(tag => (
                     <JiraTag key={tag} color={colorOfTag(tag)}>
@@ -1482,16 +1561,15 @@ function NotificationCollection ({
                 onClick={() => window.open(item.repositoryUrl)}
                 css={css`
                   font-weight: 500;
-                  color: #8994A6;
+                  color: #8994a6;
                   padding-left: 20px;
                   @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
                     display: none;
                   }
-              `}>
-                {item.repository.split('/')[1]}
-                <NotificationByline>
-                  {'@' + item.repository.split('/')[0]}
-                </NotificationByline>
+                `}
+              >
+                {'meteorite'}
+                <NotificationByline>{'@nickzuber'}</NotificationByline>
               </NotificationCell>
               {/* Score */}
               <NotificationCell
@@ -1507,16 +1585,19 @@ function NotificationCollection ({
               >
                 {'+' + item.score}
               </NotificationCell>
-              <NotificationCell width={80} css={css`
-                i {
-                  padding: 13px 0;
-                  text-align: center;
-                  width: 40px;
-                }
-                @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
-                  display: none;
-                }
-              `}>
+              <NotificationCell
+                width={80}
+                css={css`
+                  i {
+                    padding: 13px 0;
+                    text-align: center;
+                    width: 40px;
+                  }
+                  @media (max-width: ${WIDTH_FOR_MEDIUM_SCREENS}) {
+                    display: none;
+                  }
+                `}
+              >
                 <ActionItems
                   item={item}
                   view={view}
@@ -1528,16 +1609,17 @@ function NotificationCollection ({
                 />
               </NotificationCell>
             </AnimatedNotificationRow>
-            {(xid === notifications.length - 1) ?
-              (!isLastPage ? (
+            {xid === notifications.length - 1 ? (
+              !isLastPage ? (
                 <>
                   <Connector dot />
                   <Connector dot offsetX={8} opacity={0.8} />
                   <Connector dot offsetX={16} opacity={0.6} />
                 </>
               ) : null
-              ) : <Connector />
-            }
+            ) : (
+              <Connector />
+            )}
           </div>
         );
       })}
@@ -1545,7 +1627,7 @@ function NotificationCollection ({
   );
 }
 
-function ActionItems ({
+function ActionItems({
   item,
   view,
   markAsRead,
@@ -1602,7 +1684,11 @@ function ActionItems ({
               </IconLink>
               <IconLink
                 tooltip="Pin to the top of your queue"
-                css={css`i { transform: rotate(45deg); }`}
+                css={css`
+                  i {
+                    transform: rotate(45deg);
+                  }
+                `}
                 onClick={() => markAsPinned(item.id)}
               >
                 <i className="fas fa-map-pin"></i>
@@ -1645,13 +1731,10 @@ function ActionItems ({
         </>
       );
     default:
-      return null
+      return null;
   }
 }
 
-const enhance = compose(
-  withToastProvider,
-  withToasts
-)
+const enhance = compose(withToastProvider, withToasts);
 
 export default enhance(Scene);
