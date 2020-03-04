@@ -381,9 +381,40 @@ const SearchInput = enhance(
   )
 );
 
+export const FilterItem = enhance(
+  styled('span')(
+    p => `
+      display: block;
+      padding: 12px 16px;
+      font-weight: 500;
+      font-size: 13px;
+      color: ${p.dark ? WHITE : 'inherit'};
+      cursor: pointer;
+      transition: all 200ms ease;
+      text-transform: lowercase;
+
+      &:hover {
+        background: ${p.dark ? '#273947' : '#eff0f2'};
+      }
+
+      p {
+        text-transform: initial;
+        padding: 0;
+        margin: 0;
+        font-weight: 500;
+        margin-top: 4px;
+        font-size: 12px;
+        color: #8893a7cc;
+      }
+    `
+  )
+);
+
 export const Dropdown = enhance(
   styled('div')(
     p => `
+  max-height: 400px;
+  overflow-y: auto;
   background: red;
   width: 388px;
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
@@ -404,6 +435,17 @@ export const Dropdown = enhance(
       : 'rgba(84,70,35,0) 0px 2px 8px, rgba(84,70,35,0.15) 0px 1px 3px'
   };
 
+  &::-webkit-scrollbar {
+    background-color: ${p.dark ? DarkTheme.SecondaryAlt : '#fffefc'};
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: ${p.dark ? DarkTheme.Alpha.Dark : '#bfc5d1ab'};
+    border: 4px solid ${p.dark ? DarkTheme.SecondaryAlt : '#fffefc'};
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-radius: 100px;
+  }
+
   h5 {
     border-top: 1px solid ${p.dark ? DarkTheme.Secondary : '#bfc5d155'};
     margin: 0;
@@ -413,43 +455,6 @@ export const Dropdown = enhance(
     font-size: 12px;
     line-height: 16px;
     color: #8893a7cc;
-  }
-
-  span {
-    display: block;
-    padding: 12px 16px;
-    font-weight: 500;
-    font-size: 13px;
-    color: ${p.dark ? WHITE : 'inherit'};
-    cursor: pointer;
-    transition: all 200ms ease;
-    text-transform: lowercase;
-
-    &:hover {
-      background: ${p.dark ? '#273947' : '#eff0f2'};
-    }
-
-    span {
-      display: inline-block;
-      text-transform: initial;
-      // background: #ffeb3b66;
-      // border-radius: 4px;
-      // padding: 2px 6px;
-      padding: 0;
-      margin: 0;
-      font-weight: 500;
-      margin-left: 4px;
-    }
-
-    p {
-      text-transform: initial;
-      padding: 0;
-      margin: 0;
-      font-weight: 500;
-      margin-top: 4px;
-      font-size: 12px;
-      color: #8893a7cc;
-    }
   }
 `
   )

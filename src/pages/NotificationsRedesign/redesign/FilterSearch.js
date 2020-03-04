@@ -1,11 +1,22 @@
 /** @jsx jsx */
 
 import React from 'react';
+import styled from '@emotion/styled';
 import Typed from 'typed.js';
+import moment from 'moment';
 import {css, jsx} from '@emotion/core';
 import LoadingIcon from '../../../components/LoadingIcon';
-import {colorOfString, extractJiraTags} from './utils';
-import {SearchField, EnhancedSearchInput, Dropdown} from './ui';
+import {colorOfString, colorOfTag, extractJiraTags} from './utils';
+import {
+  withTheme,
+  DarkTheme,
+  WHITE,
+  SearchField,
+  EnhancedSearchInput,
+  Dropdown,
+  FilterItem,
+  JiraTag
+} from './ui';
 
 function TypedSpan({source, toString, options = {}}) {
   const spanRef = React.useRef();
@@ -33,16 +44,20 @@ function TypedSpan({source, toString, options = {}}) {
     return () => typed.current.destroy();
   }, [source]);
 
-  return <span ref={spanRef} />;
-}
-
-// @TODO will be used in main filter as well
-function filterFromQuery({query, items, toString}) {
-  query = query.toLowerCase();
-  return items.filter(item =>
-    toString(item)
-      .toLowerCase()
-      .includes(query)
+  return (
+    <span
+      css={css`
+        display: inline-block;
+        text-transform: initial;
+        padding: 0;
+        margin: 0;
+        font-weight: 500;
+        margin-left: 4px;
+        font-size: 13px;
+        color: inherit;
+      `}
+      ref={spanRef}
+    />
   );
 }
 
@@ -58,18 +73,18 @@ function FilterTagInline({type}) {
   return (
     <span
       css={css`
-        background: ${color}28 !important;
-        color: ${color} !important;
-        padding: 2px 6px !important;
-        border-radius: 4px !important;
-        font-weight: 600 !important;
-        font-size: 12px !important;
-        text-transform: capitalize !important;
-        margin-left: 0 !important;
-        position: absolute !important;
-        left: 40px !important;
-        width: 32px !important;
-        text-align: center !important;
+        background: ${color}28;
+        color: ${color};
+        padding: 2px 4px;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 10px;
+        text-transform: uppercase;
+        margin-left: 0;
+        position: absolute;
+        left: 40px;
+        width: 32px;
+        text-align: center;
       `}
     >
       {type}
@@ -83,20 +98,60 @@ function FilterTag({type}) {
   return (
     <span
       css={css`
-        background: ${color}28 !important;
-        color: ${color} !important;
-        padding: 2px 6px !important;
-        border-radius: 4px !important;
-        font-weight: 600 !important;
-        font-size: 12px !important;
-        text-transform: capitalize !important;
-        margin-left: 0 !important;
+        background: ${color}28;
+        color: ${color};
+        padding: 2px 4px;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 10px;
+        text-transform: uppercase;
+        margin-left: 0;
       `}
     >
       {type}
     </span>
   );
 }
+
+const Suggestion = withTheme(
+  styled('div')(
+    p => `
+    display: block;
+    padding: 12px 16px;
+    font-weight: 500;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 200ms ease;
+
+    &:hover {
+      background: ${p.dark ? '#273947' : '#eff0f2'};
+    }
+`
+  )
+);
+
+const SuggestionTitle = withTheme(
+  styled('p')(
+    p => `
+  display: inline-block;
+  text-transform: initial;
+  padding: 0;
+  margin: 0;
+  font-weight: 500;
+  color: ${p.dark ? WHITE : 'inherit'};
+  font-size: 13px;
+`
+  )
+);
+
+const SuggestionRepo = styled('p')`
+  text-transform: initial;
+  padding: 0;
+  margin: 0;
+  font-weight: 500;
+  font-size: 12px;
+  color: #8893a7cc;
+`;
 
 function validateFilter(filter) {
   const exists = Object.values(SearchFilters).includes(filter);
@@ -121,13 +176,24 @@ function parseTextForFilter(input, currentFilter) {
   };
 }
 
+// @TODO will be used in main filter as well
+function filterFromQuery({query, items, compare}) {
+  query = query.toLowerCase();
+  return items.filter(item => compare(item, query));
+}
+
+// -------------------------------------------------------------------------- //
+
 export function FilterSearch({
   isSearching,
+  activeQuery,
+  dark,
   notifications,
   view,
   loading,
   onSearch
 }) {
+  const downdownRef = React.useRef();
   const searchRef = React.useRef();
   const containerRef = React.useRef();
   const [searchMenuOpened, setSearchMenuOpened] = React.useState(false);
@@ -141,7 +207,7 @@ export function FilterSearch({
     },
     {
       name:
-        'Update innerRef to allow React.createRef and React.forwardRef api usage    ',
+        'Update innerRef to allow React.createRef and React.forwardRef api usage',
       repository: 'robinpowered/glamorous-native',
       score: 78
     },
@@ -153,11 +219,18 @@ export function FilterSearch({
   ]);
 
   React.useEffect(() => {
-    if (notifications.length > 3) {
+    if (notifications.length >= 3) {
       const examples = notifications.slice(0, 5);
       setExampleNotifications(examples);
     }
   }, [view]);
+
+  React.useEffect(() => {
+    if (!activeQuery) {
+      setSearchInput('');
+      setActiveFilter(null);
+    }
+  }, [activeQuery]);
 
   function smartSetSearchInput(input) {
     const {filter, text} = parseTextForFilter(input, activeFilter);
@@ -176,14 +249,23 @@ export function FilterSearch({
   };
   React.useEffect(() => () => clearInterval(timer.current), []);
 
-  // Global event listeners for things like the dropdowns & popups.
   React.useEffect(() => {
     const body = window.document.querySelector('body');
-    const hideSearchFocused = () => setSearchMenuOpened(false);
-    const eventType = 'click'; // isMobile ? 'touchend' : 'click';
-    body.addEventListener(eventType, hideSearchFocused);
-    return () => body.removeEventListener(eventType, hideSearchFocused);
+    const hideSearchFocused = event => {
+      const dropdown = downdownRef.current;
+      if (dropdown && !dropdown.contains(event.target)) {
+        setSearchMenuOpened(false);
+      }
+    };
+    body.addEventListener('click', hideSearchFocused);
+    return () => body.removeEventListener('click', hideSearchFocused);
   }, []);
+
+  function onSuggestionSelect(text) {
+    setSearchInput(text);
+    onSearch(text);
+    setSearchMenuOpened(false);
+  }
 
   return (
     <SearchField innerRef={containerRef}>
@@ -197,7 +279,7 @@ export function FilterSearch({
         onChange={e => smartSetSearchInput(e.target.value)}
         value={searchInput}
         placeholder="Search for notifications"
-        onEnter={onSearch}
+        onEnter={() => onSearch(searchInput)}
         css={css`
           ${activeFilter &&
             `
@@ -207,7 +289,10 @@ export function FilterSearch({
         `}
       />
       <DropdownSection
+        forwardRef={downdownRef}
+        onSuggestionSelect={onSuggestionSelect}
         searchMenuOpened={searchMenuOpened}
+        activeFilter={activeFilter}
         searchInput={searchInput}
         notifications={notifications}
         exampleNotifications={exampleNotifications}
@@ -221,7 +306,7 @@ export function FilterSearch({
             position: 'absolute',
             right: 0,
             transform: 'scale(0.8)',
-            backgroundColor: 'transparent'
+            backgroundColor: dark ? DarkTheme.SecondaryAlt : WHITE
           }}
         />
       )}
@@ -230,7 +315,10 @@ export function FilterSearch({
 }
 
 function DropdownSection({
+  forwardRef,
+  onSuggestionSelect,
   searchMenuOpened,
+  activeFilter,
   searchInput,
   notifications,
   exampleNotifications,
@@ -241,22 +329,73 @@ function DropdownSection({
   }
 
   return (
-    <Dropdown>
+    <Dropdown innerRef={forwardRef}>
       {searchInput !== '' ? (
         // Previews
-        <span>
+        <React.Fragment>
           {filterFromQuery({
             query: searchInput,
             items: notifications,
-            toString: item => item.name
-          }).map(n => (
-            <span>{n.name}</span>
-          ))}
-        </span>
+            compare: (item, query) => {
+              switch (activeFilter) {
+                case SearchFilters.TITLE: {
+                  const words = query.split(' ');
+                  const itemString = item.name.toLowerCase();
+                  return words.every(word => itemString.includes(word));
+                }
+                case SearchFilters.REPO: {
+                  const words = query.split(' ');
+                  const itemString = item.repository.toLowerCase();
+                  return words.every(word => itemString.includes(word));
+                }
+                default:
+                  const words = query.split(' ');
+                  const itemString = `${item.name} ${item.repository}`.toLowerCase();
+                  return words.every(word => itemString.includes(word));
+              }
+            }
+          })
+            .sort((a, b) => moment(b.updated_at).diff(a.updated_at))
+            .slice(0, 10)
+            .map(notification => {
+              const {title, tags} = extractJiraTags(notification.name);
+              return (
+                <Suggestion
+                  onClick={() => {
+                    switch (activeFilter) {
+                      case SearchFilters.TITLE:
+                        return onSuggestionSelect(notification.name);
+                      case SearchFilters.REPO:
+                        return onSuggestionSelect(notification.repository);
+                      default:
+                        return onSuggestionSelect(notification.name);
+                    }
+                  }}
+                >
+                  <SuggestionTitle>
+                    {tags.map(tag => (
+                      <JiraTag
+                        key={tag}
+                        css={css`
+                          padding: 0px 4px;
+                          vertical-align: text-bottom;
+                        `}
+                        color={colorOfTag(tag)}
+                      >
+                        {tag}
+                      </JiraTag>
+                    ))}
+                    {title}
+                  </SuggestionTitle>
+                  <SuggestionRepo>{`@${notification.repository}`}</SuggestionRepo>
+                </Suggestion>
+              );
+            })}
+        </React.Fragment>
       ) : (
         // Filter Suggestion Menu
         <React.Fragment>
-          <span onMouseDown={() => setSearchInput('[title] ')}>
+          <FilterItem onClick={() => setSearchInput('[title] ')}>
             <FilterTag type={SearchFilters.TITLE} />
             <TypedSpan
               source={exampleNotifications}
@@ -270,16 +409,16 @@ function DropdownSection({
               }}
             />
             <p>{'Search for specific titles'}</p>
-          </span>
-          <span onMouseDown={() => setSearchInput('[repo] ')}>
+          </FilterItem>
+          <FilterItem onClick={() => setSearchInput('[repo] ')}>
             <FilterTag type={SearchFilters.REPO} />
             <TypedSpan
               source={exampleNotifications}
               toString={n => n.repository.split('/')[1]}
             />
             <p>{'Search for specific repositories'}</p>
-          </span>
-          <span onMouseDown={() => setSearchInput('[score] ')}>
+          </FilterItem>
+          {/* <FilterItem onClick={() => setSearchInput('[score] ')}>
             <FilterTag type={SearchFilters.SCORE} />
             <TypedSpan
               source={exampleNotifications}
@@ -289,7 +428,7 @@ function DropdownSection({
               }}
             />
             <p>{'Search for specific score ranges'}</p>
-          </span>
+          </FilterItem> */}
           <h5>
             {'Not including a filter will search everything across all fields'}
           </h5>

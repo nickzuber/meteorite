@@ -597,7 +597,7 @@ function Scene({
   onRestoreThread,
   onLogout,
   mode,
-  setMode,
+  allNotifications,
   activeFilter,
   onSetActiveFilter,
   getUserItem,
@@ -764,8 +764,10 @@ function Scene({
             `}
           >
             <FilterSearch
-              notifications={notifications}
+              notifications={allNotifications}
+              activeQuery={query}
               view={view}
+              dark={darkMode}
               loading={loading}
               onSearch={onSearch}
               isSearching={isSearching}
@@ -1216,7 +1218,17 @@ function Scene({
                         `}
                       >
                         {'Showing results for '}
-                        <span>{query}</span>
+                        <span
+                          css={css`
+                            max-width: 250px;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            display: inline-block;
+                          `}
+                        >
+                          {query}
+                        </span>
                       </span>
                       <IconLink
                         onClick={!loading ? () => onClearQuery() : undefined}
