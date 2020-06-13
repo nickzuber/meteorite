@@ -30,7 +30,8 @@ export const forMobile = rules => `
 const DefaultContainer = styled('div')`
   overflow-x: hidden;
   * {
-    font-family: medium-content-sans-serif-font, "Inter UI", system-ui, sans-serif;
+    font-family: medium-content-sans-serif-font, 'Inter UI', system-ui,
+      sans-serif;
     font-size: 15px;
   }
 `;
@@ -39,7 +40,7 @@ const Container = styled('div')`
   position: relative;
   box-sizing: border-box;
   display: flex;
-  flex-direction: ${p => p.column ? 'column' : 'row'};
+  flex-direction: ${p => (p.column ? 'column' : 'row')};
   max-width: 1080px;
   min-height: 100px;
   margin: 0 auto;
@@ -55,7 +56,7 @@ const Container = styled('div')`
 `;
 
 const FlexItem = styled('div')`
-  flex: ${(({flex = 1}) => flex)};
+  flex: ${({flex = 1}) => flex};
   align-items: center;
   display: flex;
   flex-wrap: wrap;
@@ -151,7 +152,8 @@ const MainButton = styled(Button)`
 
 const LogoTitle = styled('span')`
   display: inline-block;
-  font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
+  font-family: medium-marketing-display-font, Georgia, Cambria, Times New Roman,
+    Times, serif;
   color: #333333;
   font-size: 22px;
   font-weight: 800;
@@ -165,19 +167,22 @@ const LogoTitle = styled('span')`
 `;
 
 const LogoSection = () => (
-  <div onClick={() => navigate(routes.HOME)} css={css`
-    display: inline-flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 125px;
-    ${forMobile(`
+  <div
+    onClick={() => navigate(routes.HOME)}
+    css={css`
+      display: inline-flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 125px;
+      ${forMobile(`
       width: 36px;
     `)}
-    div {
-      display: inline-block;
-      margin-right: 8px;
-    }
-  `}>
+      div {
+        display: inline-block;
+        margin-right: 8px;
+      }
+    `}
+  >
     <Logo white size={26} style={{filter: 'invert(0.8)'}} />
     <LogoTitle>Meteorite</LogoTitle>
   </div>
@@ -195,7 +200,8 @@ const Title = styled('h1')`
   font-size: 38px;
   line-height: 38px;
   margin: 0 auto 12px;
-  font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
+  font-family: medium-marketing-display-font, Georgia, Cambria, Times New Roman,
+    Times, serif;
   font-weight: 500;
   text-align: center;
 `;
@@ -210,18 +216,18 @@ const GroupedLinks = styled(`div`)`
     position: relative;
     display: inline-block;
     padding: 0.75rem 2.25rem;
-    border: 1px solid #EAEDF3;
+    border: 1px solid #eaedf3;
     margin-left: -1px;
     margin-top: 8px;
     transition: all 75ms ease-in-out;
   }
 
   a:hover {
-    background-color: #EAEDF366;
+    background-color: #eaedf366;
   }
 
   a:active {
-    background-color: #EAEDF3;
+    background-color: #eaedf3;
   }
 
   a:first-of-type {
@@ -240,36 +246,46 @@ const FooterSubtleText = styled('p')`
   color: #6c757d;
 `;
 
-export function BasicPageWrapper ({loggedIn, onLogout, children}) {
+export function BasicPageWrapper({loggedIn, onLogout, children}) {
   return (
     <DefaultContainer>
       {/* Header */}
       <Container>
-        <FlexItem css={css`
-          align-items: center;
-          display: flex;
-          justify-content: space-between;
-        `}>
+        <FlexItem
+          css={css`
+            align-items: center;
+            display: flex;
+            justify-content: space-between;
+          `}
+        >
           <LogoSection />
           {loggedIn ? (
             <LoginContainer>
               <Button to={routes.GUIDE}>{'Guide'}</Button>
               <Button to={routes.PRICING}>{'Pricing'}</Button>
-              <Button to={routes.NOTIFICATIONS} css={css`
-                &::after {
-                  content: "";
-                  position: absolute;
-                  background: #E91E63;
-                  top: 6px;
-                  right: 6px;
-                  height: 8px;
-                  width: 8px;
-                  border-radius: 100%;
-                  ${forMobile(`
+              <Button
+                to={routes.NOTIFICATIONS}
+                css={css`
+                  &::after {
+                    content: '';
+                    position: absolute;
+                    background: #e91e63;
+                    top: 6px;
+                    right: 6px;
+                    height: 8px;
+                    width: 8px;
+                    border-radius: 100%;
+                    ${forMobile(`
                     right: -1px;
                   `)}
-                }`}>{'Notifications'}</Button>
-              <ButtonLink href="#" onClick={onLogout}>{'Logout'}</ButtonLink>
+                  }
+                `}
+              >
+                {'Notifications'}
+              </Button>
+              <ButtonLink href="#" onClick={onLogout}>
+                {'Logout'}
+              </ButtonLink>
             </LoginContainer>
           ) : (
             <LoginContainer>
@@ -285,17 +301,44 @@ export function BasicPageWrapper ({loggedIn, onLogout, children}) {
 
       {/* Footer */}
       <Container column>
-        <Logo white size={42} style={{filter: 'invert(0.8)', margin: '0 auto'}} />
-        <Title css={css`font-size: 26px; margin: 12px auto;`}>{'Manage your notifications.'}</Title>
+        <Logo
+          white
+          size={42}
+          style={{filter: 'invert(0.8)', margin: '0 auto'}}
+        />
+        <Title
+          css={css`
+            font-size: 26px;
+            margin: 12px auto;
+          `}
+        >
+          {'Manage your notifications.'}
+        </Title>
         <FlexBreak height={20} />
         <GroupedLinks>
-          <a target="_blank" href="https://donorbox.org/meteorite">Donate</a>
-          <a target="_blank" href="https://github.com/nickzuber/meteorite/issues">Feedback</a>
-          <a target="_blank" href="https://github.com/nickzuber/meteorite/commits/master">Changelog</a>
+          <a target="_blank" href="https://donorbox.org/meteorite">
+            Donate
+          </a>
+          <a
+            target="_blank"
+            href="https://github.com/nickzuber/meteorite/issues"
+          >
+            Feedback
+          </a>
+          <a
+            target="_blank"
+            href="https://github.com/nickzuber/meteorite/commits/master"
+          >
+            Changelog
+          </a>
         </GroupedLinks>
         <GroupedLinks>
-          <a target="_blank" href="https://github.com/nickzuber/meteorite">GitHub</a>
-          <a target="_blank" href="https://twitter.com/nick_zuber">Twitter</a>
+          <a target="_blank" href="https://github.com/nickzuber/meteorite">
+            GitHub
+          </a>
+          <a target="_blank" href="https://twitter.com/nick_zuber">
+            Twitter
+          </a>
         </GroupedLinks>
         <FlexBreak height={20} />
         <FooterSubtleText>
@@ -304,4 +347,4 @@ export function BasicPageWrapper ({loggedIn, onLogout, children}) {
       </Container>
     </DefaultContainer>
   );
-};
+}

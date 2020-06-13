@@ -139,24 +139,27 @@ const Snack = ({
     onDismiss();
   }
 
-  React.useEffect(() => {
-    const stop = () => clearInterval(timer.current);
-    if (paused) return stop();
-    if (completed) return stop();
-    if (!focused) return stop();
-    if (countdown <= 0) {
-      setCompleted(true);
-      return stop();
-    }
-
-    timer.current = setTimeout(() => {
-      setCountdown(countdown => (countdown -= interval));
+  React.useEffect(
+    () => {
+      const stop = () => clearInterval(timer.current);
+      if (paused) return stop();
+      if (completed) return stop();
+      if (!focused) return stop();
       if (countdown <= 0) {
         setCompleted(true);
+        return stop();
       }
-    }, interval);
-    return () => clearInterval(timer.current);
-  }, [focused, paused, countdown, completed]);
+
+      timer.current = setTimeout(() => {
+        setCountdown(countdown => (countdown -= interval));
+        if (countdown <= 0) {
+          setCompleted(true);
+        }
+      }, interval);
+      return () => clearInterval(timer.current);
+    },
+    [focused, paused, countdown, completed]
+  );
 
   return (
     <div
@@ -207,9 +210,9 @@ const Snack = ({
         `}
       >
         {action === 'read' ? (
-          <i className="fas fa-check"></i>
+          <i className="fas fa-check" />
         ) : (
-          <i className="fas fa-times"></i>
+          <i className="fas fa-times" />
         )}
         <div
           css={css`
@@ -376,7 +379,7 @@ function SortingItem({
           transform: ${descending ? 'rotate(180deg)' : 'rotate(0deg)'};
         `}
         className="fas fa-caret-up"
-      ></i>
+      />
     </SortingItemComponent>
   );
 }
@@ -714,22 +717,31 @@ function Scene({
   }, []);
 
   // Updating the counts when new stats come in.
-  React.useEffect(() => {
-    setCounts({
-      cur: readTodayCount,
-      prev: readTodayLastWeekCount
-    });
-  }, [readTodayCount, readTodayLastWeekCount]);
+  React.useEffect(
+    () => {
+      setCounts({
+        cur: readTodayCount,
+        prev: readTodayLastWeekCount
+      });
+    },
+    [readTodayCount, readTodayLastWeekCount]
+  );
 
   // Updating the fun fact only when the view changes.
-  React.useEffect(() => {
-    setFact(getFact());
-  }, [view]);
+  React.useEffect(
+    () => {
+      setFact(getFact());
+    },
+    [view]
+  );
 
   // Save the user's dark mode preference.
-  React.useEffect(() => {
-    setUserItem('dark-mode-enabled', darkMode);
-  }, [darkMode]);
+  React.useEffect(
+    () => {
+      setUserItem('dark-mode-enabled', darkMode);
+    },
+    [darkMode]
+  );
 
   return (
     <ThemeContext.Provider value={darkMode}>
@@ -754,7 +766,7 @@ function Scene({
               open={menuOpen}
             >
               <span>{'Menu'}</span>
-              <i className="fas fa-bars"></i>
+              <i className="fas fa-bars" />
             </MenuIconItem>
           </MenuHeaderItem>
           <ContentHeaderItem
@@ -819,7 +831,7 @@ function Scene({
               tooltipOffsetY={-46}
             >
               <span>{titleOfFilter(Filters.PARTICIPATING)}</span>
-              <i className="fas fa-leaf"></i>
+              <i className="fas fa-leaf" />
             </MenuIconItem>
             <MenuIconItem
               mode={Filters.REVIEW_REQUESTED}
@@ -833,7 +845,7 @@ function Scene({
               tooltipOffsetY={-46}
             >
               <span>{titleOfFilter(Filters.REVIEW_REQUESTED)}</span>
-              <i className="fas fa-eye"></i>
+              <i className="fas fa-eye" />
             </MenuIconItem>
             <MenuIconItem
               mode={Filters.ASSIGNED}
@@ -847,7 +859,7 @@ function Scene({
               tooltipOffsetY={-46}
             >
               <span>{titleOfFilter(Filters.ASSIGNED)}</span>
-              <i className="fas fa-tags"></i>
+              <i className="fas fa-tags" />
             </MenuIconItem>
             <MenuIconItem
               mode={Filters.COMMENT}
@@ -861,7 +873,7 @@ function Scene({
               tooltipOffsetY={-46}
             >
               <span>{titleOfFilter(Filters.COMMENT)}</span>
-              <i className="fas fa-comments"></i>
+              <i className="fas fa-comments" />
             </MenuIconItem>
           </MenuContainerItem>
           <ContentItem>
@@ -951,9 +963,9 @@ function Scene({
                       } notifications`}
                     >
                       {hasNotificationsOn ? (
-                        <i className="fas fa-bell"></i>
+                        <i className="fas fa-bell" />
                       ) : (
-                        <i className="fas fa-bell-slash"></i>
+                        <i className="fas fa-bell-slash" />
                       )}
                     </IconLink>
                   </optimized.li>
@@ -972,7 +984,7 @@ function Scene({
                     <IconLink
                       tooltip={`${darkMode ? 'Disable' : 'Enable'} dark mode`}
                     >
-                      <i className="fas fa-moon"></i>
+                      <i className="fas fa-moon" />
                     </IconLink>
                   </optimized.li>
                   <optimized.li>
@@ -980,7 +992,7 @@ function Scene({
                       tooltip="View more options"
                       onClick={() => setDropdownOpen(true)}
                     >
-                      <i className="fas fa-ellipsis-v"></i>
+                      <i className="fas fa-ellipsis-v" />
                     </IconLink>
                     <InteractionMenu show={dropdownOpen}>
                       <Card
@@ -1100,8 +1112,8 @@ function Scene({
                         background: ${view === View.UNREAD
                           ? ThemeColor(darkMode)
                           : darkMode
-                          ? DarkTheme.Gray
-                          : '#bfc5d1'};
+                            ? DarkTheme.Gray
+                            : '#bfc5d1'};
                         color: ${WHITE};
                         transition: background 200ms ease;
                         font-size: 9px;
@@ -1133,8 +1145,8 @@ function Scene({
                         background: ${view === View.READ
                           ? ThemeColor(darkMode)
                           : darkMode
-                          ? DarkTheme.Gray
-                          : '#bfc5d1'};
+                            ? DarkTheme.Gray
+                            : '#bfc5d1'};
                         color: ${WHITE};
                         transition: background 200ms ease;
                         font-size: 9px;
@@ -1166,8 +1178,8 @@ function Scene({
                         background: ${view === View.ARCHIVED
                           ? ThemeColor(darkMode)
                           : darkMode
-                          ? DarkTheme.Gray
-                          : '#bfc5d1'};
+                            ? DarkTheme.Gray
+                            : '#bfc5d1'};
                         color: ${WHITE};
                         transition: background 200ms ease;
                         font-size: 9px;
@@ -1233,7 +1245,7 @@ function Scene({
                       <IconLink
                         onClick={!loading ? () => onClearQuery() : undefined}
                       >
-                        <i className="fas fa-times"></i>
+                        <i className="fas fa-times" />
                       </IconLink>
                       <Divider />
                     </>
@@ -1251,7 +1263,7 @@ function Scene({
                         : undefined
                     }
                   >
-                    <i className="fas fa-chevron-left"></i>
+                    <i className="fas fa-chevron-left" />
                   </IconLink>
                   <IconLink
                     css={css`
@@ -1266,7 +1278,7 @@ function Scene({
                         : undefined
                     }
                   >
-                    <i className="fas fa-chevron-right"></i>
+                    <i className="fas fa-chevron-right" />
                   </IconLink>
                 </div>
               </PageSelection>
@@ -1397,7 +1409,7 @@ function Scene({
             background: ${darkMode ? DarkTheme.Primary : '#2f343e'};
           `}
         >
-          <MenuContainerItem expand={menuOpen}></MenuContainerItem>
+          <MenuContainerItem expand={menuOpen} />
           <ContentItem
             css={css`
               min-height: ${FOOTER_HEIGHT};
@@ -1562,7 +1574,7 @@ function NotificationCollection({
                 </NotificationTitle>
                 {/* Byline */}
                 <NotificationByline>
-                  {item.isAuthor && <i className="fas fa-user-circle"></i>}
+                  {item.isAuthor && <i className="fas fa-user-circle" />}
                   {getMessageFromReasons(item.reasons, item.type)}
                   {` ${getRelativeTime(item.updated_at).toLowerCase()}`}
                 </NotificationByline>
@@ -1580,8 +1592,10 @@ function NotificationCollection({
                   }
                 `}
               >
-                {'meteorite'}
-                <NotificationByline>{'@nickzuber'}</NotificationByline>
+                {item.repository.split('/')[1]}
+                <NotificationByline>
+                  {'@' + item.repository.split('/')[0]}
+                </NotificationByline>
               </NotificationCell>
               {/* Score */}
               <NotificationCell
@@ -1658,13 +1672,13 @@ function ActionItems({
                 tooltip="Mark as read"
                 onClick={() => markAsReadPinned(item.id, item.repository)}
               >
-                <i className="fas fa-check"></i>
+                <i className="fas fa-check" />
               </IconLink>
               <IconLink
                 tooltip="Unpin notification"
                 onClick={() => markAsUnread(item.id)}
               >
-                <i className="fas fa-map-pin"></i>
+                <i className="fas fa-map-pin" />
               </IconLink>
             </>
           );
@@ -1675,13 +1689,13 @@ function ActionItems({
                 tooltip="Mark as unread"
                 onClick={() => markAsPinned(item.id, item.repository)}
               >
-                <i className="fas fa-undo"></i>
+                <i className="fas fa-undo" />
               </IconLink>
               <IconLink
                 tooltip="Unpin notification"
                 onClick={() => markAsRead(item.id, item.repository)}
               >
-                <i className="fas fa-map-pin"></i>
+                <i className="fas fa-map-pin" />
               </IconLink>
             </>
           );
@@ -1692,7 +1706,7 @@ function ActionItems({
                 tooltip="Mark as read"
                 onClick={() => markAsRead(item.id, item.repository)}
               >
-                <i className="fas fa-check"></i>
+                <i className="fas fa-check" />
               </IconLink>
               <IconLink
                 tooltip="Pin to the top of your queue"
@@ -1703,7 +1717,7 @@ function ActionItems({
                 `}
                 onClick={() => markAsPinned(item.id)}
               >
-                <i className="fas fa-map-pin"></i>
+                <i className="fas fa-map-pin" />
               </IconLink>
             </>
           );
@@ -1715,13 +1729,13 @@ function ActionItems({
             tooltip="Mark as unread"
             onClick={() => markAsUnread(item.id)}
           >
-            <i className="fas fa-undo"></i>
+            <i className="fas fa-undo" />
           </IconLink>
           <IconLink
             tooltip="Mark as archived"
             onClick={() => markAsArchived(item.id, item.repository)}
           >
-            <i className="fas fa-times"></i>
+            <i className="fas fa-times" />
           </IconLink>
         </>
       );
@@ -1732,13 +1746,13 @@ function ActionItems({
             tooltip="Mark as read"
             onClick={() => markAsUnread(item.id)}
           >
-            <i className="fas fa-undo"></i>
+            <i className="fas fa-undo" />
           </IconLink>
           <IconLink
             tooltip="Mark as unread"
             onClick={() => markAsRead(item.id, item.repository)}
           >
-            <i className="fas fa-check"></i>
+            <i className="fas fa-check" />
           </IconLink>
         </>
       );
@@ -1747,6 +1761,9 @@ function ActionItems({
   }
 }
 
-const enhance = compose(withToastProvider, withToasts);
+const enhance = compose(
+  withToastProvider,
+  withToasts
+);
 
 export default enhance(Scene);

@@ -5,11 +5,7 @@ import styled from '@emotion/styled';
 import {css, jsx} from '@emotion/core';
 import {Link as RouterLink} from '@reach/router';
 import {routes} from '../../constants';
-import {
-  BasicPageWrapper,
-  forSmallScreens,
-  forMobile
-} from '../common';
+import {BasicPageWrapper, forSmallScreens, forMobile} from '../common';
 
 import ItemPng from '../../images/screenshots/item.png';
 import ItemTwoPng from '../../images/screenshots/item-2.png';
@@ -21,13 +17,17 @@ const themeColor = '#27B768';
 const ALT_BACKGROUND_COLOR = '#f6f2ed';
 
 const ProductHuntButton = () => (
-  <a href="https://www.producthunt.com/posts/meteorite?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-meteorite" target="_blank">
+  <a
+    href="https://www.producthunt.com/posts/meteorite?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-meteorite"
+    target="_blank"
+  >
     <img
       src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=145651&theme=dark"
       alt="Meteorite - Smarter GitHub notifications. | Product Hunt Embed"
       style={{width: 200, height: 43}}
       width="200px"
-      height="43px" />
+      height="43px"
+    />
   </a>
 );
 
@@ -35,7 +35,7 @@ const Container = styled('div')`
   position: relative;
   box-sizing: border-box;
   display: flex;
-  flex-direction: ${p => p.column ? 'column' : 'row'};
+  flex-direction: ${p => (p.column ? 'column' : 'row')};
   max-width: 1080px;
   min-height: 100px;
   margin: 0 auto;
@@ -61,7 +61,7 @@ const LightContainer = styled(Container)`
 `;
 
 const FlexItem = styled('div')`
-  flex: ${(({flex = 1}) => flex)};
+  flex: ${({flex = 1}) => flex};
   align-items: center;
   display: flex;
   flex-wrap: wrap;
@@ -88,8 +88,11 @@ const Button = styled(RouterLink)`
   font-size: 18px;
   line-height: 1.75;
   border-radius: 5px;
-  -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  -webkit-transition: color 0.15s ease-in-out,
+    background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 
   &:hover {
     background-color: #f4f4f4;
@@ -135,7 +138,8 @@ const HeroTitle = styled('h1')`
   font-size: 68px;
   line-height: 68px;
   margin: 0 auto 6px 0;
-  font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
+  font-family: medium-marketing-display-font, Georgia, Cambria, Times New Roman,
+    Times, serif;
   font-weight: 500;
 
   ${forMobile(`
@@ -166,7 +170,8 @@ const Title = styled('h1')`
   font-size: 38px;
   line-height: 38px;
   margin: 0 auto 12px;
-  font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
+  font-family: medium-marketing-display-font, Georgia, Cambria, Times New Roman,
+    Times, serif;
   font-weight: 500;
   text-align: center;
 `;
@@ -234,7 +239,8 @@ const PricingContainer = styled('div')`
     margin: -2px 0 0;
     font-size: 20px;
     color: #26b768;
-    font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
+    font-family: medium-marketing-display-font, Georgia, Cambria,
+      Times New Roman, Times, serif;
   }
 
   p {
@@ -245,14 +251,16 @@ const PricingContainer = styled('div')`
   }
 `;
 
-const Price = styled(Title)(p => `
+const Price = styled(Title)(
+  p => `
   font-size: ${p.crossed ? 32 : 52}px;
   line-height: ${p.crossed ? 32 : 54}px;
   text-decoration: ${p.crossed ? 'line-through' : 'unset'};
   display: inline-block;
   margin-right: 8px;
   text-align: left;
-`);
+`
+);
 
 const Badge = styled('span')`
   font-size: 14px;
@@ -271,7 +279,7 @@ const FloatingLinkBox = styled('div')`
   background: rgb(255, 254, 253);
   flex: 1;
   position: relative;
-  box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
   border-radius: 4px;
   padding: 16px 24px;
   margin: 0 24px 0 0;
@@ -295,14 +303,14 @@ const FloatingLinkBox = styled('div')`
   a {
     text-decoration: none;
     font-size: 16px;
-    color: #00A0F5;
+    color: #00a0f5;
     transition: all 200ms ease;
   }
   a:hover {
     color: #0886c9;
   }
   a::after {
-    content: " →"
+    content: ' →';
   }
 `;
 
@@ -331,7 +339,8 @@ const FAQItem = styled('div')`
     justify-content: center;
     line-height: 25px;
     margin: 18px 0 8px;
-    font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
+    font-family: medium-marketing-display-font, Georgia, Cambria,
+      Times New Roman, Times, serif;
     font-weight: 600;
     letter-spacing: 0.7px;
   }
@@ -351,20 +360,26 @@ const FAQItem = styled('div')`
   }
 `;
 
-export default function Scene (props) {
+export default function Scene(props) {
   return (
     <BasicPageWrapper {...props}>
       {/* Pricing */}
-      <Container css={css`
-        ${forMobile(`
+      <Container
+        css={css`
+          ${forMobile(`
           flex-direction: column;
         `)}
-      `}>
+        `}
+      >
         <HeroLeft>
           <HeroTitle>
-            {'Simple pricing.'}<br />
-            {'Great value.'}</HeroTitle>
-          <HeroSubtitle>{'Get started for absolutely free. No trials needed.'}</HeroSubtitle>
+            {'Simple pricing.'}
+            <br />
+            {'Great value.'}
+          </HeroTitle>
+          <HeroSubtitle>
+            {'Get started for absolutely free. No trials needed.'}
+          </HeroSubtitle>
           <FlexBreak />
         </HeroLeft>
         <HeroRight>
@@ -372,72 +387,135 @@ export default function Scene (props) {
             <Price>{'$0/mo'}</Price>
             <Badge>{'Great deal'}</Badge>
             <h4>{'Unlimited everything'}</h4>
-            <p>{'A simple and better way to manage GitHub notifications for more \
-                engineers who want to be more productive.'}</p>
+            <p>
+              {
+                'A simple and better way to manage GitHub notifications for more \
+                engineers who want to be more productive.'
+              }
+            </p>
           </PricingContainer>
         </HeroRight>
       </Container>
 
-      <Container css={css`${forMobile(`flex-direction: column;`)}`}>
+      <Container
+        css={css`
+          ${forMobile(`flex-direction: column;`)}
+        `}
+      >
         <FloatingLinkBox>
           <h4>{'Pay what you want.'}</h4>
           <p>{'Donate to the engineers working on this project.'}</p>
-          <a target="_blank" href="https://donorbox.org/meteorite">{'Visit now'}</a>
+          <a target="_blank" href="https://donorbox.org/meteorite">
+            {'Visit now'}
+          </a>
         </FloatingLinkBox>
         <FloatingLinkBox>
           <h4>{'Want to contribute?'}</h4>
           <p>{'All of the code is open sourced and free to edit.'}</p>
-          <a target="_blank" href="https://github.com/nickzuber/meteorite">{'Check it out'}</a>
+          <a target="_blank" href="https://github.com/nickzuber/meteorite">
+            {'Check it out'}
+          </a>
         </FloatingLinkBox>
       </Container>
 
       {/* FAQ */}
       <Container column>
-        <LeftTitle css={css`padding-left: 12px;`}>{'Still have questions?'}</LeftTitle>
-        <LeftSubtitle css={css`padding-left: 12px;`}>{'Here are some commonly asked questions.'}</LeftSubtitle>
+        <LeftTitle
+          css={css`
+            padding-left: 12px;
+          `}
+        >
+          {'Still have questions?'}
+        </LeftTitle>
+        <LeftSubtitle
+          css={css`
+            padding-left: 12px;
+          `}
+        >
+          {'Here are some commonly asked questions.'}
+        </LeftSubtitle>
 
         <LightContainer column>
           <HorizontalFlexContainer>
             <FAQItem>
               <h3>{'What exactly is Meteorite?'}</h3>
-              <p>{'Meteorite is an app designed around prioritizing and organizing your \
+              <p>
+                {
+                  'Meteorite is an app designed around prioritizing and organizing your \
                    GitHub notifications. It has a variety of features to help keep you \
                    focused on the notifications that matter to you, and see the most important \
-                   updates at the top of your list by keeping track of the thread context.'}</p>
-              <p>{'Basically, Meteorite is the GitHub notifications of your dreams.'}</p>
+                   updates at the top of your list by keeping track of the thread context.'
+                }
+              </p>
+              <p>
+                {
+                  'Basically, Meteorite is the GitHub notifications of your dreams.'
+                }
+              </p>
             </FAQItem>
             <FAQItem>
               <h3>{'Why does this exist?'}</h3>
-              <p>{'GitHub notifications right now can be chaotic and noisy, which end up\
+              <p>
+                {
+                  'GitHub notifications right now can be chaotic and noisy, which end up\
                    making them pretty useless. Meteorite solves this problem by filtering, \
-                   sorting, and adding context to the notifications you would normally get.'}</p>
-              <p>{'This project originated from me personally getting sick and tired of the current\
-                   GitHub notifications system, so I took a crack and making it better.'}</p>
+                   sorting, and adding context to the notifications you would normally get.'
+                }
+              </p>
+              <p>
+                {
+                  'This project originated from me personally getting sick and tired of the current\
+                   GitHub notifications system, so I took a crack and making it better.'
+                }
+              </p>
             </FAQItem>
             <FAQItem>
               <h3>{'Can I try it for free?'}</h3>
-              <p>{'Absolutely – Meteorite is completely free and open source.'}</p>
+              <p>
+                {'Absolutely – Meteorite is completely free and open source.'}
+              </p>
             </FAQItem>
             <FAQItem>
               <h3>{'Can I host an instance of Meteorite myself?'}</h3>
-              <p>{'Sure – feel free to fork/contribute/self-host anything with this project. Since this project\
-                  is completely serverless, you can host your own instance for free using platforms like '}
-                  <a href="https://zeit.co/">{'Zeit'}</a>{', '}<a href="https://surge.sh/">{'Surge'}</a>{', \
-                  or anything in between.'}</p>
+              <p>
+                {
+                  'Sure – feel free to fork/contribute/self-host anything with this project. Since this project\
+                  is completely serverless, you can host your own instance for free using platforms like '
+                }
+                <a href="https://zeit.co/">{'Zeit'}</a>
+                {', '}
+                <a href="https://surge.sh/">{'Surge'}</a>
+                {', \
+                  or anything in between.'}
+              </p>
             </FAQItem>
             <FAQItem>
               <h3>{'I like this project. How can I contribute?'}</h3>
-              <p>{'You can contribute by submitting bug reports, feature requests, code that implements any \
-                  of those things, or you can help by '}<a href="https://donorbox.org/meteorite">{'donating'}</a>{' to the project itself.'}</p>
+              <p>
+                {
+                  'You can contribute by submitting bug reports, feature requests, code that implements any \
+                  of those things, or you can help by '
+                }
+                <a href="https://donorbox.org/meteorite">{'donating'}</a>
+                {' to the project itself.'}
+              </p>
             </FAQItem>
             <FAQItem>
               <h3>{'Where can I ask more questions?'}</h3>
-              <p>{'You can either personally reach out to me on '}<a href="https://twitter.com/nick_zuber">{'Twitter'}</a>{' or \
-                   leave your question on the official '}<a href="https://github.com/nickzuber/meteorite">{'GitHub repository'}</a>{' as an issue.'}</p>
+              <p>
+                {'You can either personally reach out to me on '}
+                <a href="https://twitter.com/nick_zuber">{'Twitter'}</a>
+                {' or \
+                   leave your question on the official '}
+                <a href="https://github.com/nickzuber/meteorite">
+                  {'GitHub repository'}
+                </a>
+                {' as an issue.'}
+              </p>
             </FAQItem>
           </HorizontalFlexContainer>
         </LightContainer>
       </Container>
     </BasicPageWrapper>
   );
-};
+}
