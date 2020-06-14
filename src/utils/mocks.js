@@ -10,11 +10,11 @@ function* createCounterGenerator () {
 const uidGen = createCounterGenerator();
 const indexGen = createCounterGenerator();
 
-const getMockReasons = n => {
+const getMockReasons = (n, ra) => {
   const reasons = Object.values(Reasons);
   const len = reasons.length;
   return new Array(n).fill(0).map(_ => ({
-    reason: reasons[Math.floor(Math.random() * len)],
+    reason: reasons[Math.floor(ra * len)],
     time: moment().format()
   }));
 };
@@ -32,24 +32,25 @@ function getMockName (index) {
   return names[index % names.length];
 }
 
-const getMockNotification = randomNumber => ({
+const getMockNotification = (ra, rb, rc) => ({
   id: uidGen.next().value,
-  updated_at: moment().subtract(randomNumber * 500, 'minutes').utc().format(),
-  isAuthor: randomNumber < 0.2,
-  status: randomNumber < 0.4 ? Status.QUEUED : randomNumber < 0.6 ? Status.STAGED : Status.CLOSED,
-  reasons: getMockReasons(Math.ceil(randomNumber * 10)),
-  type: ['PullRequest', 'Issue'][Math.floor(randomNumber * 2)],
+  updated_at: moment().subtract(ra * 500, 'minutes').utc().format(),
+  isAuthor: ra < 0.2,
+  status: ra < 0.4 ? Status.Unread : rb < 0.6 ? Status.Read : Status.Archived,
+  reasons: getMockReasons(Math.ceil(rb * 10), ra),
+  type: ['PullRequest', 'Issue'][rc > .7 ? 1 : 0],
   name: getMockName(indexGen.next().value),
   url: 'https://github.com/test/repo/pull',
-  repository: ['BuckleScript/bucklescript', 'nickzuber/meteorite'][Math.floor(randomNumber * 2)],
-  number: Math.ceil(randomNumber * 1000),
+  repository: ['BuckleScript/bucklescript', 'nickzuber/meteorite'][Math.floor(rb * 2)],
+  number: Math.ceil(rc * 1000),
   repositoryUrl: 'https://github.com/test/repo',
 });
 
 export function createMockNotifications (n = 50) {
   const mockNotifications = new Array(n);
   for (let i = 0; i < mockNotifications.length; i++) {
-    mockNotifications[i] = getMockNotification(Math.random());
+    let a = Math.random(), b = Math.random(), c = Math.random();
+    mockNotifications[i] = getMockNotification(a, b, c);
   }
   return mockNotifications;
 }

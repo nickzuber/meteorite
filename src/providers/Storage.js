@@ -107,6 +107,7 @@ class StorageProvider extends React.Component {
 
     this.setState({ notifications });
 
+    // Faux notifications for sample screenshots.
     // const mockNotifications = createMockNotifications(20);
     // this.setState({ notifications: mockNotifications });
   }
