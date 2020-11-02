@@ -1,35 +1,36 @@
 import React from 'react';
-import { withCookiesProvider } from './Cookies';
-import { OAUTH_TOKEN_COOKIE } from '../constants/cookies';
+import {withCookiesProvider} from './Cookies';
+import {OAUTH_TOKEN_COOKIE} from '../constants/cookies';
 
 const {Provider, Consumer} = React.createContext();
 
 class AuthProvider extends React.Component {
   state = {
-    token: (
+    token:
       this.props.cookiesApi.getCookie(OAUTH_TOKEN_COOKIE) ||
       (process.localEnv.NODE_ENV === 'local'
         ? process.localEnv.OAUTH_TOKEN
         : undefined)
-    )
-  }
+  };
 
   setToken = token => {
     this.props.cookiesApi.setCookie(OAUTH_TOKEN_COOKIE, token);
-    this.setState({ token });
-  }
+    this.setState({token});
+  };
 
   invalidateToken = () => {
-    this.setState({ token: null });
-  }
+    this.setState({token: null});
+  };
 
-  render () {
+  render() {
     return (
-      <Provider value={{
-        token: this.state.token,
-        setToken: this.setToken,
-        invalidateToken: this.invalidateToken
-      }}>
+      <Provider
+        value={{
+          token: this.state.token,
+          setToken: this.setToken,
+          invalidateToken: this.invalidateToken
+        }}
+      >
         {this.props.children}
       </Provider>
     );

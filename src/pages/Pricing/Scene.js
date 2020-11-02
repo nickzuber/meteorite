@@ -44,20 +44,18 @@ const Container = styled('div')`
   ${forSmallScreens(`
     padding-left: 2.5rem;
     padding-right: 2.5rem;
-  `)}
-  ${forMobile(`
+  `)} ${forMobile(`
     margin-bottom: 2.5rem;
-  `)}
+  `)};
 `;
 
 const LightContainer = styled(Container)`
   ${forSmallScreens(`
     padding-left: 0;
     padding-right: 0;
-  `)}
-  ${forMobile(`
+  `)} ${forMobile(`
     margin-bottom: 2.5rem;
-  `)}
+  `)};
 `;
 
 const FlexItem = styled('div')`
@@ -146,7 +144,7 @@ const HeroTitle = styled('h1')`
     font-size: 46px;
     line-height: 54px;
     margin: 0 auto 6px;
-  `)}
+  `)};
 `;
 
 const HeroSubtitle = styled('h1')`
@@ -163,7 +161,7 @@ const HeroSubtitle = styled('h1')`
     margin: 0 auto 32px;
     font-size: 20px;
     line-height: 24px;
-  `)}
+  `)};
 `;
 
 const Title = styled('h1')`
@@ -209,7 +207,7 @@ const HeroLeft = styled(FlexItem)`
     margin: 0 auto;
     width: 100%;
     text-align: center;
-  `)}
+  `)};
 `;
 
 const HeroRight = styled(FlexItem)`
@@ -218,7 +216,7 @@ const HeroRight = styled(FlexItem)`
   ${forMobile(`
     margin: 0 auto;
     width: 100%;
-  `)}
+  `)};
 `;
 
 const PricingContainer = styled('div')`
@@ -233,9 +231,7 @@ const PricingContainer = styled('div')`
   text-align: left;
   ${forMobile(`
     width: 100%;
-  `)}
-
-  h4 {
+  `)} h4 {
     margin: -2px 0 0;
     font-size: 20px;
     color: #26b768;
@@ -285,9 +281,7 @@ const FloatingLinkBox = styled('div')`
   margin: 0 24px 0 0;
   ${forMobile(`
     margin: 0 0 24px 0;
-  `)}
-
-  h4 {
+  `)} h4 {
     margin: 0;
     color: #47494b;
     font-size: 18px;
@@ -326,8 +320,7 @@ const FAQItem = styled('div')`
   flex: 1 0 34%;
   ${forMobile(`
     flex: 1 0 51%;
-  `)}
-  flex-direction: column;
+  `)} flex-direction: column;
   display: flex;
   align-items: left;
   justify-content: center;
@@ -368,7 +361,7 @@ export default function Scene(props) {
         css={css`
           ${forMobile(`
           flex-direction: column;
-        `)}
+        `)};
         `}
       >
         <HeroLeft>
@@ -399,7 +392,7 @@ export default function Scene(props) {
 
       <Container
         css={css`
-          ${forMobile(`flex-direction: column;`)}
+          ${forMobile(`flex-direction: column;`)};
         `}
       >
         <FloatingLinkBox>

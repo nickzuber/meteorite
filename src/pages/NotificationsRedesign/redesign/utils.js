@@ -124,7 +124,7 @@ export function getPRIssueIcon({type, reasons, dark, pinned}) {
             color: ${PinnedColor};
             font-size: 18px;
           `}
-        ></i>
+        />
       </NotificationIconWrapper>
     );
   }
@@ -143,7 +143,7 @@ export function getPRIssueIcon({type, reasons, dark, pinned}) {
               color: ${ThemeColor(dark)};
               font-size: 18px;
             `}
-          ></i>
+          />
         </NotificationIconWrapper>
       );
     case 'Issue':
@@ -159,7 +159,7 @@ export function getPRIssueIcon({type, reasons, dark, pinned}) {
               color: ${ThemeColor(dark)};
               font-size: 18px;
             `}
-          ></i>
+          />
         </NotificationIconWrapper>
       );
     default:
@@ -213,7 +213,7 @@ export function iconsOfBadges(badges) {
               css={css`
                 color: ${BadgeColors.RED};
               `}
-            ></i>
+            />
           );
         case Badges.COMMENTS:
           return (
@@ -222,7 +222,7 @@ export function iconsOfBadges(badges) {
               css={css`
                 color: ${BadgeColors.BLUE};
               `}
-            ></i>
+            />
           );
         case Badges.OLD:
           return (
@@ -231,7 +231,7 @@ export function iconsOfBadges(badges) {
               css={css`
                 color: ${BadgeColors.YELLOW};
               `}
-            ></i>
+            />
           );
         default:
           return null;

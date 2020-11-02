@@ -1,11 +1,11 @@
 /** @jsx jsx */
 
-import { Link } from "@reach/router";
+import {Link} from '@reach/router';
 import styled from '@emotion/styled';
 import {css, jsx} from '@emotion/core';
 import React from 'react';
-import { routes } from '../../constants';
-import { AuthenticationButton } from '../../components/buttons';
+import {routes} from '../../constants';
+import {AuthenticationButton} from '../../components/buttons';
 import LoadingIcon from '../../components/LoadingIcon';
 import ErrorMessage from '../../components/ErrorMessage';
 
@@ -27,8 +27,11 @@ const Button = styled(Link)`
   font-size: 1rem;
   line-height: 1.75;
   border-radius: 5px;
-  -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  -webkit-transition: color 0.15s ease-in-out,
+    background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 
   &:hover {
     background-color: #f4f4f4;
@@ -47,8 +50,9 @@ const Card = styled('div')`
   min-height: 100px;
   margin: 32px auto 0;
   background: #ffffff;
-  border: 1px solid #E5E6EB;
-  box-shadow: rgba(84, 70, 35, 0) 0px 2px 8px, rgba(84,70,35,0.15) 0px 1px 3px;
+  border: 1px solid #e5e6eb;
+  box-shadow: rgba(84, 70, 35, 0) 0px 2px 8px,
+    rgba(84, 70, 35, 0.15) 0px 1px 3px;
   border-radius: 6px;
   padding: 24px 32px 52px;
 `;
@@ -79,25 +83,34 @@ const ButtonsContainer = styled('div')`
   }
 `;
 
-export default function Scene ({ loading, error, loggedOut, ...props }) {
+export default function Scene({loading, error, loggedOut, ...props}) {
   return (
-    <div css={css`
-      position: relative;
-      overflow: hidden;
-      background: radial-gradient(transparent 50%, #fffefd), url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQoU2NkIBIwEqmOgQ4KX715/x/mHDERQbiNGFZTXyGuUKC+rwHAcQwLu0IifQAAAABJRU5ErkJggg==) repeat;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      width: 100%;
-      margin: 0 auto;
-    `}>
+    <div
+      css={css`
+        position: relative;
+        overflow: hidden;
+        background: radial-gradient(transparent 50%, #fffefd),
+          url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQoU2NkIBIwEqmOgQ4KX715/x/mHDERQbiNGFZTXyGuUKC+rwHAcQwLu0IifQAAAABJRU5ErkJggg==)
+            repeat;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        width: 100%;
+        margin: 0 auto;
+      `}
+    >
       <Card>
         <h3>Authenticate with GitHub</h3>
         {error ? (
           <React.Fragment>
-            <p>Log in with GitHub and we'll start organizing and sorting all of your notifications.</p>
-            <ErrorMessage>Oops, looks like something went wrong. Try again?</ErrorMessage>
+            <p>
+              Log in with GitHub and we'll start organizing and sorting all of
+              your notifications.
+            </p>
+            <ErrorMessage>
+              Oops, looks like something went wrong. Try again?
+            </ErrorMessage>
             <ButtonsContainer>
               <Button to={routes.HOME}>Go back</Button>
               <AuthenticationButton />
@@ -107,9 +120,14 @@ export default function Scene ({ loading, error, loggedOut, ...props }) {
           <LoadingIcon style={{marginTop: 50}} />
         ) : loggedOut ? (
           <React.Fragment>
-            <p>Log in with GitHub and we'll start organizing and sorting all of your notifications.</p>
+            <p>
+              Log in with GitHub and we'll start organizing and sorting all of
+              your notifications.
+            </p>
             <ButtonsContainer>
-              <Button style={{boxShadow: '0 0 0'}} to={routes.HOME}>Go back</Button>
+              <Button style={{boxShadow: '0 0 0'}} to={routes.HOME}>
+                Go back
+              </Button>
               <AuthenticationButton />
             </ButtonsContainer>
           </React.Fragment>

@@ -17,7 +17,11 @@ export const withTheme = C => p => (
   </ThemeContext.Consumer>
 );
 
-const enhance = compose(withTheme, withTooltip, withOptimizedTouchEvents);
+const enhance = compose(
+  withTheme,
+  withTooltip,
+  withOptimizedTouchEvents
+);
 
 export const ThemeColor = darkMode => (darkMode ? '#E91356' : '#27B768');
 export const WHITE = 'rgb(255, 254, 252)';
@@ -860,7 +864,7 @@ export function ProfileSection({dark, user, onLogout}) {
               font-size: 20px;
             `}
             className="fas fa-cog"
-          ></i>
+          />
         )}
         <ProfileName>{user && user.name ? user.name : 'Settings'}</ProfileName>
         <i
@@ -868,7 +872,7 @@ export function ProfileSection({dark, user, onLogout}) {
           css={css`
             transform: ${menuShow ? 'rotate(180deg)' : 'rotate(0deg)'};
           `}
-        ></i>
+        />
       </ProfileContainer>
       <InteractionMenu
         show={menuShow}
@@ -997,8 +1001,8 @@ export const IconLink = enhance(
           ? DarkTheme.Gray
           : '#bfc5d1'
         : p.dark
-        ? WHITE
-        : 'inherit'
+          ? WHITE
+          : 'inherit'
     };
   }
   &:before {

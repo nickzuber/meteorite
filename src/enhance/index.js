@@ -16,7 +16,7 @@ export const withOnEnter = WrappedComponent => ({onEnter, ...props}) => (
 );
 
 class Tooltip extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
 
     this.id = ('tooltip-id-' + Math.random()).replace(/\./g, '');
@@ -26,7 +26,7 @@ class Tooltip extends React.Component {
     tooltipOffsetX: 0,
     tooltipOffsetY: 0,
     tooltipSpeed: 350
-  }
+  };
 
   getTooltipElement = () => document.querySelector(`#${this.id}`);
 
@@ -54,23 +54,28 @@ class Tooltip extends React.Component {
     const {width} = tooltipElement.getBoundingClientRect();
     const positionStyle = `
       top: ${y + targetHeight + window.scrollY + tooltipOffsetY}px;
-      left: ${x - (width / 2) + (targetWidth / 2) + tooltipOffsetX}px;
-      ${this.props.dark ? `
+      left: ${x - width / 2 + targetWidth / 2 + tooltipOffsetX}px;
+      ${
+        this.props.dark
+          ? `
         background: #ffffff;
         color: #10293c;
-      ` : ''}
+      `
+          : ''
+      }
     `;
 
     tooltipElement.setAttribute('style', positionStyle);
     this.timeout = setTimeout(() => {
       tooltipElement.setAttribute(
-        'style', `
+        'style',
+        `
           ${positionStyle}
           opacity: ${this.props.dark ? 1 : 0.9};
         `
       );
     }, this.props.tooltipSpeed);
-  }
+  };
 
   removeTooltip = () => {
     clearTimeout(this.timeout);
@@ -78,44 +83,48 @@ class Tooltip extends React.Component {
     if (tooltipElement) {
       tooltipElement.parentNode.removeChild(tooltipElement);
     }
-  }
+  };
 
-  render () {
+  render() {
     return this.props.children({
       onMouseEnter: this.onMouseEnter,
       onMouseLeave: this.removeTooltip,
-      onMouseDown: this.removeTooltip,
+      onMouseDown: this.removeTooltip
     });
   }
 }
 
 export const withTooltip = WrappedComponent => ({
-    tooltip,
-    tooltipOffsetX,
-    tooltipOffsetY,
-    tooltipSpeed,
-    ...props
-  }) => (
-    <Tooltip
-      dark={props.dark}
-      message={tooltip}
-      tooltipOffsetX={tooltipOffsetX}
-      tooltipOffsetY={tooltipOffsetY}
-      tooltipSpeed={tooltipSpeed}
-    >
-      {mouseEvents => tooltip ? (
+  tooltip,
+  tooltipOffsetX,
+  tooltipOffsetY,
+  tooltipSpeed,
+  ...props
+}) => (
+  <Tooltip
+    dark={props.dark}
+    message={tooltip}
+    tooltipOffsetX={tooltipOffsetX}
+    tooltipOffsetY={tooltipOffsetY}
+    tooltipSpeed={tooltipSpeed}
+  >
+    {mouseEvents =>
+      tooltip ? (
         <WrappedComponent {...props} {...mouseEvents} />
       ) : (
         <WrappedComponent {...props} />
-      )}
-    </Tooltip>
+      )
+    }
+  </Tooltip>
 );
 
-function transformEventsForMobile (props) {
+function transformEventsForMobile(props) {
   return Object.keys(props).reduce((aux, prop) => {
     let propT = prop;
     switch (prop) {
-      case 'onClick': propT = 'onTouchEnd'; break;
+      case 'onClick':
+        propT = 'onTouchEnd';
+        break;
       // ...
     }
     aux[propT] = props[prop];
@@ -123,10 +132,8 @@ function transformEventsForMobile (props) {
   }, {});
 }
 
-function transformEvents (props) {
-  return isMobile
-    ? transformEventsForMobile(props)
-    : props;
+function transformEvents(props) {
+  return isMobile ? transformEventsForMobile(props) : props;
 }
 
 export const withOptimizedTouchEvents = BaseComponent => props => (

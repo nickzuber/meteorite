@@ -5,16 +5,12 @@ import styled from '@emotion/styled';
 import {css, jsx} from '@emotion/core';
 import {Link as RouterLink} from '@reach/router';
 import {routes} from '../../constants';
-import {
-  BasicPageWrapper,
-  forSmallScreens,
-  forMobile
-} from '../common';
+import {BasicPageWrapper, forSmallScreens, forMobile} from '../common';
 import WorkflowToggle from '../Home/WorkflowToggle';
 
-import SettingsPng from '../../images/screenshots/new/settings.png'
-import ParticipatingPng from '../../images/screenshots/new/settings-participating.png'
-import WatchingPng from '../../images/screenshots/new/settings-watching.png'
+import SettingsPng from '../../images/screenshots/new/settings.png';
+import ParticipatingPng from '../../images/screenshots/new/settings-participating.png';
+import WatchingPng from '../../images/screenshots/new/settings-watching.png';
 
 import '../../styles/gradient.css';
 import '../../styles/font.css';
@@ -22,16 +18,15 @@ import '../../styles/font.css';
 const themeColor = '#27B768';
 const ALT_BACKGROUND_COLOR = '#f6f2ed';
 
-
 const Outer = styled('div')`
-  background: ${p => p.alt ? ALT_BACKGROUND_COLOR : 'none'};
+  background: ${p => (p.alt ? ALT_BACKGROUND_COLOR : 'none')};
 `;
 
 const Container = styled('div')`
   position: relative;
   box-sizing: border-box;
   display: flex;
-  flex-direction: ${p => p.column ? 'column' : 'row'};
+  flex-direction: ${p => (p.column ? 'column' : 'row')};
   max-width: 1080px;
   min-height: 100px;
   margin: 0 auto;
@@ -40,24 +35,22 @@ const Container = styled('div')`
   ${forSmallScreens(`
     padding-left: 2.5rem;
     padding-right: 2.5rem;
-  `)}
-  ${forMobile(`
+  `)} ${forMobile(`
     margin-bottom: 2.5rem;
-  `)}
+  `)};
 `;
 
 const LightContainer = styled(Container)`
   ${forSmallScreens(`
     padding-left: 0;
     padding-right: 0;
-  `)}
-  ${forMobile(`
+  `)} ${forMobile(`
     margin-bottom: 2.5rem;
-  `)}
+  `)};
 `;
 
 const FlexItem = styled('div')`
-  flex: ${(({flex = 1}) => flex)};
+  flex: ${({flex = 1}) => flex};
   align-items: center;
   display: flex;
   flex-wrap: wrap;
@@ -84,8 +77,11 @@ const Button = styled(RouterLink)`
   font-size: 18px;
   line-height: 1.75;
   border-radius: 5px;
-  -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  -webkit-transition: color 0.15s ease-in-out,
+    background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 
   &:hover {
     background-color: #f4f4f4;
@@ -131,14 +127,15 @@ const HeroTitle = styled('h1')`
   font-size: 68px;
   line-height: 68px;
   margin: 0 auto 6px 0;
-  font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
+  font-family: medium-marketing-display-font, Georgia, Cambria, Times New Roman,
+    Times, serif;
   font-weight: 500;
 
   ${forMobile(`
     font-size: 46px;
     line-height: 54px;
     margin: 0 auto 6px;
-  `)}
+  `)};
 `;
 
 const HeroSubtitle = styled('h1')`
@@ -155,14 +152,15 @@ const HeroSubtitle = styled('h1')`
     margin: 0 auto 32px;
     font-size: 20px;
     line-height: 24px;
-  `)}
+  `)};
 `;
 
 const Title = styled('h1')`
   font-size: 38px;
   line-height: 38px;
   margin: 0 auto 12px;
-  font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
+  font-family: medium-marketing-display-font, Georgia, Cambria, Times New Roman,
+    Times, serif;
   font-weight: 500;
   text-align: center;
 `;
@@ -202,7 +200,7 @@ const HeroLeft = styled(FlexItem)`
     width: 100%;
     text-align: center;
     min-height: unset;
-  `)}
+  `)};
 `;
 
 const HeroRight = styled(FlexItem)`
@@ -211,7 +209,7 @@ const HeroRight = styled(FlexItem)`
   ${forMobile(`
     margin: 0 auto;
     width: 100%;
-  `)}
+  `)};
 `;
 
 const PricingContainer = styled('div')`
@@ -226,13 +224,12 @@ const PricingContainer = styled('div')`
   text-align: left;
   ${forMobile(`
     width: 100%;
-  `)}
-
-  h4 {
+  `)} h4 {
     margin: -2px 0 0;
     font-size: 20px;
     color: #26b768;
-    font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
+    font-family: medium-marketing-display-font, Georgia, Cambria,
+      Times New Roman, Times, serif;
   }
 
   p {
@@ -243,14 +240,16 @@ const PricingContainer = styled('div')`
   }
 `;
 
-const Price = styled(Title)(p => `
+const Price = styled(Title)(
+  p => `
   font-size: ${p.crossed ? 32 : 52}px;
   line-height: ${p.crossed ? 32 : 54}px;
   text-decoration: ${p.crossed ? 'line-through' : 'unset'};
   display: inline-block;
   margin-right: 8px;
   text-align: left;
-`);
+`
+);
 
 const Badge = styled('span')`
   font-size: 14px;
@@ -269,15 +268,13 @@ const FloatingLinkBox = styled('div')`
   background: rgb(255, 254, 253);
   flex: 1;
   position: relative;
-  box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
   border-radius: 4px;
   padding: 16px 24px;
   margin: 0 24px 0 0;
   ${forMobile(`
     margin: 0 0 24px 0;
-  `)}
-
-  h4 {
+  `)} h4 {
     margin: 0;
     color: #47494b;
     font-size: 18px;
@@ -293,14 +290,14 @@ const FloatingLinkBox = styled('div')`
   a {
     text-decoration: none;
     font-size: 16px;
-    color: #00A0F5;
+    color: #00a0f5;
     transition: all 200ms ease;
   }
   a:hover {
     color: #0886c9;
   }
   a::after {
-    content: " →"
+    content: ' →';
   }
 `;
 
@@ -316,8 +313,7 @@ const FAQItem = styled('div')`
   flex: 1 0 34%;
   ${forMobile(`
     flex: 1 0 51%;
-  `)}
-  flex-direction: column;
+  `)} flex-direction: column;
   display: flex;
   align-items: left;
   justify-content: center;
@@ -329,7 +325,8 @@ const FAQItem = styled('div')`
     justify-content: center;
     line-height: 25px;
     margin: 18px 0 8px;
-    font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
+    font-family: medium-marketing-display-font, Georgia, Cambria,
+      Times New Roman, Times, serif;
     font-weight: 600;
     letter-spacing: 0.7px;
   }
@@ -354,18 +351,20 @@ const DotsBackground = styled('div')`
   height: 400px;
   width: 100%;
   margin-left: -60px;
-  background: radial-gradient(transparent 50%, #fffefd), \
-    url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQoU2NkIBIwEqmOgQ4KX715/x/mHDERQbiNGFZTXyGuUKC+rwHAcQwLu0IifQAAAABJRU5ErkJggg==) repeat;
+  background: radial-gradient(transparent 50%, #fffefd),
+    \url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQoU2NkIBIwEqmOgQ4KX715/x/mHDERQbiNGFZTXyGuUKC+rwHAcQwLu0IifQAAAABJRU5ErkJggg==)
+      repeat;
   ${forMobile(`
     display: none;
-  `)}
+  `)};
 `;
 
 const Checklist = styled('div')`
   z-index: 1;
   background: #fff;
   margin: 0 auto;
-  box-shadow: rgba(84,70,35,0) 0px 4px 18px, rgba(84,70,35,0.15) 0px 2px 8px;
+  box-shadow: rgba(84, 70, 35, 0) 0px 4px 18px,
+    rgba(84, 70, 35, 0.15) 0px 2px 8px;
   border-radius: 6px;
   min-height: 100px;
   min-width: 200px;
@@ -384,11 +383,11 @@ const ChecklistItem = styled('span')`
   color: #737b83;
 
   &::before {
-    content: "✓";
+    content: '✓';
     font-size: 18px;
     line-height: 24px;
     border-radius: 100%;
-    background: #27B768;
+    background: #27b768;
     color: #fff;
     font-weight: 600;
     height: 22px;
@@ -406,10 +405,11 @@ const GuideContainer = styled('div')`
   flex-direction: row;
   ${forSmallScreens(`
     flex-direction: column;
-  `)}
+  `)};
 `;
 
-const GuideItem = styled('div')(p => `
+const GuideItem = styled('div')(
+  p => `
   flex: ${p.flex || 1};
   position: relative;
   ${forSmallScreens(`
@@ -437,23 +437,33 @@ const GuideItem = styled('div')(p => `
     box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.175);
     border-radius: 4px;
   }
-`);
+`
+);
 
-export default function Scene (props) {
+export default function Scene(props) {
   return (
     <BasicPageWrapper {...props}>
       {/* Hero */}
-      <Container css={css`
-        ${forMobile(`
+      <Container
+        css={css`
+          ${forMobile(`
           flex-direction: column;
-        `)}
-      `}>
+        `)};
+        `}
+      >
         <HeroLeft>
           <HeroTitle>
-            {'No installation.'}<br />
+            {'No installation.'}
+            <br />
             {'Easy setup.'}
-            </HeroTitle>
-          <HeroSubtitle css={css`margin-top: -35px;`}>{'You\'re at most a few click away.'}</HeroSubtitle>
+          </HeroTitle>
+          <HeroSubtitle
+            css={css`
+              margin-top: -35px;
+            `}
+          >
+            {"You're at most a few click away."}
+          </HeroSubtitle>
           <FlexBreak />
         </HeroLeft>
         <HeroRight>
@@ -462,7 +472,7 @@ export default function Scene (props) {
             <ChecklistTitle>{'Only a few simple steps.'}</ChecklistTitle>
             <ChecklistItem>{'Navigate to your GitHub settings.'}</ChecklistItem>
             <ChecklistItem>{'Turn on web notifications.'}</ChecklistItem>
-            <ChecklistItem>{'And you\'re done.'}</ChecklistItem>
+            <ChecklistItem>{"And you're done."}</ChecklistItem>
           </Checklist>
         </HeroRight>
       </Container>
@@ -472,8 +482,12 @@ export default function Scene (props) {
         <Container column>
           <FlexBreak height={60} />
           <Title>{'Ready. Set. Go.'}</Title>
-          <Subtitle>{'You only need to flip a few switches before we can organize your notifications\
-                      and make your life easier.'}</Subtitle>
+          <Subtitle>
+            {
+              'You only need to flip a few switches before we can organize your notifications\
+                      and make your life easier.'
+            }
+          </Subtitle>
 
           <WorkflowToggle
             easeTimingMs={100}
@@ -481,30 +495,48 @@ export default function Scene (props) {
               {
                 id: 0,
                 title: '1. Visit your settings',
-                description: 'Head over to GitHub and view your account settings in the notifications tab.',
+                description:
+                  'Head over to GitHub and view your account settings in the notifications tab.',
                 image: SettingsPng
               },
               {
                 id: 1,
                 title: '2. Enable Participating alerts',
-                description: 'Turn on "Web and Mobile" notifications for the participating tab.',
+                description:
+                  'Turn on "Web and Mobile" notifications for the participating tab.',
                 image: ParticipatingPng
               },
               {
                 id: 2,
                 title: '3. Enable Watching alerts',
-                description: 'Turn on "Web and Mobile" notifications for the watching tab.',
+                description:
+                  'Turn on "Web and Mobile" notifications for the watching tab.',
                 image: WatchingPng
-              },
+              }
             ]}
           />
 
           <FlexBreak height={100} />
-          <Title css={css`font-size: 32px; line-height: 38px; margin-bottom: 24px;`}>{'Start using Meteorite absolutely free'}</Title>
-          <HeroButton to={routes.LOGIN} css={css`margin: 0 auto;`}>{'Login / Sign up'}</HeroButton>
+          <Title
+            css={css`
+              font-size: 32px;
+              line-height: 38px;
+              margin-bottom: 24px;
+            `}
+          >
+            {'Start using Meteorite absolutely free'}
+          </Title>
+          <HeroButton
+            to={routes.LOGIN}
+            css={css`
+              margin: 0 auto;
+            `}
+          >
+            {'Login / Sign up'}
+          </HeroButton>
           <FlexBreak height={80} />
         </Container>
       </Outer>
     </BasicPageWrapper>
   );
-};
+}

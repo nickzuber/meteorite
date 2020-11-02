@@ -49,10 +49,9 @@ const Container = styled('div')`
   ${forSmallScreens(`
     padding-left: 2.0rem;
     padding-right: 2.0rem;
-  `)}
-  ${forMobile(`
+  `)} ${forMobile(`
     margin-bottom: 2.5rem;
-  `)}
+  `)};
 `;
 
 const FlexItem = styled('div')`
@@ -83,9 +82,7 @@ const ButtonLink = styled('a')`
   transition: all 0.15s ease-in-out;
   ${forMobile(`
     padding: 0.125rem 0.25rem;
-  `)}
-
-  &:hover {
+  `)} &:hover {
     background-color: #f4f4f4;
     border-color: #f4f4f4;
   }
@@ -120,9 +117,7 @@ const Button = styled(RouterLink)`
   transition: all 0.15s ease-in-out;
   ${forMobile(`
     padding: 0.125rem 0.25rem;
-  `)}
-
-  &:hover {
+  `)} &:hover {
     background-color: #f4f4f4;
     border-color: #f4f4f4;
   }
@@ -163,7 +158,7 @@ const LogoTitle = styled('span')`
 
   ${forMobile(`
     display: none;
-  `)}
+  `)};
 `;
 
 const LogoSection = () => (
@@ -176,8 +171,7 @@ const LogoSection = () => (
       width: 125px;
       ${forMobile(`
       width: 36px;
-    `)}
-      div {
+    `)} div {
         display: inline-block;
         margin-right: 8px;
       }
@@ -277,7 +271,7 @@ export function BasicPageWrapper({loggedIn, onLogout, children}) {
                     border-radius: 100%;
                     ${forMobile(`
                     right: -1px;
-                  `)}
+                  `)};
                   }
                 `}
               >

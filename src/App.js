@@ -1,47 +1,38 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import amplitude from 'amplitude-js';
-import {
-  Redirect,
-  Router,
-  Location,
-  LocationProvider
-} from "@reach/router";
-import { routes } from './constants';
-import { AuthProvider } from './providers/Auth';
-import {
-  Home,
-  Login,
-  Pricing,
-  Guide,
-  NotificationsRedesign,
-} from './pages';
-
+import {Redirect, Router, Location, LocationProvider} from '@reach/router';
+import {routes} from './constants';
+import {AuthProvider} from './providers/Auth';
+import {Home, Login, Pricing, Guide, NotificationsRedesign} from './pages';
 
 // Initalize Amplitude for this session.
 amplitude.init('752af9db0250fe93d507f42362a2977d');
 
-function gtag () {
+function gtag() {
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(arguments);
 }
 
-function gaTrack (options) {
+function gaTrack(options) {
   gtag('config', 'UA-154218045-1', options);
 }
 
 // Effectively track each new page.
-function PageTracker ({location}) {
-  React.useEffect(() => {
-    gaTrack({
-      page_location: location,
-      page_path: location.pathname
-    });
-  }, [location]);
+function PageTracker({location}) {
+  React.useEffect(
+    () => {
+      gaTrack({
+        page_location: location,
+        page_path: location.pathname
+      });
+    },
+    [location]
+  );
 
   return null;
 }
 
-function RedirectShell () {
+function RedirectShell() {
   return <Redirect noThrow to={routes.NOTIFICATIONS} />;
 }
 

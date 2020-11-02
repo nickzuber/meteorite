@@ -9,7 +9,7 @@ export default class TokenHandler extends React.Component {
       this.props.onSetLoading(true);
       fetch(`https://meteorite-gatekeeper.herokuapp.com/authenticate/${code}`)
         .then(response => response.json())
-        .then(({ token, error }) => {
+        .then(({token, error}) => {
           this.props.onSetLoading(false);
           if (error) {
             this.props.onSetError(true);
@@ -20,7 +20,7 @@ export default class TokenHandler extends React.Component {
     }
   }
 
-  render () {
+  render() {
     return null;
   }
 }

@@ -68,23 +68,30 @@ import pr_closed from './svg/github/pr-closed.svg';
 import pr_open from './svg/github/pr-open.svg';
 import pr_merged from './svg/github/pr-merged.svg';
 
-const SvgIcon = styled('div')({
-  position: 'relative',
-  backgroundSize: 'cover',
-  fontSize: 14,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-}, ({size, icon, opacity, shrink}) => ({
-  height: size || 24,
-  width: size || 24,
-  background: `url(${icon}) center center no-repeat`,
-  opacity,
-  transform: shrink ? `scale(${shrink})` : 'inherit'
-}));
+const SvgIcon = styled('div')(
+  {
+    position: 'relative',
+    backgroundSize: 'cover',
+    fontSize: 14,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  ({size, icon, opacity, shrink}) => ({
+    height: size || 24,
+    width: size || 24,
+    background: `url(${icon}) center center no-repeat`,
+    opacity,
+    transform: shrink ? `scale(${shrink})` : 'inherit'
+  })
+);
 
-export default function Icon ({src, ...props}) {
-  return <SvgIcon {...props} icon={src}>&nbsp;</SvgIcon>
+export default function Icon({src, ...props}) {
+  return (
+    <SvgIcon {...props} icon={src}>
+      &nbsp;
+    </SvgIcon>
+  );
 }
 
 const createIcon = src => props => <Icon {...props} src={src} />;
