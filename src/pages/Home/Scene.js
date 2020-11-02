@@ -8,25 +8,14 @@ import {routes} from '../../constants';
 import {BasicPageWrapper, forSmallScreens, forMobile} from '../common';
 import WorkflowToggle from './WorkflowToggle';
 
-<<<<<<< HEAD
-import {ReactComponent as CloudOffSvg} from '../../images/svg/icons/cloud_off.svg';
-import {ReactComponent as NotificationsActiveSvg} from '../../images/svg/icons/notifications_active.svg';
-import {ReactComponent as PriorityHighSvg} from '../../images/svg/icons/priority_high.svg';
-import {ReactComponent as TuneSvg} from '../../images/svg/icons/tune.svg';
-import {ReactComponent as SpeedSvg} from '../../images/svg/icons/speed.svg';
-import {ReactComponent as GpsFixedSvg} from '../../images/svg/icons/gps_fixed.svg';
-import {ReactComponent as WbIridescentSvg} from '../../images/svg/icons/wb_iridescent.svg';
-import {ReactComponent as TimelineSvg} from '../../images/svg/icons/timeline.svg';
-=======
-import {ReactComponent as ServerlessSvg} from '../../images/svg/icons/cloud_off.svg'
-import {ReactComponent as DesktopNotificationsSvg} from '../../images/svg/icons/notifications_active.svg'
-import {ReactComponent as AutoSortingSvg} from '../../images/svg/icons/smart_button.svg'
-import {ReactComponent as FilterNoiseSvg} from '../../images/svg/icons/tune.svg'
-import {ReactComponent as UndoActionsSvg} from '../../images/svg/icons/rule.svg'
-import {ReactComponent as LiveUpdatesSvg} from '../../images/svg/icons/gps_fixed.svg'
-import {ReactComponent as PinnedNotificationsSvg} from '../../images/svg/icons/push_pin.svg'
-import {ReactComponent as StatisticsSvg} from '../../images/svg/icons/insights.svg'
->>>>>>> 26f9509e06a0d56d65238732438ba817e2b8063a
+import {ReactComponent as ServerlessSvg} from '../../images/svg/icons/cloud_off.svg';
+import {ReactComponent as DesktopNotificationsSvg} from '../../images/svg/icons/notifications_active.svg';
+import {ReactComponent as AutoSortingSvg} from '../../images/svg/icons/smart_button.svg';
+import {ReactComponent as FilterNoiseSvg} from '../../images/svg/icons/tune.svg';
+import {ReactComponent as UndoActionsSvg} from '../../images/svg/icons/rule.svg';
+import {ReactComponent as LiveUpdatesSvg} from '../../images/svg/icons/gps_fixed.svg';
+import {ReactComponent as PinnedNotificationsSvg} from '../../images/svg/icons/push_pin.svg';
+import {ReactComponent as StatisticsSvg} from '../../images/svg/icons/insights.svg';
 
 import ItemPng from '../../images/screenshots/item.png';
 import ItemTwoPng from '../../images/screenshots/item-2.png';
@@ -76,10 +65,9 @@ const Container = styled('div')`
   ${forSmallScreens(`
     padding-left: 2.5rem;
     padding-right: 2.5rem;
-  `)}
-  ${forMobile(`
+  `)} ${forMobile(`
     margin-bottom: 2.5rem;
-  `)}
+  `)};
 `;
 
 const FlexItem = styled('div')`
@@ -167,7 +155,7 @@ const HeroTitle = styled('h1')`
   ${forMobile(`
     font-size: 52px;
     line-height: 58px;
-  `)}
+  `)};
 `;
 
 const HeroSubtitle = styled('h1')`
@@ -184,7 +172,7 @@ const HeroSubtitle = styled('h1')`
     margin: 0 auto 32px;
     font-size: 20px;
     line-height: 24px;
-  `)}
+  `)};
 `;
 
 const Title = styled('h1')`
@@ -227,7 +215,7 @@ const HeroLeft = styled(FlexItem)`
     margin: 0 auto;
     width: 100%;
     text-align: center;
-  `)}
+  `)};
 `;
 
 const HeroRight = styled(FlexItem)`
@@ -235,7 +223,7 @@ const HeroRight = styled(FlexItem)`
   width: 50%;
   ${forMobile(`
     display: none;
-  `)}
+  `)};
 `;
 
 const DotsBackground = styled('div')`
@@ -244,12 +232,17 @@ const DotsBackground = styled('div')`
   width: 100%;
   margin-left: -60px;
   background: radial-gradient(transparent 50%, #fffefd),
-    \url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQoU2NkIBIwEqmOgQ4KX715/x/mHDERQbiNGFZTXyGuUKC+rwHAcQwLu0IifQAAAABJRU5ErkJggg==)
+    \url(
+        data: image/png;base64,
+        iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs +
+          9aaaakeleqvqou2nkibiweqmogq4kx715 / x/mHDERQbiNGFZTXyGuUKC +
+          rwHAcQwLu0IifQAAAABJRU5ErkJggg==
+      )
       repeat;
   ${forMobile(`
     width: 90%;
     margin: 0 auto;
-  `)}
+  `)};
 `;
 
 const FooterImageContainer = styled('div')`
@@ -258,11 +251,16 @@ const FooterImageContainer = styled('div')`
   width: 100%;
   text-align: center;
   background: radial-gradient(transparent 50%, ${ALT_BACKGROUND_COLOR}),
-    \url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQoU2NkIBIwEqmOgQ4KX715/x/mHDERQbiNGFZTXyGuUKC+rwHAcQwLu0IifQAAAABJRU5ErkJggg==)
+    \url(
+        data: image/png;base64,
+        iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs +
+          9aaaakeleqvqou2nkibiweqmogq4kx715 / x/mHDERQbiNGFZTXyGuUKC +
+          rwHAcQwLu0IifQAAAABJRU5ErkJggg==
+      )
       repeat;
   ${forMobile(`
     display: none;
-  `)}
+  `)};
 `;
 
 const CompanyQuotesContainer = styled('div')`
@@ -274,7 +272,7 @@ const CompanyQuotesContainer = styled('div')`
     flex-direction: column;
     max-width: 300px;
     margin: 0 auto;
-  `)}
+  `)};
 `;
 
 const HorizontalFlexContainer = styled('div')`
@@ -385,7 +383,7 @@ export default function Scene(props) {
         css={css`
           ${forMobile(`
           flex-direction: column;
-        `)}
+        `)};
         `}
       >
         <HeroLeft>
@@ -406,12 +404,12 @@ export default function Scene(props) {
               display: block;
               margin: 0 auto;
               width: 300px;
-            `)}
+            `)};
             `}
           >
             <HeroButton
               css={css`
-                ${forMobile(`margin-bottom: 12px;`)}
+                ${forMobile(`margin-bottom: 12px;`)};
               `}
               to={routes.LOGIN}
             >
@@ -456,7 +454,8 @@ export default function Scene(props) {
             </CompanyPerson>
           </HorizontalListItem>
           <HorizontalListItem>
-            <Quote>{`I've been using it for a bit and it's so useful, especially if you use GitHub for work.`}</Quote>
+            <Quote
+            >{`I've been using it for a bit and it's so useful, especially if you use GitHub for work.`}</Quote>
             <CompanyPerson>
               <img src={RobinLogo} />
               <span>
@@ -593,15 +592,9 @@ export default function Scene(props) {
             <p>{'All of your notifications are processed in real time.'}</p>
           </FeatureItem>
           <FeatureItem color={'#fd9446'}>
-<<<<<<< HEAD
-            <WbIridescentSvg />
-            <h3>{'Reasoning'}</h3>
-            <p>{"We'll also tell you why you're getting each notification."}</p>
-=======
             <PinnedNotificationsSvg />
             <h3>{'Pinnable'}</h3>
             <p>{'Keep your important tasks at the top of your list.'}</p>
->>>>>>> 26f9509e06a0d56d65238732438ba817e2b8063a
           </FeatureItem>
           <FeatureItem color={'#fc46fd'}>
             <StatisticsSvg />

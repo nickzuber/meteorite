@@ -30,19 +30,22 @@ function TypedSpan({source, toString, options = {}}) {
       .join(' ');
   }
 
-  React.useEffect(() => {
-    const defaultOptions = {
-      strings: source.map(toString).map(clean),
-      startDelay: 100,
-      typeSpeed: 50,
-      backSpeed: 15,
-      backDelay: 3000,
-      loop: true,
-      ...options
-    };
-    typed.current = new Typed(spanRef.current, defaultOptions);
-    return () => typed.current.destroy();
-  }, [source]);
+  React.useEffect(
+    () => {
+      const defaultOptions = {
+        strings: source.map(toString).map(clean),
+        startDelay: 100,
+        typeSpeed: 50,
+        backSpeed: 15,
+        backDelay: 3000,
+        loop: true,
+        ...options
+      };
+      typed.current = new Typed(spanRef.current, defaultOptions);
+      return () => typed.current.destroy();
+    },
+    [source]
+  );
 
   return (
     <span
@@ -218,19 +221,25 @@ export function FilterSearch({
     }
   ]);
 
-  React.useEffect(() => {
-    if (notifications.length >= 3) {
-      const examples = notifications.slice(0, 5);
-      setExampleNotifications(examples);
-    }
-  }, [view]);
+  React.useEffect(
+    () => {
+      if (notifications.length >= 3) {
+        const examples = notifications.slice(0, 5);
+        setExampleNotifications(examples);
+      }
+    },
+    [view]
+  );
 
-  React.useEffect(() => {
-    if (!activeQuery) {
-      setSearchInput('');
-      setActiveFilter(null);
-    }
-  }, [activeQuery]);
+  React.useEffect(
+    () => {
+      if (!activeQuery) {
+        setSearchInput('');
+        setActiveFilter(null);
+      }
+    },
+    [activeQuery]
+  );
 
   function smartSetSearchInput(input) {
     const {filter, text} = parseTextForFilter(input, activeFilter);
@@ -269,7 +278,7 @@ export function FilterSearch({
 
   return (
     <SearchField innerRef={containerRef}>
-      <i className="fas fa-search"></i>
+      <i className="fas fa-search" />
       {activeFilter && <FilterTagInline type={activeFilter} />}
       <EnhancedSearchInput
         innerRef={searchRef}
@@ -285,7 +294,7 @@ export function FilterSearch({
             `
             padding-left: 42px;
             width: 298px;
-          `}
+          `};
         `}
       />
       <DropdownSection
@@ -350,7 +359,9 @@ function DropdownSection({
                 }
                 default:
                   const words = query.split(' ');
-                  const itemString = `${item.name} ${item.repository}`.toLowerCase();
+                  const itemString = `${item.name} ${
+                    item.repository
+                  }`.toLowerCase();
                   return words.every(word => itemString.includes(word));
               }
             }
@@ -387,7 +398,9 @@ function DropdownSection({
                     ))}
                     {title}
                   </SuggestionTitle>
-                  <SuggestionRepo>{`@${notification.repository}`}</SuggestionRepo>
+                  <SuggestionRepo>{`@${
+                    notification.repository
+                  }`}</SuggestionRepo>
                 </Suggestion>
               );
             })}
