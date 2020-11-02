@@ -13,8 +13,8 @@ import {
 import WorkflowToggle from '../Home/WorkflowToggle';
 
 import SettingsPng from '../../images/screenshots/new/settings.png'
-import ParticipatingPng from '../../images/screenshots/new/participating.png'
-import WatchingPng from '../../images/screenshots/new/watching.png'
+import ParticipatingPng from '../../images/screenshots/new/settings-participating.png'
+import WatchingPng from '../../images/screenshots/new/settings-watching.png'
 
 import '../../styles/gradient.css';
 import '../../styles/font.css';

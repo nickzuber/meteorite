@@ -8,6 +8,7 @@ import {routes} from '../../constants';
 import {BasicPageWrapper, forSmallScreens, forMobile} from '../common';
 import WorkflowToggle from './WorkflowToggle';
 
+<<<<<<< HEAD
 import {ReactComponent as CloudOffSvg} from '../../images/svg/icons/cloud_off.svg';
 import {ReactComponent as NotificationsActiveSvg} from '../../images/svg/icons/notifications_active.svg';
 import {ReactComponent as PriorityHighSvg} from '../../images/svg/icons/priority_high.svg';
@@ -16,12 +17,22 @@ import {ReactComponent as SpeedSvg} from '../../images/svg/icons/speed.svg';
 import {ReactComponent as GpsFixedSvg} from '../../images/svg/icons/gps_fixed.svg';
 import {ReactComponent as WbIridescentSvg} from '../../images/svg/icons/wb_iridescent.svg';
 import {ReactComponent as TimelineSvg} from '../../images/svg/icons/timeline.svg';
+=======
+import {ReactComponent as ServerlessSvg} from '../../images/svg/icons/cloud_off.svg'
+import {ReactComponent as DesktopNotificationsSvg} from '../../images/svg/icons/notifications_active.svg'
+import {ReactComponent as AutoSortingSvg} from '../../images/svg/icons/smart_button.svg'
+import {ReactComponent as FilterNoiseSvg} from '../../images/svg/icons/tune.svg'
+import {ReactComponent as UndoActionsSvg} from '../../images/svg/icons/rule.svg'
+import {ReactComponent as LiveUpdatesSvg} from '../../images/svg/icons/gps_fixed.svg'
+import {ReactComponent as PinnedNotificationsSvg} from '../../images/svg/icons/push_pin.svg'
+import {ReactComponent as StatisticsSvg} from '../../images/svg/icons/insights.svg'
+>>>>>>> 26f9509e06a0d56d65238732438ba817e2b8063a
 
 import ItemPng from '../../images/screenshots/item.png';
 import ItemTwoPng from '../../images/screenshots/item-2.png';
-import ScreenshotPng from '../../images/screenshots/new/dashboard.png';
-import ScoresPng from '../../images/screenshots/new/scores.png';
-import ReasonsPng from '../../images/screenshots/new/reasons.png';
+import ScreenshotPng from '../../images/screenshots/new/dashboard-light.png';
+import ReasonsPng from '../../images/screenshots/new/dashboard-reasons-dark.png';
+import ScoresPng from '../../images/screenshots/new/dashboard-scores-light.png';
 
 import RobinLogo from '../../images/logos/robin-logo.png';
 import ForwardLogo from '../../images/logos/forward-logo.png';
@@ -539,7 +550,7 @@ export default function Scene(props) {
         </Subtitle>
         <HorizontalFlexContainer>
           <FeatureItem color={'#9C27B0'}>
-            <CloudOffSvg />
+            <ServerlessSvg />
             <h3>{'Serverless'}</h3>
             <p>
               {
@@ -548,7 +559,7 @@ export default function Scene(props) {
             </p>
           </FeatureItem>
           <FeatureItem color={'#ffc915'}>
-            <NotificationsActiveSvg />
+            <DesktopNotificationsSvg />
             <h3>{'Desktop Notifications'}</h3>
             <p>
               {
@@ -557,14 +568,14 @@ export default function Scene(props) {
             </p>
           </FeatureItem>
           <FeatureItem color={'#27B768'}>
-            <PriorityHighSvg />
+            <AutoSortingSvg />
             <h3>{'Auto Sorting'}</h3>
             <p>
               {'Keep your most important notifications at the top of the list.'}
             </p>
           </FeatureItem>
           <FeatureItem color={'#00A0F5'}>
-            <TuneSvg />
+            <FilterNoiseSvg />
             <h3>{'Filter Noise'}</h3>
             <p>
               {"Any notifications that don't directly involve you are hidden."}
@@ -572,22 +583,28 @@ export default function Scene(props) {
           </FeatureItem>
           <FlexBreak />
           <FeatureItem color={'#EE3F46'}>
-            <SpeedSvg />
-            <h3>{'Dead Simple'}</h3>
-            <p>{'No integrations – just log in and start working.'}</p>
+            <UndoActionsSvg />
+            <h3>{'Undo Actions'}</h3>
+            <p>{'Mark notifications as unread if you change your mind.'}</p>
           </FeatureItem>
           <FeatureItem color={'#10293c'}>
-            <GpsFixedSvg />
+            <LiveUpdatesSvg />
             <h3>{'Live Updates'}</h3>
             <p>{'All of your notifications are processed in real time.'}</p>
           </FeatureItem>
           <FeatureItem color={'#fd9446'}>
+<<<<<<< HEAD
             <WbIridescentSvg />
             <h3>{'Reasoning'}</h3>
             <p>{"We'll also tell you why you're getting each notification."}</p>
+=======
+            <PinnedNotificationsSvg />
+            <h3>{'Pinnable'}</h3>
+            <p>{'Keep your important tasks at the top of your list.'}</p>
+>>>>>>> 26f9509e06a0d56d65238732438ba817e2b8063a
           </FeatureItem>
           <FeatureItem color={'#fc46fd'}>
-            <TimelineSvg />
+            <StatisticsSvg />
             <h3>{'Statistics'}</h3>
             <p>{'Better understand how you work with data visualizations.'}</p>
           </FeatureItem>

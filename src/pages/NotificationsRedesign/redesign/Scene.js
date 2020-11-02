@@ -165,6 +165,7 @@ const Snack = ({
     <div
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onClick={onDismiss}
       css={css`
         display: flex;
         align-items: center;
@@ -298,8 +299,14 @@ const withToastProvider = WrappedComponent => props => (
 );
 
 const withToasts = WrappedComponent => props => {
-  const {addToast} = useToasts();
-  return <WrappedComponent addToast={addToast} {...props} />;
+  const {addToast, removeAllToasts} = useToasts();
+  return (
+    <WrappedComponent
+      addToast={addToast}
+      removeAllToasts={removeAllToasts}
+      {...props}
+    />
+  );
 };
 
 function BasePageItem({children, onChange, ...props}) {
@@ -605,7 +612,8 @@ function Scene({
   onSetActiveFilter,
   getUserItem,
   setUserItem,
-  addToast
+  addToast,
+  removeAllToasts
 }) {
   const hasNotificationsOn = notificationsPermission === 'granted';
   const [darkMode, setDarkMode] = React.useState(
@@ -623,6 +631,7 @@ function Scene({
     const notification = notifications.find(({id}) => id === thread_id);
     const {title, tags} = extractJiraTags(notification.name);
 
+    removeAllToasts();
     addToast(
       <React.Fragment>
         <ToastTitle dark={darkMode}>

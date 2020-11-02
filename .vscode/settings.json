@@ -3,5 +3,6 @@
   "[javascript]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "editor.minimap.enabled": false
 }
