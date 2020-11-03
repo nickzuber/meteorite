@@ -787,6 +787,7 @@ function Scene({
             <FilterSearch
               notifications={allNotifications}
               activeQuery={query}
+              clearQuery={onClearQuery}
               view={view}
               dark={darkMode}
               loading={loading}

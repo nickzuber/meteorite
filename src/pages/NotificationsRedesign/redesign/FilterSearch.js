@@ -190,6 +190,7 @@ function filterFromQuery({query, items, compare}) {
 export function FilterSearch({
   isSearching,
   activeQuery,
+  clearQuery,
   dark,
   notifications,
   view,
@@ -245,6 +246,7 @@ export function FilterSearch({
     const {filter, text} = parseTextForFilter(input, activeFilter);
     setSearchInput(text);
     if (input === '') {
+      clearQuery();
       setActiveFilter(null);
     } else {
       setActiveFilter(filter);
