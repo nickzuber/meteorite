@@ -1230,6 +1230,13 @@ function Scene({
                           font-weight: 500;
                           vertical-align: text-top;
                           margin-right: 8px;
+                          background: ${darkMode
+                            ? DarkTheme.Secondary
+                            : '#fffefc'};
+                          padding: 8px 0 8px 8px;
+                          border-radius: 8px;
+                          transition: all 200ms ease;
+
                           span {
                             font-size: 13px;
                             color: ${darkMode ? WHITE : '#37352f'};

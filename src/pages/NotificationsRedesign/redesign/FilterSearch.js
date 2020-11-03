@@ -289,13 +289,14 @@ export function FilterSearch({
         value={searchInput}
         placeholder="Search for notifications"
         onEnter={() => onSearch(searchInput)}
-        css={css`
-          ${activeFilter &&
-            `
-            padding-left: 42px;
-            width: 298px;
-          `};
-        `}
+        css={
+          activeFilter
+            ? css`
+                padding-left: 42px;
+                width: 298px;
+              `
+            : undefined
+        }
       />
       <DropdownSection
         forwardRef={downdownRef}
@@ -337,73 +338,83 @@ function DropdownSection({
     return null;
   }
 
+  const items = filterFromQuery({
+    query: searchInput,
+    items: notifications,
+    compare: (item, query) => {
+      switch (activeFilter) {
+        case SearchFilters.TITLE: {
+          const words = query.split(' ');
+          const itemString = item.name.toLowerCase();
+          return words.every(word => itemString.includes(word));
+        }
+        case SearchFilters.REPO: {
+          const words = query.split(' ');
+          const itemString = item.repository.toLowerCase();
+          return words.every(word => itemString.includes(word));
+        }
+        default:
+          const words = query.split(' ');
+          const itemString = `${item.name} ${item.repository}`.toLowerCase();
+          return words.every(word => itemString.includes(word));
+      }
+    }
+  });
+
   return (
     <Dropdown innerRef={forwardRef}>
       {searchInput !== '' ? (
         // Previews
         <React.Fragment>
-          {filterFromQuery({
-            query: searchInput,
-            items: notifications,
-            compare: (item, query) => {
-              switch (activeFilter) {
-                case SearchFilters.TITLE: {
-                  const words = query.split(' ');
-                  const itemString = item.name.toLowerCase();
-                  return words.every(word => itemString.includes(word));
-                }
-                case SearchFilters.REPO: {
-                  const words = query.split(' ');
-                  const itemString = item.repository.toLowerCase();
-                  return words.every(word => itemString.includes(word));
-                }
-                default:
-                  const words = query.split(' ');
-                  const itemString = `${item.name} ${
-                    item.repository
-                  }`.toLowerCase();
-                  return words.every(word => itemString.includes(word));
-              }
-            }
-          })
-            .sort((a, b) => moment(b.updated_at).diff(a.updated_at))
-            .slice(0, 10)
-            .map(notification => {
-              const {title, tags} = extractJiraTags(notification.name);
-              return (
-                <Suggestion
-                  onClick={() => {
-                    switch (activeFilter) {
-                      case SearchFilters.TITLE:
-                        return onSuggestionSelect(notification.name);
-                      case SearchFilters.REPO:
-                        return onSuggestionSelect(notification.repository);
-                      default:
-                        return onSuggestionSelect(notification.name);
-                    }
-                  }}
-                >
-                  <SuggestionTitle>
-                    {tags.map(tag => (
-                      <JiraTag
-                        key={tag}
-                        css={css`
-                          padding: 0px 4px;
-                          vertical-align: text-bottom;
-                        `}
-                        color={colorOfTag(tag)}
-                      >
-                        {tag}
-                      </JiraTag>
-                    ))}
-                    {title}
-                  </SuggestionTitle>
-                  <SuggestionRepo>{`@${
-                    notification.repository
-                  }`}</SuggestionRepo>
-                </Suggestion>
-              );
-            })}
+          {items.length === 0 ? (
+            <h5
+              css={css`
+                border-top: 0px solid transparent !important;
+              `}
+            >
+              {"Couldn't find any notifications with this query."}
+            </h5>
+          ) : (
+            items
+              .sort((a, b) => moment(b.updated_at).diff(a.updated_at))
+              .slice(0, 10)
+              .map(notification => {
+                const {title, tags} = extractJiraTags(notification.name);
+                return (
+                  <Suggestion
+                    onClick={() => {
+                      switch (activeFilter) {
+                        case SearchFilters.TITLE:
+                          return onSuggestionSelect(notification.name);
+                        case SearchFilters.REPO:
+                          return onSuggestionSelect(notification.repository);
+                        default:
+                          return onSuggestionSelect(notification.name);
+                      }
+                    }}
+                  >
+                    <SuggestionTitle>
+                      {tags.map(tag => (
+                        <JiraTag
+                          key={tag}
+                          css={css`
+                            padding: 0px 4px;
+                            vertical-align: text-bottom;
+                          `}
+                          color={colorOfTag(tag)}
+                        >
+                          {tag}
+                        </JiraTag>
+                      ))}
+                      {title}
+                    </SuggestionTitle>
+                    <SuggestionRepo>{`@${
+                      notification.repository
+                    }`}</SuggestionRepo>
+                  </Suggestion>
+                );
+              })
+          )}
         </React.Fragment>
       ) : (
         // Filter Suggestion Menu
@@ -431,17 +442,6 @@ function DropdownSection({
             />
             <p>{'Search for specific repositories'}</p>
           </FilterItem>
-          {/* <FilterItem onClick={() => setSearchInput('[score] ')}>
-            <FilterTag type={SearchFilters.SCORE} />
-            <TypedSpan
-              source={exampleNotifications}
-              toString={n => {
-                const comparator = ['>', '='][Math.floor(Math.random() * 2)];
-                return `${comparator} ${n.score}`;
-              }}
-            />
-            <p>{'Search for specific score ranges'}</p>
-          </FilterItem> */}
           <h5>
             {'Not including a filter will search everything across all fields'}
           </h5>

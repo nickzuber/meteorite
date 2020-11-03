@@ -424,7 +424,7 @@ export const Dropdown = enhance(
   @media (max-width: ${WIDTH_FOR_SMALL_SCREENS}) {
     width: 288px;
   }
-  min-height: 40px;
+  min-height: 20px;
   position: absolute;
   top: calc(100% - 1px);
   left: -1px;
