@@ -1,19 +1,19 @@
 import React from 'react';
 import moment from 'moment';
 import amplitude from 'amplitude-js';
-import { Redirect } from "@reach/router";
-import { compose } from 'recompose';
-import { withNotificationsProvider } from '../../providers/Notifications';
-import { withAuthProvider } from '../../providers/Auth';
-import { withCookiesProvider } from '../../providers/Cookies';
-import { withStorageProvider } from '../../providers/Storage';
-import { OAUTH_TOKEN_COOKIE } from '../../constants/cookies';
-import { routes } from '../../constants';
-import { Filters } from '../../constants/filters';
-import { Status } from '../../constants/status';
-import { Reasons, Badges } from '../../constants/reasons';
+import {Redirect} from '@reach/router';
+import {compose} from 'recompose';
+import {withNotificationsProvider} from '../../providers/Notifications';
+import {withAuthProvider} from '../../providers/Auth';
+import {withCookiesProvider} from '../../providers/Cookies';
+import {withStorageProvider} from '../../providers/Storage';
+import {OAUTH_TOKEN_COOKIE} from '../../constants/cookies';
+import {routes} from '../../constants';
+import {Filters} from '../../constants/filters';
+import {Status} from '../../constants/status';
+import {Reasons, Badges} from '../../constants/reasons';
 import Scene from './Scene';
-import { getMessageFromReasons } from './redesign/utils';
+import {getMessageFromReasons} from './redesign/utils';
 import issueIcon from '../../images/issue-bg.png';
 import prIcon from '../../images/pr-bg.png';
 import tabIcon from '../../images/iconCircle.png';
@@ -42,7 +42,7 @@ export const Mode = {
   OLD: 3
 };
 
-function logNotificationPinned (value) {
+function logNotificationPinned(value) {
   amplitude.getInstance().logEvent('notification_pinned', {
     event_category: 'notification',
     event_label: 'Notification pinned',
@@ -50,7 +50,7 @@ function logNotificationPinned (value) {
   });
 }
 
-function logNotificationRead (value) {
+function logNotificationRead(value) {
   amplitude.getInstance().logEvent('notification_read', {
     event_category: 'notification',
     event_label: 'Notification read',
@@ -58,7 +58,7 @@ function logNotificationRead (value) {
   });
 }
 
-function logNotificationArchived (value) {
+function logNotificationArchived(value) {
   amplitude.getInstance().logEvent('notification_archived', {
     event_category: 'notification',
     event_label: 'Notification archived',
@@ -98,7 +98,7 @@ function logNotificationArchived (value) {
  * @param {Object} notification Some notification to score.
  * @return {number} The score.
  */
-function scoreOf (notification) {
+function scoreOf(notification) {
   const {reasons} = notification;
   let score = 0;
   let prevReason = null;
@@ -113,12 +113,15 @@ function scoreOf (notification) {
     prevReason = reason;
   }
   return score;
-};
+}
 
-function badgesOf (notification) {
+function badgesOf(notification) {
   const badges = [];
   const len = notification.reasons.length;
-  const timeSinceLastUpdate = moment().diff(moment(notification.reasons[len - 1].time), 'minutes');
+  const timeSinceLastUpdate = moment().diff(
+    moment(notification.reasons[len - 1].time),
+    'minutes'
+  );
 
   // If there are more than 4 reasons, and the last 4 reasons have happened within
   // an hour of each other. The last update should be within the past 30 minutes.
@@ -138,12 +141,14 @@ function badgesOf (notification) {
   }
   // If you've been tagged in for review and the most recent update happened over
   // 3 days ago – but that specific time is subject to change here if we want.
-  if (notification.reasons.some(r => r.reason === Reasons.REVIEW_REQUESTED) &&
-      timeSinceLastUpdate > 60 * 24 * 3) {
+  if (
+    notification.reasons.some(r => r.reason === Reasons.REVIEW_REQUESTED) &&
+    timeSinceLastUpdate > 60 * 24 * 3
+  ) {
     badges.push(Badges.OLD);
   }
   return badges;
-};
+}
 
 const scoreOfReason = {
   [Reasons.ASSIGN]: 21,
@@ -154,7 +159,7 @@ const scoreOfReason = {
   [Reasons.REVIEW_REQUESTED]: 29,
   [Reasons.SUBSCRIBED]: 3,
   [Reasons.COMMENT]: 6,
-  [Reasons.STATE_CHANGE]: 5,
+  [Reasons.STATE_CHANGE]: 5
 };
 
 const decorateWithScore = notification => ({
@@ -164,7 +169,7 @@ const decorateWithScore = notification => ({
 });
 
 class NotificationsPage extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
 
     this.notificationSent = false;
@@ -185,9 +190,9 @@ class NotificationsPage extends React.Component {
     sort: Sort.SCORE,
     descending: false,
     user: null
-  }
+  };
 
-  componentDidMount () {
+  componentDidMount() {
     const isFirstTimeUser = !this.props.storageApi.getUserItem('hasOnboarded');
 
     if (isFirstTimeUser) {
@@ -201,7 +206,9 @@ class NotificationsPage extends React.Component {
       amplitude.getInstance().setUserProperties({
         username: user.login,
         full_name: user.name,
-        version: process.localEnv.GIT_HASH ? process.localEnv.GIT_HASH : 'unknown'
+        version: process.localEnv.GIT_HASH
+          ? process.localEnv.GIT_HASH
+          : 'unknown'
       });
       this.setState({user});
     });
@@ -213,15 +220,19 @@ class NotificationsPage extends React.Component {
     }, 2 * 1000);
 
     this.syncer = setInterval(() => {
-      this.props.notificationsApi.fetchNotificationsSync()
+      this.props.notificationsApi
+        .fetchNotificationsSync()
         .then(() => this.setState({error: null}))
         .catch(error => this.setState({error}));
       this.setState({currentTime: moment()});
     }, 8 * 1000);
   }
 
-  shouldComponentUpdate (nextProps, nextState) {
-    if (this.props.notificationsApi.newChanges !== nextProps.notificationsApi.newChanges) {
+  shouldComponentUpdate(nextProps, nextState) {
+    if (
+      this.props.notificationsApi.newChanges !==
+      nextProps.notificationsApi.newChanges
+    ) {
       this.notificationSent = false;
     }
     // The idea here is if we've just updated the prevNotifications state, then
@@ -229,88 +240,88 @@ class NotificationsPage extends React.Component {
     return nextState.prevNotifications === this.state.prevNotifications;
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     clearInterval(this.syncer);
     clearInterval(this.tabSyncer);
   }
 
   onChangePage = page => {
-    this.setState({ currentPage: page });
-  }
+    this.setState({currentPage: page});
+  };
 
   onSetActiveFilter = filter => {
-    this.setState({ activeFilter: filter, currentPage: 1 });
-  }
+    this.setState({activeFilter: filter, currentPage: 1});
+  };
 
   onSetActiveStatus = status => {
-    this.setState({ activeStatus: status, currentPage: 1 });
-  }
+    this.setState({activeStatus: status, currentPage: 1});
+  };
 
   onClearQuery = () => {
-    this.setState({ query: null });
-  }
+    this.setState({query: null});
+  };
 
   onLogout = () => {
     // Remove cookie and invalidate token on client.
     this.props.cookiesApi.removeCookie(OAUTH_TOKEN_COOKIE);
     this.props.authApi.invalidateToken();
-  }
+  };
 
-  onSearch = event => {
-    const text = event.target.value;
-
+  onSearch = text => {
     // Ignore empty queries.
     if (text.length <= 0) {
       this.onClearQuery();
       return;
     }
 
-    this.setState({ isSearching: true });
+    this.setState({isSearching: true});
     setTimeout(() => {
       this.setState({
         query: text,
         isSearching: false
-       });
+      });
     }, 800);
-  }
+  };
 
-  enhancedOnMarkAsPinned = (thread_id) => {
+  enhancedOnMarkAsPinned = thread_id => {
     logNotificationPinned(thread_id);
     this.props.notificationsApi.pinThread(thread_id);
-  }
+  };
 
   enhancedOnMarkAsReadPinned = (thread_id, repository) => {
     logNotificationRead(thread_id);
     this.props.storageApi.incrStat('stagedCount');
     this.props.storageApi.incrStat(repository + '-stagedCount', '__REPO__');
     this.props.notificationsApi.readPinThread(thread_id);
-  }
+  };
 
   enhancedOnStageThread = (thread_id, repository) => {
     logNotificationRead(thread_id);
     this.props.storageApi.incrStat('stagedCount');
     this.props.storageApi.incrStat(repository + '-stagedCount', '__REPO__');
     this.props.notificationsApi.stageThread(thread_id);
-  }
+  };
 
   enhancedOnMarkAsRead = (thread_id, repository) => {
     logNotificationArchived(thread_id);
     this.props.storageApi.incrStat('stagedCount');
     this.props.storageApi.incrStat(repository + '-stagedCount', '__REPO__');
     this.props.notificationsApi.markAsRead(thread_id);
-  }
+  };
 
   restoreThread = thread_id => {
     this.props.notificationsApi.restoreThread(thread_id);
-  }
+  };
 
   setNotificationsPermission = (...args) => {
     this.props.notificationsApi.setNotificationsPermission(...args);
-  }
+  };
 
-  updateTabIcon (hasUnread = false) {
+  updateTabIcon(hasUnread = false) {
     this.isUnreadTab = hasUnread;
-    var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+    var link =
+      document.querySelector("link[rel*='icon']") ||
+      document.createElement('link');
     link.rel = 'shortcut icon';
     link.href = hasUnread ? tabDotIcon : tabIcon;
     document.getElementsByTagName('head')[0].appendChild(link);
@@ -338,26 +349,25 @@ class NotificationsPage extends React.Component {
     const n = newNotifcations[0];
     const reasonByline = getMessageFromReasons(n.reasons, n.type);
 
-    const additionalInfo = newNotifcations.length > 1
-      ? ` (+${newNotifcations.length} more)`
-      : '';
+    const additionalInfo =
+      newNotifcations.length > 1 ? ` (+${newNotifcations.length} more)` : '';
 
     const notification = new Notification(n.name + additionalInfo, {
       body: reasonByline,
-      icon: n.type === "Issue" ? issueIcon : prIcon,
-      badge: n.type === "Issue" ? issueIcon : prIcon,
-      requireInteraction: true,
+      icon: n.type === 'Issue' ? issueIcon : prIcon,
+      badge: n.type === 'Issue' ? issueIcon : prIcon,
+      requireInteraction: true
     });
 
     notification.addEventListener('click', () => {
       this.updateTabIcon(false);
       this.enhancedOnStageThread(n.id, n.repository);
       window.open(n.url);
-    })
+    });
 
     // Manually close for legacy browser support.
     setTimeout(notification.close.bind(notification), 10000);
-  }
+  };
 
   getFilteredNotifications = () => {
     const {notifications} = this.props.notificationsApi;
@@ -365,29 +375,26 @@ class NotificationsPage extends React.Component {
     let filterMethod = () => true;
     switch (this.state.activeFilter) {
       case Filters.PARTICIPATING:
-        filterMethod = n => (
-          n.reasons.some(({ reason }) => (
-            reason === Reasons.REVIEW_REQUESTED ||
-            reason === Reasons.ASSIGN ||
-            reason === Reasons.MENTION ||
-            reason === Reasons.AUTHOR
-          ))
-        );
+        filterMethod = n =>
+          n.reasons.some(
+            ({reason}) =>
+              reason === Reasons.REVIEW_REQUESTED ||
+              reason === Reasons.ASSIGN ||
+              reason === Reasons.MENTION ||
+              reason === Reasons.AUTHOR
+          );
         break;
       case Filters.ASSIGNED:
-        filterMethod = n => (
-          n.reasons.some(({ reason }) => reason === Reasons.ASSIGN)
-        );
+        filterMethod = n =>
+          n.reasons.some(({reason}) => reason === Reasons.ASSIGN);
         break;
       case Filters.REVIEW_REQUESTED:
-        filterMethod = n => (
-          n.reasons.some(({ reason }) => reason === Reasons.REVIEW_REQUESTED)
-        );
+        filterMethod = n =>
+          n.reasons.some(({reason}) => reason === Reasons.REVIEW_REQUESTED);
         break;
       case Filters.COMMENT:
-        filterMethod = n => (
-          n.reasons.some(({ reason }) => reason === Reasons.COMMENT)
-        );
+        filterMethod = n =>
+          n.reasons.some(({reason}) => reason === Reasons.COMMENT);
         break;
       default:
         filterMethod = () => true;
@@ -398,23 +405,31 @@ class NotificationsPage extends React.Component {
       .map(decorateWithScore);
 
     if (this.state.mode === Mode.HOT) {
-      filteredNotifications = filteredNotifications
-        .filter(item => item.badges.includes(Badges.HOT));
+      filteredNotifications = filteredNotifications.filter(item =>
+        item.badges.includes(Badges.HOT)
+      );
     } else if (this.state.mode === Mode.COMMENTS) {
-      filteredNotifications = filteredNotifications
-        .filter(item => item.badges.includes(Badges.COMMENTS));
+      filteredNotifications = filteredNotifications.filter(item =>
+        item.badges.includes(Badges.COMMENTS)
+      );
     } else if (this.state.mode === Mode.OLD) {
-      filteredNotifications = filteredNotifications
-        .filter(item => item.badges.includes(Badges.OLD));
+      filteredNotifications = filteredNotifications.filter(item =>
+        item.badges.includes(Badges.OLD)
+      );
     }
 
-    let notificationsQueued = filteredNotifications.filter(n => (
-      n.status === Status.QUEUED ||
-      n.status === Status.Pinned ||
-      n.status === Status.PinnedRead
-    ));
-    let notificationsStaged = filteredNotifications.filter(n => n.status === Status.STAGED);
-    let notificationsClosed = filteredNotifications.filter(n => n.status === Status.CLOSED);
+    let notificationsQueued = filteredNotifications.filter(
+      n =>
+        n.status === Status.QUEUED ||
+        n.status === Status.Pinned ||
+        n.status === Status.PinnedRead
+    );
+    let notificationsStaged = filteredNotifications.filter(
+      n => n.status === Status.STAGED
+    );
+    let notificationsClosed = filteredNotifications.filter(
+      n => n.status === Status.CLOSED
+    );
 
     let notificationsToRender = [];
     switch (this.state.activeStatus) {
@@ -447,16 +462,12 @@ class NotificationsPage extends React.Component {
       if (this.state.descending) {
         notificationsToRender.sort((a, b) => {
           const diff = a.repository.localeCompare(b.repository);
-          return diff === 0
-            ? b.score - a.score
-            : diff;
+          return diff === 0 ? b.score - a.score : diff;
         });
       } else {
         notificationsToRender.sort((a, b) => {
           const diff = b.repository.localeCompare(a.repository);
-          return diff === 0
-            ? b.score - a.score
-            : diff;
+          return diff === 0 ? b.score - a.score : diff;
         });
       }
     }
@@ -469,33 +480,37 @@ class NotificationsPage extends React.Component {
     }
     if (this.state.sort === Sort.DATE) {
       if (this.state.descending) {
-        notificationsToRender.sort((a, b) => moment(a.updated_at).diff(b.updated_at));
+        notificationsToRender.sort((a, b) =>
+          moment(a.updated_at).diff(b.updated_at)
+        );
       } else {
-        notificationsToRender.sort((a, b) => moment(b.updated_at).diff(a.updated_at));
+        notificationsToRender.sort((a, b) =>
+          moment(b.updated_at).diff(a.updated_at)
+        );
       }
     }
 
     // We gotta make sure to search notifications before we paginate.
     // Otherwise we'd just end up searching on the current page, which is bad.
     if (this.state.query) {
-      notificationsToRender = notificationsToRender.filter(n => (
-        n.name.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1)
+      notificationsToRender = notificationsToRender.filter(
+        n => n.name.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1
       );
-      notificationsQueued = notificationsQueued.filter(n => (
-        n.name.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1)
+      notificationsQueued = notificationsQueued.filter(
+        n => n.name.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1
       );
-      notificationsStaged = notificationsStaged.filter(n => (
-        n.name.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1)
+      notificationsStaged = notificationsStaged.filter(
+        n => n.name.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1
       );
-      notificationsClosed = notificationsClosed.filter(n => (
-        n.name.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1)
+      notificationsClosed = notificationsClosed.filter(
+        n => n.name.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1
       );
     }
 
     if (this.props.notificationsApi.newChanges) {
-      const filteredNewChanges = this.props.notificationsApi.newChanges.filter(n => (
-        notificationsToRender.some(fn => fn.id === n.id)
-      ));
+      const filteredNewChanges = this.props.notificationsApi.newChanges.filter(
+        n => notificationsToRender.some(fn => fn.id === n.id)
+      );
       if (filteredNewChanges.length > 0) {
         this.sendWebNotification(filteredNewChanges);
       }
@@ -522,16 +537,17 @@ class NotificationsPage extends React.Component {
     });
 
     return {
+      filteredNotifications: filteredNotifications,
       notifications: notificationsToRender,
       queuedCount: notificationsQueued.length,
       stagedCount: notificationsStaged.length,
-      closedCount: notificationsClosed.length,
+      closedCount: notificationsClosed.length
     };
-  }
+  };
 
-  render () {
+  render() {
     if (!this.props.authApi.token) {
-      return <Redirect noThrow to={routes.LOGIN} />
+      return <Redirect noThrow to={routes.LOGIN} />;
     }
 
     const {
@@ -540,25 +556,32 @@ class NotificationsPage extends React.Component {
       clearCache,
       notificationsPermission,
       loading: isFetchingNotifications,
-      error: fetchingNotificationsError,
+      error: fetchingNotificationsError
     } = this.props.notificationsApi;
 
     const {
+      filteredNotifications,
       notifications: scoredAndSortedNotifications,
       queuedCount,
       stagedCount,
-      closedCount,
+      closedCount
     } = this.getFilteredNotifications();
 
-    const [highestScore, lowestScore] = scoredAndSortedNotifications.reduce(([h, l], notification) => {
-      h = Math.max(notification.score, h);
-      l = Math.min(notification.score, l);
-      return [h, l];
-    }, [0, Infinity]);
+    const [highestScore, lowestScore] = scoredAndSortedNotifications.reduce(
+      ([h, l], notification) => {
+        h = Math.max(notification.score, h);
+        l = Math.min(notification.score, l);
+        return [h, l];
+      },
+      [0, Infinity]
+    );
 
     let firstIndex = (this.state.currentPage - 1) * PER_PAGE;
-    let lastIndex = (this.state.currentPage * PER_PAGE);
-    let notificationsOnPage = scoredAndSortedNotifications.slice(firstIndex, lastIndex);
+    let lastIndex = this.state.currentPage * PER_PAGE;
+    let notificationsOnPage = scoredAndSortedNotifications.slice(
+      firstIndex,
+      lastIndex
+    );
     let lastPage = Math.ceil(scoredAndSortedNotifications.length / PER_PAGE);
     let firstNumbered = firstIndex + 1;
     let lastNumbered = Math.min(lastIndex, scoredAndSortedNotifications.length);
@@ -583,12 +606,16 @@ class NotificationsPage extends React.Component {
     )[0];
     const stagedStatistics = this.props.storageApi.getStat(
       'stagedCount',
-      this.state.currentTime.clone().startOf('week').subtract(1, 'week'),
+      this.state.currentTime
+        .clone()
+        .startOf('week')
+        .subtract(1, 'week'),
       this.state.currentTime.clone().endOf('week')
     );
 
     return (
       <Scene
+        allNotifications={filteredNotifications}
         currentTime={this.state.currentTime}
         readStatistics={stagedStatistics}
         isFirstTimeUser={this.state.isFirstTimeUser}
@@ -623,7 +650,9 @@ class NotificationsPage extends React.Component {
         onRefreshNotifications={this.props.storageApi.refreshNotifications}
         isSearching={this.state.isSearching}
         isFetchingNotifications={isFetchingNotifications}
-        fetchingNotificationsError={fetchingNotificationsError || this.state.error}
+        fetchingNotificationsError={
+          fetchingNotificationsError || this.state.error
+        }
         highestScore={highestScore}
         lowestScore={lowestScore}
         hasUnread={this.isUnreadTab}
@@ -645,7 +674,7 @@ class NotificationsPage extends React.Component {
       />
     );
   }
-};
+}
 
 const enhance = compose(
   withStorageProvider,

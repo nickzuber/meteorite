@@ -49,25 +49,28 @@ const BaseBlob = styled('div')`
 `;
 
 const Blob1 = styled(BaseBlob)`
-  background: url(${(B1)}) center center no-repeat;
+  background: url(${B1}) center center no-repeat;
   animation: ${blobFrames1} 25s infinite;
 `;
 
 const Blob2 = styled(BaseBlob)`
-  background: url(${(B2)}) center center no-repeat;
+  background: url(${B2}) center center no-repeat;
   animation: ${blobFrames2} 15s infinite;
 `;
 
-const Header = styled('h1')(({dark}) => `
+const Header = styled('h1')(
+  ({dark}) => `
   text-align: center;
   letter-spacing: -0.25px;
   font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
   font-weight: 500;
   font-size: 20px;
   color: ${dark ? '#ffffff' : '#131212'};
-`);
+`
+);
 
-const Byline = styled('p')(({dark}) => `
+const Byline = styled('p')(
+  ({dark}) => `
   text-align: center;
   font-family: medium-content-sans-serif-font,Inter UI,system-ui,sans-serif;
   font-weight: 500;
@@ -77,9 +80,11 @@ const Byline = styled('p')(({dark}) => `
   font-size: 16px;
   line-height: 16px;
   color: ${dark ? '#667386' : '#9d9b97'};
-`);
+`
+);
 
-const Container = styled('div')(({opacity}) => `
+const Container = styled('div')(
+  ({opacity}) => `
   position: relative;
   background: none;
   height: 550px;
@@ -90,9 +95,10 @@ const Container = styled('div')(({opacity}) => `
   overflow: hidden;
   opacity: ${opacity};
   transition: all 150ms ease-in;
-`);
+`
+);
 
-function EmptyState ({dark}) {
+function EmptyState({dark}) {
   const [opacity, setOpacity] = React.useState(0);
   const timer = React.useRef();
   React.useEffect(() => {
@@ -102,8 +108,16 @@ function EmptyState ({dark}) {
 
   return (
     <Container opacity={opacity}>
-      <Blob1 css={css`opacity: ${dark ? 0.15 : 1};`} />
-      <Blob2 css={css`opacity: ${dark ? 0.15 : 1};`} />
+      <Blob1
+        css={css`
+          opacity: ${dark ? 0.15 : 1};
+        `}
+      />
+      <Blob2
+        css={css`
+          opacity: ${dark ? 0.15 : 1};
+        `}
+      />
       <Header dark={dark}>
         {"🌱 You're all caught up"}
         <Byline dark={dark}>

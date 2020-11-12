@@ -2,9 +2,9 @@ import moment from 'moment';
 import {Reasons} from '../constants/reasons';
 import {Status} from '../constants/status';
 
-function* createCounterGenerator () {
+function* createCounterGenerator() {
   let i = 0;
-  while(true) yield i++
+  while (true) yield i++;
 }
 
 const uidGen = createCounterGenerator();
@@ -19,7 +19,7 @@ const getMockReasons = (n, ra) => {
   }));
 };
 
-function getMockName (index) {
+function getMockName(index) {
   const names = [
     '[MPQ-43] Feature - Improve native events performance',
     'Chore - Remove redundent constants file',
@@ -27,29 +27,36 @@ function getMockName (index) {
     'Feature - Update Storage bindings to be fastpipe compatible',
     '[RFC] Standard Library Interfaces',
     '[Belt] Change reduceReverse to reduceRight',
-    '[Experiment][DoNotmerge] Represent OCaml records as JS objects at runtime',
+    '[Experiment][DoNotmerge] Represent OCaml records as JS objects at runtime'
   ];
   return names[index % names.length];
 }
 
 const getMockNotification = (ra, rb, rc) => ({
   id: uidGen.next().value,
-  updated_at: moment().subtract(ra * 500, 'minutes').utc().format(),
+  updated_at: moment()
+    .subtract(ra * 500, 'minutes')
+    .utc()
+    .format(),
   isAuthor: ra < 0.2,
   status: ra < 0.4 ? Status.Unread : rb < 0.6 ? Status.Read : Status.Archived,
   reasons: getMockReasons(Math.ceil(rb * 10), ra),
-  type: ['PullRequest', 'Issue'][rc > .7 ? 1 : 0],
+  type: ['PullRequest', 'Issue'][rc > 0.7 ? 1 : 0],
   name: getMockName(indexGen.next().value),
   url: 'https://github.com/test/repo/pull',
-  repository: ['BuckleScript/bucklescript', 'nickzuber/meteorite'][Math.floor(rb * 2)],
+  repository: ['BuckleScript/bucklescript', 'nickzuber/meteorite'][
+    Math.floor(rb * 2)
+  ],
   number: Math.ceil(rc * 1000),
-  repositoryUrl: 'https://github.com/test/repo',
+  repositoryUrl: 'https://github.com/test/repo'
 });
 
-export function createMockNotifications (n = 50) {
+export function createMockNotifications(n = 50) {
   const mockNotifications = new Array(n);
   for (let i = 0; i < mockNotifications.length; i++) {
-    let a = Math.random(), b = Math.random(), c = Math.random();
+    let a = Math.random(),
+      b = Math.random(),
+      c = Math.random();
     mockNotifications[i] = getMockNotification(a, b, c);
   }
   return mockNotifications;

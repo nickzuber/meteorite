@@ -7,14 +7,14 @@ import {Status} from '../constants/status';
 const BASE_GITHUB_API_URL = 'https://api.github.com';
 const PER_PAGE = 50;
 
-function transformUrlFromResponse (url) {
+function transformUrlFromResponse(url) {
   return url
     .replace('api.github.com', 'github.com')
     .replace('/repos/', '/')
     .replace('/pulls/', '/pull/');
 }
 
-function processHeadersAndBodyJson (response) {
+function processHeadersAndBodyJson(response) {
   const entries = response.headers.entries();
   const headers = {};
   for (let [name, value] of entries) {
@@ -25,7 +25,7 @@ function processHeadersAndBodyJson (response) {
   const links = {};
 
   if (rawLinks) {
-    rawLinks.split(',').forEach((p) => {
+    rawLinks.split(',').forEach(p => {
       const section = p.split(';');
       if (section.length !== 2) {
         throw new Error("section could not be split on ';'");
@@ -34,7 +34,7 @@ function processHeadersAndBodyJson (response) {
       const page = section[0].match(/page=(\d)/)[1];
       const name = section[1].replace(/rel="(.*)"/, '$1').trim();
       links[name] = {url, page};
-    })
+    });
   }
   // links.next.page
   headers['link'] = links;
@@ -61,7 +61,7 @@ function processHeadersAndBodyJson (response) {
 }
 
 class NotificationsProvider extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
 
     this.last_modified = null;
@@ -73,18 +73,19 @@ class NotificationsProvider extends React.Component {
     error: null,
     newChanges: null,
     notificationsPermission:
-      this.props.getUserItem('notificationsPermission') ||
-      'default',
-  }
+      this.props.getUserItem('notificationsPermission') || 'default'
+  };
 
-  shouldComponentUpdate (nextProps, nextState) {
+  shouldComponentUpdate(nextProps, nextState) {
     // Don't try to rerender if we're just setting the new changes.
     if (this.state.newChanges !== nextState.newChanges) {
       return false;
     }
     // Update if our state changes.
-    if ((this.state.loading !== nextState.loading) ||
-        (this.state.error !== nextState.error)) {
+    if (
+      this.state.loading !== nextState.loading ||
+      this.state.error !== nextState.error
+    ) {
       return true;
     }
     // Update if the token changes at all (sign in & sign out).
@@ -93,9 +94,7 @@ class NotificationsProvider extends React.Component {
     }
     // Only update if our notifications prop changes.
     // All other props "changing" should NOT trigger a rerender.
-    return (
-      this.props.notifications !== nextProps.notifications
-    );
+    return this.props.notifications !== nextProps.notifications;
   }
 
   // The web notificaitons API doesn't let users revoke notifications permission
@@ -106,12 +105,12 @@ class NotificationsProvider extends React.Component {
     this.setState({notificationsPermission: permission});
     this.props.setUserItem('notificationsPermission', permission);
     this.forceUpdate();
-  }
+  };
 
   request = (url, method = 'GET') => {
     const headers = {
-      'Authorization': `token ${this.props.token}`,
-      'Content-Type': 'application/json',
+      Authorization: `token ${this.props.token}`,
+      'Content-Type': 'application/json'
     };
 
     // @TODO probably add timestamp
@@ -123,26 +122,27 @@ class NotificationsProvider extends React.Component {
     return fetch(url, {
       method,
       headers
-    }).then(processHeadersAndBodyJson)
+    })
+      .then(processHeadersAndBodyJson)
       .then(({json}) => {
-        console.info(`Response from %c${url}`, 'font-weight: bold;')
-        console.info(json)
-        console.info('')
+        console.info(`Response from %c${url}`, 'font-weight: bold;');
+        console.info(json);
+        console.info('');
         this.props.setUserItem(url, json);
         return json;
       })
       .catch(({status, text}) => {
-        console.info(`Response from %c${url}`, 'font-weight: bold;')
-        console.info(`${status}: ${text}`)
-        console.info('')
+        console.info(`Response from %c${url}`, 'font-weight: bold;');
+        console.info(`${status}: ${text}`);
+        console.info('');
         this.props.setUserItem(url, null);
       });
-  }
+  };
 
   requestUser = () => {
     const headers = {
-      'Authorization': `token ${this.props.token}`,
-      'Content-Type': 'application/json',
+      Authorization: `token ${this.props.token}`,
+      'Content-Type': 'application/json'
     };
 
     // @TODO probably add timestamp
@@ -154,12 +154,13 @@ class NotificationsProvider extends React.Component {
     return fetch(`${BASE_GITHUB_API_URL}/user`, {
       method: 'GET',
       headers: headers
-    }).then(processHeadersAndBodyJson)
+    })
+      .then(processHeadersAndBodyJson)
       .then(({json}) => {
         this.props.setUserItem('user-model', json);
         return json;
       });
-  }
+  };
 
   requestPage = (page = 1, optimizePolling = true) => {
     // Fetch all notifications from a month ago, including ones that have been read.
@@ -169,21 +170,28 @@ class NotificationsProvider extends React.Component {
     // the middle of the things you're working on and only having part of the story.
     //
     // 1 month is pretty arbitrary, we can raise this if we want.
-    const since = moment().subtract(1, 'month').toISOString().split('.')[0] + 'Z';
+    const since =
+      moment()
+        .subtract(1, 'month')
+        .toISOString()
+        .split('.')[0] + 'Z';
 
     const headers = {
-      'Authorization': `token ${this.props.token}`,
-      'Content-Type': 'application/json',
+      Authorization: `token ${this.props.token}`,
+      'Content-Type': 'application/json'
     };
 
     if (optimizePolling && this.last_modified) {
       headers['If-Modified-Since'] = this.last_modified;
     }
 
-    return fetch(`${BASE_GITHUB_API_URL}/notifications?page=${page}&per_page=${PER_PAGE}&since=${since}&all=true`, {
-      method: 'GET',
-      headers: headers
-    })
+    return fetch(
+      `${BASE_GITHUB_API_URL}/notifications?page=${page}&per_page=${PER_PAGE}&since=${since}&all=true`,
+      {
+        method: 'GET',
+        headers: headers
+      }
+    )
       .then(processHeadersAndBodyJson)
       .then(({headers, json}) => {
         // If there were updates, make sure we get the newest last-modified.
@@ -203,7 +211,7 @@ class NotificationsProvider extends React.Component {
         }
         return this.processNotificationsChunk(nextPage, json);
       });
-  }
+  };
 
   requestFetchNotifications = (page = 1, optimizePolling = true) => {
     if (this.state.syncing) {
@@ -212,9 +220,10 @@ class NotificationsProvider extends React.Component {
     }
 
     this.setState({syncing: true});
-    return this.requestPage(page, optimizePolling)
-      .finally(() => this.setState({syncing: false}));
-  }
+    return this.requestPage(page, optimizePolling).finally(() =>
+      this.setState({syncing: false})
+    );
+  };
 
   fetchNotifications = (page = 1, optimizePolling = true) => {
     if (!this.props.token) {
@@ -227,12 +236,12 @@ class NotificationsProvider extends React.Component {
       return;
     }
 
-    this.setState({ loading: true });
+    this.setState({loading: true});
     return this.requestFetchNotifications(page, optimizePolling)
       .then(() => this.setState({error: null}))
-      .catch(error =>this.setState({error}))
-      .finally(() => this.setState({ loading: false }));
-  }
+      .catch(error => this.setState({error}))
+      .finally(() => this.setState({loading: false}));
+  };
 
   processNotificationsChunk = (nextPage, notificationsChunk) => {
     return new Promise((resolve, reject) => {
@@ -278,12 +287,12 @@ class NotificationsProvider extends React.Component {
         return resolve();
       }
     });
-  }
+  };
 
   requestMarkAsRead = thread_id => {
     const headers = {
-      'Authorization': `token ${this.props.token}`,
-      'Content-Type': 'application/json',
+      Authorization: `token ${this.props.token}`,
+      'Content-Type': 'application/json'
     };
 
     return fetch(`${BASE_GITHUB_API_URL}/notifications/threads/${thread_id}`, {
@@ -291,20 +300,18 @@ class NotificationsProvider extends React.Component {
       headers: headers
     })
       .then(response => {
-        return response.status === 205
-          ? Promise.resolve()
-          : Promise.reject();
+        return response.status === 205 ? Promise.resolve() : Promise.reject();
       })
       .then(() => {
         this.props.removeItemFromStorage(thread_id);
         this.props.refreshNotifications();
         return Promise.resolve();
       });
-  }
+  };
 
   markAsRead = thread_id => {
     if (!this.props.token) {
-      console.error('Unauthenitcated, aborting request.')
+      console.error('Unauthenitcated, aborting request.');
       return false;
     }
 
@@ -313,12 +320,12 @@ class NotificationsProvider extends React.Component {
       return;
     }
 
-    this.setState({ loading: true });
+    this.setState({loading: true});
     return this.requestMarkAsRead(thread_id)
       .then(() => this.setState({error: null}))
       .catch(error => this.setState({error}))
-      .finally(() => this.setState({ loading: false }));
-  }
+      .finally(() => this.setState({loading: false}));
+  };
 
   requestClearCache = () => {
     return new Promise((resolve, reject) => {
@@ -327,15 +334,15 @@ class NotificationsProvider extends React.Component {
       this.last_modified = null;
       return resolve();
     });
-  }
+  };
 
   clearCache = () => {
-    this.setState({ loading: true });
+    this.setState({loading: true});
     return this.requestClearCache()
       .then(() => this.setState({error: null}))
       .catch(error => this.setState({error}))
-      .finally(() => this.setState({ loading: false }));
-  }
+      .finally(() => this.setState({loading: false}));
+  };
 
   requestStageThread = thread_id => {
     return new Promise((resolve, reject) => {
@@ -350,10 +357,12 @@ class NotificationsProvider extends React.Component {
         this.props.refreshNotifications();
         return resolve();
       } else {
-        throw new Error(`Attempted to stage thread ${thread_id} that wasn't found in the cache.`);
+        throw new Error(
+          `Attempted to stage thread ${thread_id} that wasn't found in the cache.`
+        );
       }
     });
-  }
+  };
 
   requestPinThread = thread_id => {
     return new Promise((resolve, reject) => {
@@ -368,10 +377,12 @@ class NotificationsProvider extends React.Component {
         this.props.refreshNotifications();
         return resolve();
       } else {
-        throw new Error(`Attempted to stage thread ${thread_id} that wasn't found in the cache.`);
+        throw new Error(
+          `Attempted to stage thread ${thread_id} that wasn't found in the cache.`
+        );
       }
     });
-  }
+  };
 
   requestReadPinThread = thread_id => {
     return new Promise((resolve, reject) => {
@@ -386,10 +397,12 @@ class NotificationsProvider extends React.Component {
         this.props.refreshNotifications();
         return resolve();
       } else {
-        throw new Error(`Attempted to stage thread ${thread_id} that wasn't found in the cache.`);
+        throw new Error(
+          `Attempted to stage thread ${thread_id} that wasn't found in the cache.`
+        );
       }
     });
-  }
+  };
 
   requestStageAll = () => {
     return new Promise((resolve, reject) => {
@@ -410,7 +423,7 @@ class NotificationsProvider extends React.Component {
       this.props.refreshNotifications();
       return resolve();
     });
-  }
+  };
 
   requestRestoreThread = thread_id => {
     return new Promise((resolve, reject) => {
@@ -425,54 +438,56 @@ class NotificationsProvider extends React.Component {
         this.props.refreshNotifications();
         return resolve();
       } else {
-        throw new Error(`Attempted to restore thread ${thread_id} that wasn't found in the cache.`);
+        throw new Error(
+          `Attempted to restore thread ${thread_id} that wasn't found in the cache.`
+        );
       }
     });
-  }
+  };
 
   markAllAsStaged = () => {
-    this.setState({ loading: true });
+    this.setState({loading: true});
     return this.requestStageAll()
       .then(() => this.setState({error: null}))
       .catch(error => this.setState({error}))
-      .finally(() => this.setState({ loading: false }));
-  }
+      .finally(() => this.setState({loading: false}));
+  };
 
   stageThread = thread_id => {
     return this.requestStageThread(thread_id)
       .then(() => this.setState({error: null}))
       .catch(error => this.setState({error}));
-  }
+  };
 
   pinThread = thread_id => {
     return this.requestPinThread(thread_id)
       .then(() => this.setState({error: null}))
       .catch(error => this.setState({error}));
-  }
+  };
 
   readPinThread = thread_id => {
     return this.requestReadPinThread(thread_id)
       .then(() => this.setState({error: null}))
       .catch(error => this.setState({error}));
-  }
+  };
 
   restoreThread = thread_id => {
     return this.requestRestoreThread(thread_id)
       .then(() => this.setState({error: null}))
       .catch(error => this.setState({error}));
-  }
+  };
 
   updateNotification = (n, cachedNotification = null) => {
     const prevReason = cachedNotification ? cachedNotification.reasons : null;
-    const isPinned = cachedNotification ? (
-      cachedNotification.status === Status.Pinned ||
-      cachedNotification.status === Status.PinnedRead
-    ) : false;
+    const isPinned = cachedNotification
+      ? cachedNotification.status === Status.Pinned ||
+        cachedNotification.status === Status.PinnedRead
+      : false;
     let reasons = [];
     const newReason = {
       reason: n.reason,
       time: n.updated_at
-    }
+    };
 
     if (prevReason) {
       reasons = prevReason.concat(newReason);
@@ -485,7 +500,9 @@ class NotificationsProvider extends React.Component {
       : null;
 
     const url = commentNumber
-      ? transformUrlFromResponse(n.subject.url) + '#issuecomment-' + commentNumber
+      ? transformUrlFromResponse(n.subject.url) +
+        '#issuecomment-' +
+        commentNumber
       : transformUrlFromResponse(n.subject.url);
 
     let nextStatus = null;
@@ -522,9 +539,9 @@ class NotificationsProvider extends React.Component {
     };
     this.props.setItemInStorage(n.id, value);
     return value;
-  }
+  };
 
-  render () {
+  render() {
     return this.props.children({
       ...this.state,
       request: this.request,
@@ -539,14 +556,14 @@ class NotificationsProvider extends React.Component {
       restoreThread: this.restoreThread,
       pinThread: this.pinThread,
       readPinThread: this.readPinThread,
-      setNotificationsPermission: this.setNotificationsPermission,
+      setNotificationsPermission: this.setNotificationsPermission
     });
   }
 }
 
 const withNotificationsProvider = WrappedComponent => props => (
   <AuthConsumer>
-    {({ token }) => (
+    {({token}) => (
       <StorageProvider>
         {({
           refreshNotifications,
@@ -569,8 +586,11 @@ const withNotificationsProvider = WrappedComponent => props => (
             removeItemFromStorage={removeItem}
             token={token}
           >
-            {(notificationsApi) => (
-              <WrappedComponent {...props} notificationsApi={notificationsApi} />
+            {notificationsApi => (
+              <WrappedComponent
+                {...props}
+                notificationsApi={notificationsApi}
+              />
             )}
           </NotificationsProvider>
         )}
@@ -579,7 +599,4 @@ const withNotificationsProvider = WrappedComponent => props => (
   </AuthConsumer>
 );
 
-export {
-  NotificationsProvider,
-  withNotificationsProvider
-};
+export {NotificationsProvider, withNotificationsProvider};

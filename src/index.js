@@ -8,11 +8,11 @@ const OfflinePlugin = require('offline-plugin/runtime');
 
 OfflinePlugin.install({
   onInstalled: function() {
-    console.info('Offline content has been installed.')
+    console.info('Offline content has been installed.');
   },
 
   onUpdating: function() {
-    console.info('Updating offline content.')
+    console.info('Updating offline content.');
   },
 
   onUpdateReady: function() {

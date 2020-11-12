@@ -5,20 +5,16 @@ import styled from '@emotion/styled';
 import {css, jsx} from '@emotion/core';
 import {Link as RouterLink} from '@reach/router';
 import {routes} from '../../constants';
-import {
-  BasicPageWrapper,
-  forSmallScreens,
-  forMobile
-} from '../common';
+import {BasicPageWrapper, forSmallScreens, forMobile} from '../common';
 
-import {ReactComponent as CloudOffSvg} from '../../images/svg/icons/cloud_off.svg'
-import {ReactComponent as NotificationsActiveSvg} from '../../images/svg/icons/notifications_active.svg'
-import {ReactComponent as PriorityHighSvg} from '../../images/svg/icons/priority_high.svg'
-import {ReactComponent as TuneSvg} from '../../images/svg/icons/tune.svg'
-import {ReactComponent as SpeedSvg} from '../../images/svg/icons/speed.svg'
-import {ReactComponent as GpsFixedSvg} from '../../images/svg/icons/gps_fixed.svg'
-import {ReactComponent as WbIridescentSvg} from '../../images/svg/icons/wb_iridescent.svg'
-import {ReactComponent as TimelineSvg} from '../../images/svg/icons/timeline.svg'
+import {ReactComponent as CloudOffSvg} from '../../images/svg/icons/cloud_off.svg';
+import {ReactComponent as NotificationsActiveSvg} from '../../images/svg/icons/notifications_active.svg';
+import {ReactComponent as PriorityHighSvg} from '../../images/svg/icons/priority_high.svg';
+import {ReactComponent as TuneSvg} from '../../images/svg/icons/tune.svg';
+import {ReactComponent as SpeedSvg} from '../../images/svg/icons/speed.svg';
+import {ReactComponent as GpsFixedSvg} from '../../images/svg/icons/gps_fixed.svg';
+import {ReactComponent as WbIridescentSvg} from '../../images/svg/icons/wb_iridescent.svg';
+import {ReactComponent as TimelineSvg} from '../../images/svg/icons/timeline.svg';
 
 import ItemPng from '../../images/screenshots/item.png';
 import ItemTwoPng from '../../images/screenshots/item-2.png';
@@ -35,20 +31,24 @@ const WorkflowToggle = ({easeTimingMs = 200, items}) => {
   const activeItem = items[state];
 
   return (
-    <div css={css`
-      margin-top: 32px;
-      display: flex;
-      flex-direction: row;
-      ${forSmallScreens(`
-        flex-direction: column;
-      `)}
-    `}>
-      <div css={css`
-        flex: 1;
+    <div
+      css={css`
+        margin-top: 32px;
+        display: flex;
+        flex-direction: row;
         ${forSmallScreens(`
+        flex-direction: column;
+      `)};
+      `}
+    >
+      <div
+        css={css`
+          flex: 1;
+          ${forSmallScreens(`
           margin-bottom: 24px;
-        `)}
-      `}>
+        `)};
+        `}
+      >
         {items.map((item, xid) => (
           <div
             key={xid}
@@ -68,36 +68,49 @@ const WorkflowToggle = ({easeTimingMs = 200, items}) => {
               cursor: pointer;
               background: ${state === xid ? '#ffffff' : 'none'};
               transition: all 0.15s ease-in-out;
-          `}>
-            <h3 css={css`
-              font-size: 22px;
-              line-height: 26px;
-              margin: 0 auto 4px;
-              font-family: medium-marketing-display-font,Georgia,Cambria,Times New Roman,Times,serif;
-              font-weight: 500;
-            `}>{item.title}</h3>
-            <p css={css`
-              font-size: 16px;
-              line-height: 20px;
-              margin: 0;
-            `}>{item.description}</p>
+            `}
+          >
+            <h3
+              css={css`
+                font-size: 22px;
+                line-height: 26px;
+                margin: 0 auto 4px;
+                font-family: medium-marketing-display-font, Georgia, Cambria,
+                  Times New Roman, Times, serif;
+                font-weight: 500;
+              `}
+            >
+              {item.title}
+            </h3>
+            <p
+              css={css`
+                font-size: 16px;
+                line-height: 20px;
+                margin: 0;
+              `}
+            >
+              {item.description}
+            </p>
           </div>
         ))}
       </div>
-      <div css={css`
-        position: relative;
-        flex: 3;
-      `}>
+      <div
+        css={css`
+          position: relative;
+          flex: 3;
+        `}
+      >
         <img
           src={activeItem.image}
           css={css`
             max-width: 100%;
             opacity: ${imageOpacity};
             will-change: opacity;
-            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.175);
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.175);
             transition: opacity ${easeTimingMs}ms linear;
             border-radius: 4px;
-          `} />
+          `}
+        />
       </div>
     </div>
   );

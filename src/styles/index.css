@@ -111,3 +111,9 @@ a {
 .react-toast-notifications__container {
 	overflow: hidden !important;
 }
+
+.typed-cursor {
+	margin-left: 2px !important;
+	animation-duration: 1s !important;
+	font-weight: 400 !important;
+}

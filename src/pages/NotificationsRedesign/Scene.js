@@ -4,7 +4,7 @@ import {default as RedesignScene} from './redesign/Scene';
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable no-script-url */
 
-export default function Scene ({
+export default function Scene({
   onMarkAsRead,
   fetchingNotificationsError,
   ...props

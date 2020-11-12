@@ -70,6 +70,7 @@
     "sass-loader": "7.1.0",
     "style-loader": "0.23.0",
     "terser-webpack-plugin": "1.1.0",
+    "typed.js": "^2.0.11",
     "url-loader": "1.1.1",
     "victory": "^30.6.0",
     "webpack": "4.19.1",

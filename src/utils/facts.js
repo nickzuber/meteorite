@@ -1,4 +1,3 @@
-
 const facts = [
   'Movie trailers were originally shown after the movie, which is why they were called “trailers”.',
   'The top six foods that make your fart are beans, corn, bell peppers, cauliflower, cabbage and milk!',
@@ -40,7 +39,7 @@ const facts = [
   '12+1 = 11+2, and "twelve plus one" is an anagram of "eleven plus two."'
 ];
 
-export function getFact () {
+export function getFact() {
   // DoUbLe TiLdE iS mOrE eLeGaNt ThAn MaTh.FlOoR
   return facts[~~(Math.random() * facts.length)];
 }

@@ -1,30 +1,30 @@
 import React from 'react';
-import { Redirect } from '@reach/router';
-import { compose } from 'recompose';
-import { withAuthProvider } from '../../providers/Auth';
-import { withNotificationsProvider } from '../../providers/Notifications';
-import { withCookiesProvider } from '../../providers/Cookies';
+import {Redirect} from '@reach/router';
+import {compose} from 'recompose';
+import {withAuthProvider} from '../../providers/Auth';
+import {withNotificationsProvider} from '../../providers/Notifications';
+import {withCookiesProvider} from '../../providers/Cookies';
 import TokenHandler from './TokenHandler';
 import Scene from './Scene.new';
-import { routes } from '../../constants';
+import {routes} from '../../constants';
 
 class LoginPage extends React.Component {
   state = {
     loading: false,
     error: null
-  }
+  };
 
   onSetLoading = loading => {
-    this.setState({ loading });
-  }
+    this.setState({loading});
+  };
 
   onSetError = error => {
-    this.setState({ error });
-  }
+    this.setState({error});
+  };
 
-  render () {
+  render() {
     if (this.props.authApi.token) {
-      return <Redirect noThrow to={routes.NOTIFICATIONS} />
+      return <Redirect noThrow to={routes.NOTIFICATIONS} />;
     }
 
     return (

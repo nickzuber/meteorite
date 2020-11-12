@@ -17,7 +17,7 @@ export const TriageLimit = {
 };
 
 class StorageProvider extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
 
     this.originalTitle = document.title;
@@ -28,13 +28,13 @@ class StorageProvider extends React.Component {
     loading: false,
     error: null,
     notifications: []
-  }
+  };
 
-  componentWillMount () {
+  componentWillMount() {
     this.refreshNotifications();
   }
 
-  componentDidMount () {
+  componentDidMount() {
     window.onfocus = () => this.setTitle(this.originalTitle);
   }
 
@@ -42,14 +42,13 @@ class StorageProvider extends React.Component {
     if (document.title.indexOf('(1)') === -1 && document.title !== title) {
       document.title = title;
     }
-  }
+  };
 
   /**
    * Loads up the notifications state with the cache.
    */
   refreshNotifications = () => {
-    const notifications = Object
-      .keys(window.localStorage)
+    const notifications = Object.keys(window.localStorage)
       .reduce((acc, key) => {
         if (key.indexOf(LOCAL_STORAGE_PREFIX) > -1) {
           const cached_n = JSON.parse(window.localStorage.getItem(key));
@@ -62,8 +61,7 @@ class StorageProvider extends React.Component {
         // a notification, however we should fallback to `updated_at` in case
         // there is a thread that doesn't have this set yet.
         const lastUpdated = moment(
-          notification.status_last_changed ||
-          notification.updated_at
+          notification.status_last_changed || notification.updated_at
         );
         const daysOld = moment().diff(lastUpdated, 'days');
 
@@ -105,12 +103,12 @@ class StorageProvider extends React.Component {
         return false;
       });
 
-    this.setState({ notifications });
+    this.setState({notifications});
 
     // Faux notifications for sample screenshots.
     // const mockNotifications = createMockNotifications(20);
     // this.setState({ notifications: mockNotifications });
-  }
+  };
 
   /**
    * Stats are broken up since they are fetched and set often, we want to avoid
@@ -134,18 +132,24 @@ class StorageProvider extends React.Component {
     // Range reflects `[start, end)`
     for (let m = startTime.clone(); m.isBefore(endTime); m.add(1, 'day')) {
       const key = m.format('YYYY-MM-DD');
-      const value = window.localStorage.getItem(`${LOCAL_STORAGE_STATISTIC_PREFIX}${key}-${stat}`);
+      const value = window.localStorage.getItem(
+        `${LOCAL_STORAGE_STATISTIC_PREFIX}${key}-${stat}`
+      );
       if (value) {
         response.push(value);
       } else {
         // If the date is in the past or present, give it a value of 0. Otherwise, null.
-        const fauxValue = m.clone().startOf('day').isSameOrBefore(
-          currentTime.clone().startOf('day')) ? 0 : null;
+        const fauxValue = m
+          .clone()
+          .startOf('day')
+          .isSameOrBefore(currentTime.clone().startOf('day'))
+          ? 0
+          : null;
         response.push(fauxValue);
       }
     }
     return response;
-  }
+  };
 
   /**
    * Since our stats right now are just numbers, we can assume "setting" will always
@@ -154,13 +158,21 @@ class StorageProvider extends React.Component {
    */
   incrStat = (stat, additionalPrefix = moment().format('YYYY-MM-DD')) => {
     const key = additionalPrefix ? `${additionalPrefix}-` : '';
-    const oldValue = window.localStorage.getItem(`${LOCAL_STORAGE_STATISTIC_PREFIX}${key}${stat}`);
+    const oldValue = window.localStorage.getItem(
+      `${LOCAL_STORAGE_STATISTIC_PREFIX}${key}${stat}`
+    );
     if (oldValue !== null) {
-      window.localStorage.setItem(`${LOCAL_STORAGE_STATISTIC_PREFIX}${key}${stat}`, parseInt(oldValue, 10) + 1);
+      window.localStorage.setItem(
+        `${LOCAL_STORAGE_STATISTIC_PREFIX}${key}${stat}`,
+        parseInt(oldValue, 10) + 1
+      );
     } else {
-      window.localStorage.setItem(`${LOCAL_STORAGE_STATISTIC_PREFIX}${key}${stat}`, 1);
+      window.localStorage.setItem(
+        `${LOCAL_STORAGE_STATISTIC_PREFIX}${key}${stat}`,
+        1
+      );
     }
-  }
+  };
 
   getAllRepoStagedCounts = () => {
     return Object.keys(window.localStorage)
@@ -172,42 +184,55 @@ class StorageProvider extends React.Component {
         }
 
         // Janky but will work.
-        const repo = key.split('__REPO__-').pop().split('-stagedCount')[0];
+        const repo = key
+          .split('__REPO__-')
+          .pop()
+          .split('-stagedCount')[0];
 
         repos[repo] = value;
         return repos;
       }, {});
-  }
+  };
 
   // val value : Object
   setItem = (id, value) => {
-    window.localStorage.setItem(`${LOCAL_STORAGE_PREFIX}${id}`, JSON.stringify(value));
-  }
+    window.localStorage.setItem(
+      `${LOCAL_STORAGE_PREFIX}${id}`,
+      JSON.stringify(value)
+    );
+  };
 
   getItem = id => {
     try {
-      return JSON.parse(window.localStorage.getItem(`${LOCAL_STORAGE_PREFIX}${id}`));
+      return JSON.parse(
+        window.localStorage.getItem(`${LOCAL_STORAGE_PREFIX}${id}`)
+      );
     } catch (e) {
       return window.localStorage.getItem(`${LOCAL_STORAGE_PREFIX}${id}`);
     }
-  }
+  };
 
   getUserItem = id => {
     try {
-      return JSON.parse(window.localStorage.getItem(`${LOCAL_STORAGE_USER_PREFIX}${id}`));
+      return JSON.parse(
+        window.localStorage.getItem(`${LOCAL_STORAGE_USER_PREFIX}${id}`)
+      );
     } catch (e) {
       return window.localStorage.getItem(`${LOCAL_STORAGE_USER_PREFIX}${id}`);
     }
-  }
+  };
 
   setUserItem = (id, value) => {
-    window.localStorage.setItem(`${LOCAL_STORAGE_USER_PREFIX}${id}`, JSON.stringify(value));
-  }
+    window.localStorage.setItem(
+      `${LOCAL_STORAGE_USER_PREFIX}${id}`,
+      JSON.stringify(value)
+    );
+  };
 
   // Actually does the work of deleting the item from the cache.
   deleteItem = id => {
     window.localStorage.removeItem(`${LOCAL_STORAGE_PREFIX}${id}`);
-  }
+  };
 
   removeItem = id => {
     // We never really want to purge anything from the cache if we can help it,
@@ -222,11 +247,10 @@ class StorageProvider extends React.Component {
       status: Status.CLOSED
     };
     this.setItem(id, closed_cached_n);
-  }
+  };
 
   clearArchivedCache = () => {
-    Object
-      .keys(window.localStorage)
+    Object.keys(window.localStorage)
       .reduce((acc, key) => {
         if (key.indexOf(LOCAL_STORAGE_PREFIX) > -1) {
           const cached_n = JSON.parse(window.localStorage.getItem(key));
@@ -236,13 +260,13 @@ class StorageProvider extends React.Component {
       }, [])
       .filter(notification => notification.status === Status.Archived)
       .forEach(notification => this.deleteItem(notification.id));
-  }
+  };
 
   clearCache = () => {
     window.localStorage.clear();
-  }
+  };
 
-  render () {
+  render() {
     return this.props.children({
       ...this.state,
       setItem: this.setItem,
@@ -255,20 +279,15 @@ class StorageProvider extends React.Component {
       refreshNotifications: this.refreshNotifications,
       getStat: this.getStat,
       getAllRepoStagedCounts: this.getAllRepoStagedCounts,
-      incrStat: this.incrStat,
+      incrStat: this.incrStat
     });
   }
 }
 
 const withStorageProvider = WrappedComponent => props => (
   <StorageProvider>
-    {(storageApi) => (
-      <WrappedComponent {...props} storageApi={storageApi} />
-    )}
+    {storageApi => <WrappedComponent {...props} storageApi={storageApi} />}
   </StorageProvider>
 );
 
-export {
-  StorageProvider,
-  withStorageProvider
-};
+export {StorageProvider, withStorageProvider};
