@@ -336,7 +336,7 @@ export function BasicPageWrapper({loggedIn, onLogout, children}) {
         </GroupedLinks>
         <FlexBreak height={20} />
         <FooterSubtleText>
-          {`© 2019 Nick Zuber – Meteorite v${version}`}
+          {`© ${new Date().getFullYear()} Nick Zuber – Meteorite v${version}`}
         </FooterSubtleText>
       </Container>
     </DefaultContainer>
