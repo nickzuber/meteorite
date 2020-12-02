@@ -231,14 +231,8 @@ const DotsBackground = styled('div')`
   height: 400px;
   width: 100%;
   margin-left: -60px;
-  background: radial-gradient(transparent 50%, #fffefd),
-    \url(
-        data: image/png;base64,
-        iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs +
-          9aaaakeleqvqou2nkibiweqmogq4kx715 / x/mHDERQbiNGFZTXyGuUKC +
-          rwHAcQwLu0IifQAAAABJRU5ErkJggg==
-      )
-      repeat;
+  background: radial-gradient(transparent 50%, #fffefd), \
+    url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQoU2NkIBIwEqmOgQ4KX715/x/mHDERQbiNGFZTXyGuUKC+rwHAcQwLu0IifQAAAABJRU5ErkJggg==) repeat;
   ${forMobile(`
     width: 90%;
     margin: 0 auto;
@@ -250,14 +244,8 @@ const FooterImageContainer = styled('div')`
   height: 250px;
   width: 100%;
   text-align: center;
-  background: radial-gradient(transparent 50%, ${ALT_BACKGROUND_COLOR}),
-    \url(
-        data: image/png;base64,
-        iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs +
-          9aaaakeleqvqou2nkibiweqmogq4kx715 / x/mHDERQbiNGFZTXyGuUKC +
-          rwHAcQwLu0IifQAAAABJRU5ErkJggg==
-      )
-      repeat;
+  background: radial-gradient(transparent 50%, #fffefd), \
+    url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQoU2NkIBIwEqmOgQ4KX715/x/mHDERQbiNGFZTXyGuUKC+rwHAcQwLu0IifQAAAABJRU5ErkJggg==) repeat;
   ${forMobile(`
     display: none;
   `)};

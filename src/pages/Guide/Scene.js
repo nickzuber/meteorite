@@ -351,9 +351,8 @@ const DotsBackground = styled('div')`
   height: 400px;
   width: 100%;
   margin-left: -60px;
-  background: radial-gradient(transparent 50%, #fffefd),
-    \url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQoU2NkIBIwEqmOgQ4KX715/x/mHDERQbiNGFZTXyGuUKC+rwHAcQwLu0IifQAAAABJRU5ErkJggg==)
-      repeat;
+  background: radial-gradient(transparent 50%, #fffefd), \
+    url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQoU2NkIBIwEqmOgQ4KX715/x/mHDERQbiNGFZTXyGuUKC+rwHAcQwLu0IifQAAAABJRU5ErkJggg==) repeat;
   ${forMobile(`
     display: none;
   `)};
