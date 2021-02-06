@@ -277,7 +277,7 @@ export function prettify(n) {
 export function titleOfMode(mode) {
   switch (mode) {
     case Mode.ALL:
-      return 'All Relevent Threads';
+      return 'All Relevant Threads';
     case Mode.HOT:
       return 'Hot Threads';
     case Mode.COMMENTS:
@@ -292,7 +292,7 @@ export function titleOfMode(mode) {
 export function titleOfFilter(filter) {
   switch (filter) {
     case Filters.PARTICIPATING:
-      return 'All Relevent';
+      return 'All Relevant';
     case Filters.SUBSCRIBED:
       return 'Subscribed';
     case Filters.COMMENT:
