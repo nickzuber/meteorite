@@ -244,7 +244,7 @@ const FooterImageContainer = styled('div')`
   height: 250px;
   width: 100%;
   text-align: center;
-  background: radial-gradient(transparent 50%, #fffefd), \
+  background: radial-gradient(transparent 50%, #f6f2ed), \
     url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQoU2NkIBIwEqmOgQ4KX715/x/mHDERQbiNGFZTXyGuUKC+rwHAcQwLu0IifQAAAABJRU5ErkJggg==) repeat;
   ${forMobile(`
     display: none;
