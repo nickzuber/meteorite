@@ -45,7 +45,7 @@
     "lodash-es": "^4.17.11",
     "lodash-move": "^1.1.1",
     "mini-css-extract-plugin": "0.4.3",
-    "moment": "^2.22.2",
+    "moment": "^2.29.2",
     "offline-plugin": "^5.0.7",
     "optimize-css-assets-webpack-plugin": "5.0.1",
     "pnp-webpack-plugin": "1.1.0",
