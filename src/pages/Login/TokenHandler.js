@@ -7,7 +7,7 @@ export default class TokenHandler extends React.Component {
     const code = params.code;
     if (code) {
       this.props.onSetLoading(true);
-      fetch(`https://meteorite-gatekeeper.herokuapp.com/authenticate/${code}`)
+      fetch(`https://getskipper.dev/api/meteorite-auth/${code}`)
         .then(response => response.json())
         .then(({token, error}) => {
           this.props.onSetLoading(false);
