@@ -8,10 +8,14 @@ const BASE_GITHUB_API_URL = 'https://api.github.com';
 const PER_PAGE = 50;
 
 function transformUrlFromResponse(url) {
-  return url
-    .replace('api.github.com', 'github.com')
-    .replace('/repos/', '/')
-    .replace('/pulls/', '/pull/');
+  try {
+    return url
+      .replace('api.github.com', 'github.com')
+      .replace('/repos/', '/')
+      .replace('/pulls/', '/pull/');
+  } catch (err) {
+    return url || ""
+  }
 }
 
 function processHeadersAndBodyJson(response) {
@@ -171,10 +175,7 @@ class NotificationsProvider extends React.Component {
     //
     // 1 month is pretty arbitrary, we can raise this if we want.
     const since =
-      moment()
-        .subtract(1, 'month')
-        .toISOString()
-        .split('.')[0] + 'Z';
+      moment().subtract(1, 'month').toISOString().split('.')[0] + 'Z';
 
     const headers = {
       Authorization: `token ${this.props.token}`,
@@ -209,7 +210,33 @@ class NotificationsProvider extends React.Component {
         if (links && links.next && links.next.page) {
           nextPage = links.next.page;
         }
-        return this.processNotificationsChunk(nextPage, json);
+
+        const chunk = json.filter(notification => {
+          // 2/4/2023
+          // New reasons have joined the party.
+          // Restrict some reasons to maintain backwards compat.
+          const allowedReasons = [
+            "assign",
+            "author",
+            "comment",
+            // "ci_activity",
+            // "invitation",
+            // "manual",
+            "mention",
+            "review_requested",
+            // "security_alert",
+            "state_change",
+            "subscribed",
+            "team_mention"
+          ]
+          if (allowedReasons.includes(notification.reason)) {
+            return true
+          } else {
+            return false
+          }
+        })
+
+        return this.processNotificationsChunk(nextPage, chunk);
       });
   };
 
